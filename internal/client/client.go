@@ -59,6 +59,8 @@ func (e *APIError) Class() int {
 		return ExitDomain
 	case strings.HasPrefix(e.Code, "run_") || e.Code == "domain_failure":
 		return ExitDomain
+	case e.Status == 0:
+		return ExitTransport
 	case e.Status >= 500:
 		return ExitServer
 	default:
@@ -291,12 +293,16 @@ func (c *Client) Status(runID string) (*Status, error) {
 	return st, nil
 }
 
-// Wait polls until a terminal state or budget exhaustion.
+// Wait polls until a terminal state or budget exhaustion. A definitive
+// server answer (404 run_not_found_or_expired) is returned immediately.
 func (c *Client) Wait(runID string) (*Status, error) {
 	deadline := time.Now().Add(c.PollBudget)
 	for {
 		st, err := c.Status(runID)
 		if err != nil {
+			if apiErr, ok := err.(*APIError); ok && apiErr.Status == 404 {
+				return nil, err
+			}
 			if time.Now().After(deadline) {
 				return nil, err
 			}

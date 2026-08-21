@@ -242,6 +242,10 @@ func main() {
 			final, werr := c.Wait(args[0])
 			if werr != nil {
 				fmt.Fprintln(os.Stderr, werr)
+				if apiErr, ok := werr.(*client.APIError); ok && apiErr.Status != 0 {
+					os.Exit(apiErr.Class())
+				}
+				printResume(args[0], out)
 				os.Exit(client.ExitTransport)
 			}
 			if final.State == "succeeded" {
@@ -317,4 +321,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(client.ExitUsage)
 	}
+}
+
+func printResume(runID, outputPath string) {
+	bundle.PrintResumeLines(runID, outputPath)
 }
