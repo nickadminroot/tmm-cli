@@ -33,8 +33,8 @@ container for sampled output or renderer settings.
    absolute paths:
 
    ```bash
-   tmm linkage /absolute/path/to/model.yaml \
-     --output /absolute/path/to/output-dir
+   tmm linkage "/absolute/path/to/model.yaml" \
+     --output "/absolute/path/to/output-dir"
    ```
 
    Inspect the command exit status and returned artifact paths. A prepared file

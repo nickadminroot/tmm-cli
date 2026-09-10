@@ -1,9 +1,8 @@
 # TMM CLI reference
 
-Compatibility checked against source revision
-`7f7348ca7beeb3e5fb7c9a6fa610bbe0ddb447d7` and `tmm version` output
-`0.1.0-dev`. The release assets must be available anonymously before this
-reference is advertised as an installation path.
+This reference is part of the public skills release tag `v0.1.0`. It requires
+a separately published `tmm` CLI release asset; verify the archive checksum and
+`tmm version` before use. No private TMM source revision is a dependency.
 
 ## Commands
 

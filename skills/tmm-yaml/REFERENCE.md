@@ -1,9 +1,8 @@
 # Physical YAML reference
 
-Compatibility checked against the TMM CLI source revision
-`7f7348ca7beeb3e5fb7c9a6fa610bbe0ddb447d7`, CLI version `0.1.0-dev`, and
-the `tmm-linkage-once` 0.1.0 YAML contract. The contract has no independent
-schema version; refresh this reference when the owning parser changes.
+Compatibility checked against the public skills release tag `v0.1.0` and the
+`tmm-linkage-once` 0.1.0 YAML contract. The contract has no independent schema
+version; refresh this reference when the owning parser changes.
 
 ## Complete input
 
@@ -123,8 +122,8 @@ when asking the user for a correction.
 Verify a saved model only as follows:
 
 ```bash
-tmm linkage /absolute/path/to/model.yaml \
-  --output /absolute/path/to/output-dir
+tmm linkage "/absolute/path/to/model.yaml" \
+  --output "/absolute/path/to/output-dir"
 ```
 
 Check the exit status, the result status, and the declared output files. Do not

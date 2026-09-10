@@ -32,8 +32,9 @@ locally. It does not calculate mechanisms or run Mathcad/KOMPAS on its own.
    tmm --help
    ```
 
-   The current contract is CLI `0.1.0-dev` at the source revision recorded in
-   [REFERENCE.md](REFERENCE.md). Refresh this statement with every release.
+The public skill release tag recorded in [REFERENCE.md](REFERENCE.md) versions
+this instruction. The CLI binary is versioned by its `tmm-cli/v*` release; do
+not proceed until a matching public asset is available and `tmm version` passes.
 
 ## Authentication and secrets
 

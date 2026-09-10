@@ -43,10 +43,11 @@ their installation behavior is not verified here.
 
 The numerical runtime is a standalone Python project under
 `skills/metric-synthesis/scripts`. It requires Python 3.10 or newer, `uv`,
-NumPy, and SciPy. Install only the bundled project:
-
+NumPy, and SciPy. If `uv` is not installed, follow the
+[official installation instructions](https://docs.astral.sh/uv/getting-started/installation/).
+Then install only the bundled project:
 ```bash
-SKILL_DIR=/absolute/path/to/tmm-skills/skills/metric-synthesis
+SKILL_DIR="/absolute/path/to/tmm-skills/skills/metric-synthesis"
 uv sync --locked --project "$SKILL_DIR/scripts"
 uv run --locked --project "$SKILL_DIR/scripts" python -m msynth.cli models
 ```
@@ -56,12 +57,13 @@ Run it from any working directory with absolute input paths:
 ```bash
 uv run --locked --project "$SKILL_DIR/scripts" \
   python -m msynth.cli run \
-  --input /absolute/path/to/request.json \
+  --input "/absolute/path/to/request.json" \
   --output-format json
 ```
 
 The request file and output directory belong to the user. The runtime never
-writes task inputs into its installed skill directory.
+writes task inputs into its installed
+skill directory.
 
 ## Minimal sequence
 
@@ -71,7 +73,7 @@ writes task inputs into its installed skill directory.
 3. Run the model and keep the structured JSON result.
 4. Choose one assembly pose and write a complete physical YAML with
    `skills/tmm-yaml/REFERENCE.md`.
-5. Run `tmm linkage <absolute-model.yaml> --output <absolute-output-dir>`.
+5. Run `tmm linkage "/absolute/path/to/model.yaml" --output "/absolute/path/to/output-dir"`.
 6. Report the numerical result, the authored YAML path, and the actual linkage
    status/artifacts. If the CLI, network, token, pose, branch, or physical data
    are unavailable, stop at the corresponding step and say exactly what is

@@ -18,8 +18,8 @@ physical linkage model.
    file and run the bundled classifier:
 
    ```bash
-   uv run --locked --project /absolute/path/to/metric-synthesis/scripts \
-     python -m msynth.cli classify --text /absolute/path/to/task.txt
+   uv run --locked --project "/absolute/path/to/metric-synthesis/scripts" \
+     python -m msynth.cli classify --text "/absolute/path/to/task.txt"
    ```
 
    Classification is a hint. Confirm the model definition and required fields
@@ -27,7 +27,7 @@ physical linkage model.
 3. Query the runtime schema before constructing a request:
 
    ```bash
-   uv run --locked --project /absolute/path/to/metric-synthesis/scripts \
+   uv run --locked --project "/absolute/path/to/metric-synthesis/scripts" \
      python -m msynth.cli schema <model-id>
    ```
 
@@ -39,9 +39,9 @@ physical linkage model.
    Run structured JSON output:
 
    ```bash
-   uv run --locked --project /absolute/path/to/metric-synthesis/scripts \
+   uv run --locked --project "/absolute/path/to/metric-synthesis/scripts" \
      python -m msynth.cli run \
-     --input /absolute/path/to/request.json \
+     --input "/absolute/path/to/request.json" \
      --output-format json
    ```
 
@@ -61,8 +61,8 @@ physical linkage model.
 8. Verify the authored model only with the public CLI:
 
    ```bash
-   tmm linkage /absolute/path/to/model.yaml \
-     --output /absolute/path/to/output-dir
+   tmm linkage "/absolute/path/to/model.yaml" \
+     --output "/absolute/path/to/output-dir"
    ```
 
    Report the actual status and artifact paths. If the binary, token, network,
@@ -71,10 +71,15 @@ physical linkage model.
 
 ## Runtime setup
 
+If `uv` is not installed, follow the
+[official installation instructions](https://docs.astral.sh/uv/getting-started/installation/)
+before using the bundled project. Do not install NumPy or SciPy into a system
+Python for this skill.
+
 The install target is the `scripts/` directory inside this skill:
 
 ```bash
-SKILL_DIR=/absolute/path/to/metric-synthesis
+SKILL_DIR="/absolute/path/to/metric-synthesis"
 uv sync --locked --project "$SKILL_DIR/scripts"
 uv run --locked --project "$SKILL_DIR/scripts" \
   python -m msynth.cli models
