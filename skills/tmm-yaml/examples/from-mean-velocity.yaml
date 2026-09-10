@@ -4,10 +4,10 @@ output_body: "3"
 gravity: [0.0, -9.81, 0.0]
 
 parameters:
-  l_AB: 0.06
-  l_BC: 0.18
+  l_AB: 0.0625
+  l_BC: 0.2
   phi_1: 40.0
-  omega_1: 31.41592653589793
+  omega_1: 37.69911184307752
   alpha_1: 0.0
   marker: 0.18
 

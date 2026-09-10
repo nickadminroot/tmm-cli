@@ -54,7 +54,7 @@ physical linkage model.
    validation together. A dimensionless ratio is not an absolute length.
 7. Hand the result to [tmm-yaml](../tmm-yaml/SKILL.md) when that neighboring skill
    is available. Choose one assembly pose and branch. Request all physical data
-   that synthesis does not provide: drive `omega`/`alpha), body mass,
+   that synthesis does not provide: drive `omega`/`alpha`, body mass,
    inertia, center of mass, gravity, external loads, and any required marker
    geometry. Do not pretend that multi-position constraints describe all poses
    in one YAML file.

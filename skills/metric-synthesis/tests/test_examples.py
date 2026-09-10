@@ -49,9 +49,9 @@ REFERENCE_SOLUTIONS: dict[str, dict[str, float]] = {
         "derived.theta_H": 0.04250742211873604,
     },
     "slider_crank_mean_velocity.json": {
-        "unknowns.l_1": 0.06,
-        "derived.H": 0.12,
-        "derived.l_2": 0.18,
+        "unknowns.l_1": 0.0625,
+        "derived.H": 0.125,
+        "derived.l_2": 0.2,
     },
     "slider_crank_pressure_angle.json": {
         "unknowns.lambda_2": 2.9238044001630876,

@@ -4,20 +4,21 @@ output_body: "3"
 gravity: [0.0, -9.81, 0.0]
 
 parameters:
-  l_OC: 0.9
-  l_OA: 0.55
-  l_S2A: 0.12
-  phi_1: 60.0
+  X_D: 0.5074306673752904
+  Y_D: 0.05
+  l_OA: 0.27702975280442843
+  phi_1: 65.18691586205648
   omega_1: 8.0
   alpha_1: 0.0
+  frame_marker: 0.12
 
 geometry:
   points:
     O: [0.0, 0.0]
+    C: [0.5074306673752904, 0.05]
   construct:
-    - {type: point_on_ray, point: C, from: O, length: l_OC, angle_deg: 0.0}
     - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1}
-    - {type: point_offset, point: S2, from: A, vector: [1.0, 0.0], length: l_S2A}
+    - {type: point_offset, point: S2, from: A, vector: [1.0, 0.0], length: frame_marker}
   aliases: {P: A, S1: O, S3: C}
 
 bodies:

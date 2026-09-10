@@ -4,23 +4,23 @@ output_body: "3"
 gravity: [0.0, -9.81, 0.0]
 
 parameters:
-  X_D: 1.2
-  Y_D: 0.1
-  l_OA: 0.4
-  l_AB: 0.95
-  l_CB: 0.85
-  gamma_H: 125.0
-  phi_1H: 45.0
+  X_D: 0.8
+  Y_D: -0.1
+  l_OA: 0.24151703160264398
+  l_AB: 0.7975435309161845
+  l_DB: 0.5
+  gamma_H: 70.0
+  phi_1H: 20.851248356858576
   omega_1: 6.0
   alpha_1: 0.0
 
 geometry:
   points:
     O: [0.0, 0.0]
-    D: [1.2, 0.1]
+    D: [0.8, -0.1]
   construct:
     - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1H}
-    - {type: circle_circle, point: B, center1: A, radius1: l_AB, center2: D, radius2: l_CB, branch: upper}
+    - {type: circle_circle, point: B, center1: A, radius1: l_AB, center2: D, radius2: l_DB, branch: upper}
 
 bodies:
   "1": {frame: [O, A], points: [O, A], mass: 1.8, inertia: 0.04, com: mid}
