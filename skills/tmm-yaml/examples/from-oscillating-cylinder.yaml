@@ -1,0 +1,55 @@
+# One pose of an oscillating-cylinder mechanism.
+units: SI
+output_body: "3"
+gravity: [0.0, -9.81, 0.0]
+
+parameters:
+  l_OC: 0.9
+  l_OA: 0.55
+  l_S2A: 0.12
+  phi_1: 60.0
+  omega_1: 8.0
+  alpha_1: 0.0
+
+geometry:
+  points:
+    O: [0.0, 0.0]
+  construct:
+    - {type: point_on_ray, point: C, from: O, length: l_OC, angle_deg: 0.0}
+    - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1}
+    - {type: point_offset, point: S2, from: A, vector: [1.0, 0.0], length: l_S2A}
+  aliases: {P: A, S1: O, S3: C}
+
+bodies:
+  "1":
+    frame: [O, A]
+    points: [O, A, S1]
+    mass: 8.0
+    inertia: 0.7
+    com: O
+  "2":
+    frame: [A, S2]
+    points: [A, P, S2]
+    mass: 0.0
+    inertia: 0.0
+    com: A
+  "3":
+    frame: [C, P]
+    points: [C, P, S3]
+    mass: 12.0
+    inertia: 1.1
+    com: C
+
+joints:
+  - {id: O, type: revolute, endpoints: [{body: ground, point: O}, {body: "1", point: O}]}
+  - {id: A, type: revolute, endpoints: [{body: "1", point: A}, {body: "2", point: A}]}
+  - id: P
+    type: slot
+    guide: {body: "3", point: P}
+    pin: {body: "2", point: P}
+    normal_axis: y
+    axis_points: [C, P]
+  - {id: C, type: revolute, endpoints: [{body: ground, point: C}, {body: "3", point: C}]}
+
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
+loads: []

@@ -1,0 +1,37 @@
+# One H-pose of a four-bar synthesized from two extreme rocker positions.
+units: SI
+output_body: "3"
+gravity: [0.0, -9.81, 0.0]
+
+parameters:
+  X_D: 1.2
+  Y_D: 0.1
+  l_OA: 0.4
+  l_AB: 0.95
+  l_CB: 0.85
+  gamma_H: 125.0
+  phi_1H: 45.0
+  omega_1: 6.0
+  alpha_1: 0.0
+
+geometry:
+  points:
+    O: [0.0, 0.0]
+    D: [1.2, 0.1]
+  construct:
+    - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1H}
+    - {type: circle_circle, point: B, center1: A, radius1: l_AB, center2: D, radius2: l_CB, branch: upper}
+
+bodies:
+  "1": {frame: [O, A], points: [O, A], mass: 1.8, inertia: 0.04, com: mid}
+  "2": {frame: [A, B], points: [A, B], mass: 2.8, inertia: 0.10, com: mid}
+  "3": {frame: [D, B], points: [D, B], mass: 2.0, inertia: 0.07, com: mid}
+
+joints:
+  - {id: O, type: revolute, endpoints: [{body: ground, point: O}, {body: "1", point: O}]}
+  - {id: A, type: revolute, endpoints: [{body: "1", point: A}, {body: "2", point: A}]}
+  - {id: D, type: revolute, endpoints: [{body: ground, point: D}, {body: "3", point: D}]}
+  - {id: B, type: revolute, endpoints: [{body: "2", point: B}, {body: "3", point: B}]}
+
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
+loads: []

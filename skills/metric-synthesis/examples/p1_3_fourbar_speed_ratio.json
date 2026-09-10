@@ -1,0 +1,11 @@
+{
+  "model": "fourbar.two_extreme_positions_speed_ratio",
+  "units": {"length": "m", "angle": "deg"},
+  "inputs": {
+    "Y_D": -0.1,
+    "l_3": 0.5,
+    "K_omega": 1.2,
+    "gamma_H": 50,
+    "gamma_K": 110
+  }
+}

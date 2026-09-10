@@ -1,0 +1,90 @@
+# One H-pose of a slider-crank synthesized from two positions.
+units: SI
+output_body: "3"
+gravity: [0.0, -9.81, 0.0]
+
+parameters:
+  l_AB: 0.11327540717342367
+  l_BC: 0.2831885179335592
+  y_slider: 0.04531016286936947
+  phi_1: 60.0
+  omega_1: 8.0
+  alpha_1: 0.0
+  marker: 0.20
+
+geometry:
+  points:
+    A: [0.0, 0.0]
+    G0: [0.0, 0.04531016286936947]
+    G1: [1.0, 0.04531016286936947]
+  construct:
+    - type: point_on_ray
+      point: B
+      from: A
+      length: l_AB
+      angle_deg: phi_1
+    - type: circle_line_y
+      point: C
+      center: B
+      radius: l_BC
+      y: y_slider
+      branch: right
+    - type: point_offset
+      point: S3
+      from: C
+      vector: [0.0, 1.0]
+      length: marker
+  aliases:
+    S1: A
+    S2: B
+
+bodies:
+  "1":
+    frame: [A, B]
+    points: [A, B, S1]
+    mass: 2.0
+    inertia: 0.03
+    com: mid
+  "2":
+    frame: [B, C]
+    points: [B, C, S2]
+    mass: 3.0
+    inertia: 0.08
+    com: mid
+  "3":
+    frame: [C, S3]
+    points: [C, S3]
+    mass: 1.0
+    inertia: 0.01
+    com: C
+
+joints:
+  - id: A
+    type: revolute
+    endpoints:
+      - {body: ground, point: A}
+      - {body: "1", point: A}
+  - id: B
+    type: revolute
+    endpoints:
+      - {body: "1", point: B}
+      - {body: "2", point: B}
+  - id: C
+    type: revolute
+    endpoints:
+      - {body: "2", point: C}
+      - {body: "3", point: C}
+  - id: slider
+    type: slot
+    guide: {body: ground, point: C}
+    pin: {body: "3", point: C}
+    normal_axis: y
+    axis_points: [G0, G1]
+
+drive:
+  body: "1"
+  q_ratio: 1
+  omega: omega_1
+  alpha: alpha_1
+
+loads: []

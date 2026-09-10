@@ -1,0 +1,9 @@
+{
+  "model": "slider_crank.pressure_angle",
+  "units": {"angle": "deg"},
+  "inputs": {
+    "theta_max": 20,
+    "lambda_e": 0.0,
+    "l_1": 0.1
+  }
+}

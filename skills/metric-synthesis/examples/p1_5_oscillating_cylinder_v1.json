@@ -1,0 +1,12 @@
+{
+  "model": "oscillating_cylinder.fixed_y_theta_k",
+  "units": {"length": "m", "angle": "deg"},
+  "inputs": {
+    "h_min": 0.05,
+    "h_max": 0.3,
+    "beta": 60,
+    "theta_K": 50,
+    "Y_D": 0.05,
+    "l_sh": 0.39
+  }
+}

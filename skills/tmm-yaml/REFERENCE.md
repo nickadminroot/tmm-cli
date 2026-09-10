@@ -1,0 +1,169 @@
+# Physical YAML reference
+
+Compatibility checked against the TMM CLI source revision
+`7f7348ca7beeb3e5fb7c9a6fa610bbe0ddb447d7`, CLI version `0.1.0-dev`, and
+the `tmm-linkage-once` 0.1.0 YAML contract. The contract has no independent
+schema version; refresh this reference when the owning parser changes.
+
+## Complete input
+
+A full input describes one physical assembly pose:
+
+```yaml
+units: SI
+parameters: {}
+geometry:
+  points: {}
+  construct: []
+  aliases: {}
+bodies: {}
+joints: []
+drive: {}
+loads: []
+gravity: [0.0, -9.81, 0.0]
+# dynamics: {}  # optional; omission and an empty block use defaults
+```
+
+The top-level `units` value is informational. Geometry is written in metres
+for `SI`; the parser does not translate arbitrary length units. Convert input
+quantities before authoring and retain the conversion in the task provenance.
+
+## Physical fields
+
+- `parameters` is a numeric or reference-value dictionary used by construction
+  steps. References resolve within this YAML.
+- `geometry.points` contains fixed `[x, y]` coordinates.
+- `geometry.construct` derives points with the supported step types below.
+- `geometry.aliases` gives another semantic name to an existing point.
+- `bodies` contains moving bodies only. IDs are quoted integers. A body has
+  `frame: [P0, P1]`, optional `points`, and for complete analysis
+  `mass`, `inertia`, and `com`.
+- `joints` closes the mechanism explicitly.
+- `output_body` is an optional physical selector for extrema; it is not a
+  runtime output configuration.
+- `drive` or `drives` declares the driven body. Complete analysis requires
+  `omega` and `alpha`; `q_ratio` is the relation between body angle and the
+  generalized coordinate.
+- `gravity` is a three-component SI vector. `loads` is an explicit list,
+  possibly empty.
+- `attached_masses` adds a point mass to an existing body without adding a
+  degree of freedom.
+- `dynamics` is optional physical analysis configuration. Effective defaults
+  remain solver-owned and must not be copied into the input as generated data.
+
+## Geometry construction
+
+Supported steps:
+
+| Type | Required fields and meaning |
+| --- | --- |
+| `point_on_ray` | `point`, `from`, `length`, `angle_deg`; absolute angle in degrees |
+| `circle_line_y` | `point`, `center`, `radius`, `y`, `branch: right\|left` |
+| `circle_line_x` | `point`, `center`, `radius`, `x`, `branch: upper\|lower` |
+| `circle_circle` | two centers/radii and `branch: upper\|lower\|right\|left\|ccw\|cw` |
+| `circle_ray` | circle and ray fields plus `branch: positive\|far_positive\|near\|far` |
+| `point_at_angle` | vertex, reference point, length, angle, and side |
+| `point_on_line` | endpoints plus `distance` or `fraction` |
+| `point_towards` | `from`, `to`, and length |
+| `point_offset` | `from`, vector/direction/angle, and length |
+
+A construction branch is part of the physical model. Do not let a renderer or
+the solver silently choose a different intersection.
+
+## Bodies, joints, and physical data
+
+```yaml
+bodies:
+  "1":
+    frame: [A, B]
+    points: [A, B]
+    mass: 2.0
+    inertia: 0.12
+    com: mid
+
+joints:
+  - id: A
+    type: revolute
+    endpoints:
+      - {body: ground, point: A}
+      - {body: "1", point: A}
+  - id: C
+    type: slot
+    guide: {body: ground, point: C}
+    pin: {body: "2", point: C}
+    normal_axis: y
+    axis_points: [G0, G1]
+
+drive:
+  body: "1"
+  q_ratio: 1
+  omega: 10.0
+  alpha: 0.0
+
+gravity: [0.0, -9.81, 0.0]
+loads: []
+```
+
+A revolute pair has two coincident endpoints. A slot has a guide body/point and
+a pin body/point; `normal_axis` is `x` or `y`, and `axis_points` may give
+the global sliding direction. Omit `constrain_rotation` or set it to
+`true`; `false` requests an unsupported higher pair.
+
+Frames must have distinct points. For a massless rod whose meaningful points
+coincide, add a declared nonzero marker point and reference it in the frame.
+The marker is physical authoring data, not a synthesis result.
+
+## Diagnostics and verification
+
+Parser diagnostics use a stable code/message/field/stage envelope. YAML syntax
+errors may include one-based `line` and `column`; semantic errors identify a
+JSON-Pointer-like field such as `/bodies/2/mass`. Preserve the field and stage
+when asking the user for a correction.
+
+Verify a saved model only as follows:
+
+```bash
+tmm linkage /absolute/path/to/model.yaml \
+  --output /absolute/path/to/output-dir
+```
+
+Check the exit status, the result status, and the declared output files. Do not
+report a YAML as checked because it parsed, because a synthesis result existed,
+or because a fixture was copied.
+
+## Forbidden runtime fields
+
+These keys are not physical input and must be rejected:
+
+- `outputs`
+- `vectorPlans`
+- `graphs`
+- `force_reference`
+
+Do not add browser-import limits, sampled traces, output vectors, or renderer
+configuration to this YAML.
+
+## Synthesis handoff
+
+A metric-synthesis result supplies only the fields its model solves:
+
+- `slider_crank.two_positions_stroke`: use `l_1`, `l_2`, `e`, and the
+  H-pose angle; the K pose and stroke remain provenance.
+- `slider_crank.mean_velocity`: use `l_1`, `H`, and `l_2`; frequency
+  can inform `omega`, but `alpha`, pose, branch, and physical data remain
+  inputs.
+- `slider_crank.pressure_angle`: `theta_max` alone gives only
+  dimensionless `lambda_2`. Require absolute `l_1` before writing `l_2`
+  and geometry; the result does not choose a pose or prove crankability.
+- `fourbar.two_extreme_positions`: construct fixed A/D, the H-pose crank from
+  `l_1`, `phi_1H`, and the rocker from `l_3`, `gamma_H`; use revolute A/B/C/D.
+- `fourbar.two_extreme_positions_speed_ratio`: use solved `X_D`, `l_1`, `l_2`
+  for the same H-pose; `gamma_K` and `K_omega` are provenance.
+- `fourbar.three_positions`: author position 1 using `l_1`, `l_2`, `phi_1H`
+  and `gamma_1` or `phi_21`; preserve positions 2/3 as provenance.
+- `oscillating_cylinder.fixed_y_theta_k`: choose H or K, use solved
+  `X_D`, `l_1`, `phi_1`, `phi_3H`/`phi_3K`, and author a nonzero frame marker
+  for a massless rod.
+
+The result must be combined with an explicit one-pose branch, drive, masses,
+inertia, centers of mass, gravity, and loads before linkage verification.
