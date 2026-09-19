@@ -1,4 +1,5 @@
 # One pose of an oscillating-cylinder mechanism.
+schema: linkage/v2
 units: SI
 output_body: "3"
 gravity: [0.0, -9.81, 0.0]
@@ -17,40 +18,57 @@ geometry:
     O: [0.0, 0.0]
     C: [0.5074306673752904, 0.05]
   construct:
-    - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1}
-    - {type: point_offset, point: S2, from: A, vector: [1.0, 0.0], length: frame_marker}
-  aliases: {P: A, S1: O, S3: C}
+    - type: point_on_ray
+      point: A
+      from: O
+      length: l_OA
+      angle_deg: phi_1
+    - type: point_towards
+      point: S3
+      from: C
+      to: A
+      length: frame_marker
+  aliases: {}
 
 bodies:
   "1":
-    frame: [O, A]
-    points: [O, A, S1]
+    type: rigid
+    points: [O, A]
+    frame: {origin: O, x_axis: {through: A}}
     mass: 8.0
     inertia: 0.7
     com: O
   "2":
-    frame: [A, S2]
-    points: [A, P, S2]
+    type: slider
+    points: [A]
+    frame: {origin: A}
     mass: 0.0
     inertia: 0.0
     com: A
   "3":
-    frame: [C, P]
-    points: [C, P, S3]
+    type: rigid
+    points: [C, S3]
+    frame: {origin: C, x_axis: {through: S3}}
     mass: 12.0
     inertia: 1.1
     com: C
 
 joints:
-  - {id: O, type: revolute, endpoints: [{body: ground, point: O}, {body: "1", point: O}]}
-  - {id: A, type: revolute, endpoints: [{body: "1", point: A}, {body: "2", point: A}]}
+  - id: O
+    type: revolute
+    endpoints: [{body: ground, point: O}, {body: "1", point: O}]
+  - id: A
+    type: revolute
+    endpoints: [{body: "1", point: A}, {body: "2", point: A}]
   - id: P
-    type: slot
-    guide: {body: "3", point: P}
-    pin: {body: "2", point: P}
-    normal_axis: y
-    axis_points: [C, P]
-  - {id: C, type: revolute, endpoints: [{body: ground, point: C}, {body: "3", point: C}]}
+    type: prismatic
+    guide:
+      body: "3"
+      axis: {origin: C, angle_deg: 0.0}
+    slider: {body: "2", point: A}
+  - id: C
+    type: revolute
+    endpoints: [{body: ground, point: C}, {body: "3", point: C}]
 
 drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
 loads: []

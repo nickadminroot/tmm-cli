@@ -6,6 +6,9 @@ compatibility: Requires a TMM CLI for linkage verification; the skill does not e
 
 # Physical linkage YAML
 
+The current public contract is strict `linkage/v2`: `schema: linkage/v2` is
+required, and the CLI does not convert legacy YAML automatically.
+
 Use this skill after numerical synthesis or when the task already supplies a
 physical planar mechanism. A YAML file describes one assembly pose and the
 physical data needed by the complete `tmm linkage` analysis. It is not a
@@ -20,12 +23,14 @@ container for sampled output or renderer settings.
 2. Collect one pose: fixed points, body lengths, absolute angles, assembly
    branch, aliases, and the selected output body. Convert supplied geometry to
    metres before writing it. Keep `units: SI`; it records the convention and
-   does not perform automatic conversion.
-3. Add the physical inputs required by the complete calculation: body frames,
-   mass, inertia, center of mass, drive `omega`/`alpha`, gravity, and loads.
-   A genuinely massless rod may have zero mass and inertia, but its frame still
-   needs two distinct points. Ask for missing values; never insert educational
-   values into a user's model without saying so.
+   does not perform automatic conversion. Start the file with
+   `schema: linkage/v2`.
+3. Add the physical inputs required by the complete calculation: body `type`
+   (`rigid` or `slider`), object-shaped frames, mass, inertia, center of mass,
+   drive `omega`/`alpha`, gravity, and loads. A genuinely massless rod may have
+   zero mass and inertia, but its frame still needs two distinct points. Ask for
+   missing values; never insert educational values into a user's model without
+   saying so.
 4. Use only physical YAML fields. Do not copy `outputs`, `vectorPlans`,
    `graphs`, `force_reference`, sampled arrays, Mathcad formulas, or debug
    dumps into the input.
@@ -52,8 +57,9 @@ container for sampled output or renderer settings.
 - Use `geometry.aliases` when two semantic labels refer to one point.
 - Use explicit `circle_circle`, `circle_line_y`, `circle_line_x`, or
   `circle_ray` branches when two intersections are possible.
-- A `slot` is a constrained lower pair. It is not a pin-in-an-unconstrained
-  higher pair; `constrain_rotation: false` is rejected.
+- A `prismatic` is a constrained lower pair with separate `guide` and `slider`
+  roles. The slider body must have `type: slider`; legacy `slot`, `pin`,
+  `normal_axis`, and `axis_points` fields are not accepted by the v2 parser.
 - Multi-position synthesis constraints select one pose for this YAML. Do not
   duplicate one physical body for every numerical position.
 

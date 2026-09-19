@@ -16,15 +16,20 @@ locally. It does not calculate mechanisms or run Mathcad/KOMPAS on its own.
    [TMM skills releases](https://github.com/nickadminroot/tmm-skills/releases).
    Use the release assets and checksum file supplied by the publisher; do not
    clone a private source checkout.
-2. Verify the archive before extracting it:
+2. Verify the downloaded archive before extracting it. The checksum file lists
+   every platform asset, so check only the row for the file you downloaded:
 
    ```bash
-   sha256sum -c checksums.txt
+   archive="$(find . -maxdepth 1 -type f -name 'tmm-cli_*' -print -quit)"
+   test -n "$archive"
+   grep -F "  ${archive##*/}" checksums.txt | sha256sum -c -
    ```
 
-   On macOS use `shasum -a 256 -c checksums.txt`. Compare the PowerShell
-   `Get-FileHash` result on Windows. If a signed checksum bundle is supplied,
-   verify it with the release's published identity before installation.
+   On macOS pipe the matching row to `shasum -a 256 -c -`. On Windows compare
+   `Get-FileHash` with the matching filename row. Running `sha256sum -c
+   checksums.txt` is valid only after downloading every archive in the
+   release. If a signed checksum bundle is supplied, verify it with the
+   release's published identity before installation.
 3. Put the verified executable in a user-owned `PATH` directory and check:
 
    ```bash

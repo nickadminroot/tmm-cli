@@ -1,4 +1,5 @@
 # One H-pose of a slider-crank synthesized from two positions.
+schema: linkage/v2
 units: SI
 output_body: "3"
 gravity: [0.0, -9.81, 0.0]
@@ -10,17 +11,14 @@ parameters:
   phi_1: 60.0
   omega_1: 8.0
   alpha_1: 0.0
-  marker: 0.20
 
 geometry:
   points:
-    A: [0.0, 0.0]
-    G0: [0.0, 0.04531016286936947]
-    G1: [1.0, 0.04531016286936947]
+    O: [0.0, 0.0]
   construct:
     - type: point_on_ray
       point: B
-      from: A
+      from: O
       length: l_AB
       angle_deg: phi_1
     - type: circle_line_y
@@ -29,62 +27,47 @@ geometry:
       radius: l_BC
       y: y_slider
       branch: right
-    - type: point_offset
-      point: S3
-      from: C
-      vector: [0.0, 1.0]
-      length: marker
-  aliases:
-    S1: A
-    S2: B
+  aliases: {}
 
 bodies:
   "1":
-    frame: [A, B]
-    points: [A, B, S1]
+    type: rigid
+    points: [O, B]
+    frame: {origin: O, x_axis: {through: B}}
+    com: mid
     mass: 2.0
     inertia: 0.03
-    com: mid
   "2":
-    frame: [B, C]
-    points: [B, C, S2]
+    type: rigid
+    points: [B, C]
+    frame: {origin: B, x_axis: {through: C}}
+    com: mid
     mass: 3.0
     inertia: 0.08
-    com: mid
   "3":
-    frame: [C, S3]
-    points: [C, S3]
+    type: slider
+    points: [C]
+    frame: {origin: C}
+    com: C
     mass: 1.0
     inertia: 0.01
-    com: C
 
 joints:
-  - id: A
+  - id: O
     type: revolute
-    endpoints:
-      - {body: ground, point: A}
-      - {body: "1", point: A}
+    endpoints: [{body: ground, point: O}, {body: "1", point: O}]
   - id: B
     type: revolute
-    endpoints:
-      - {body: "1", point: B}
-      - {body: "2", point: B}
+    endpoints: [{body: "1", point: B}, {body: "2", point: B}]
   - id: C
     type: revolute
-    endpoints:
-      - {body: "2", point: C}
-      - {body: "3", point: C}
-  - id: slider
-    type: slot
-    guide: {body: ground, point: C}
-    pin: {body: "3", point: C}
-    normal_axis: y
-    axis_points: [G0, G1]
+    endpoints: [{body: "2", point: C}, {body: "3", point: C}]
+  - id: H
+    type: prismatic
+    guide:
+      body: ground
+      axis: {origin: [0.0, 0.04531016286936947], angle_deg: 0.0}
+    slider: {body: "3", point: C}
 
-drive:
-  body: "1"
-  q_ratio: 1
-  omega: omega_1
-  alpha: alpha_1
-
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
 loads: []

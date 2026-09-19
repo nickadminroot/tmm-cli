@@ -1,14 +1,16 @@
 # Physical YAML reference
 
 Compatibility checked against the public skills release tag `v0.1.0` and the
-`tmm-linkage-once` 0.1.0 YAML contract. The contract has no independent schema
-version; refresh this reference when the owning parser changes.
+`tmm-linkage-once` 0.1.0 YAML contract. Physical inputs use the strict
+`linkage/v2` schema; the CLI rejects missing schemas and does not convert the
+legacy slot/body/frame syntax.
 
 ## Complete input
 
 A full input describes one physical assembly pose:
 
 ```yaml
+schema: linkage/v2
 units: SI
 parameters: {}
 geometry:
@@ -34,9 +36,9 @@ quantities before authoring and retain the conversion in the task provenance.
 - `geometry.points` contains fixed `[x, y]` coordinates.
 - `geometry.construct` derives points with the supported step types below.
 - `geometry.aliases` gives another semantic name to an existing point.
-- `bodies` contains moving bodies only. IDs are quoted integers. A body has
-  `frame: [P0, P1]`, optional `points`, and for complete analysis
-  `mass`, `inertia`, and `com`.
+- `bodies` contains moving bodies only. IDs are quoted integers. Every body has
+  `type: rigid` or `type: slider`, a complete `points` list, and an object-shaped
+  `frame`. Complete analysis also requires `mass`, `inertia`, and `com`.
 - `joints` closes the mechanism explicitly.
 - `output_body` is an optional physical selector for extrema; it is not a
   runtime output configuration.
@@ -74,11 +76,19 @@ the solver silently choose a different intersection.
 ```yaml
 bodies:
   "1":
-    frame: [A, B]
+    type: rigid
     points: [A, B]
+    frame: {origin: A, x_axis: {through: B}}
     mass: 2.0
     inertia: 0.12
     com: mid
+  "2":
+    type: slider
+    points: [C]
+    frame: {origin: C}
+    mass: 1.0
+    inertia: 0.01
+    com: C
 
 joints:
   - id: A
@@ -86,12 +96,12 @@ joints:
     endpoints:
       - {body: ground, point: A}
       - {body: "1", point: A}
-  - id: C
-    type: slot
-    guide: {body: ground, point: C}
-    pin: {body: "2", point: C}
-    normal_axis: y
-    axis_points: [G0, G1]
+  - id: H
+    type: prismatic
+    guide:
+      body: ground
+      axis: {origin: [0.0, 0.0], angle_deg: 0.0}
+    slider: {body: "2", point: C}
 
 drive:
   body: "1"
@@ -103,10 +113,11 @@ gravity: [0.0, -9.81, 0.0]
 loads: []
 ```
 
-A revolute pair has two coincident endpoints. A slot has a guide body/point and
-a pin body/point; `normal_axis` is `x` or `y`, and `axis_points` may give
-the global sliding direction. Omit `constrain_rotation` or set it to
-`true`; `false` requests an unsupported higher pair.
+A revolute pair has two coincident endpoints. A prismatic pair has separate
+`guide` and `slider` roles. The guide axis is a line datum with an `origin` and
+the tangent `angle_deg`; the slider role names a point on a body declared with
+`type: slider`. The old `slot`, `pin`, `normal_axis`, and `axis_points` fields
+are not part of `linkage/v2` and are rejected rather than converted.
 
 Frames must have distinct points. For a massless rod whose meaningful points
 coincide, add a declared nonzero marker point and reference it in the frame.
