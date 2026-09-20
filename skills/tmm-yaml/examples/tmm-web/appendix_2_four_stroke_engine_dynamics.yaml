@@ -1,0 +1,339 @@
+units: SI
+parameters:
+  H: 0.11538461538461539
+  l_OA: 0.057692307692307696
+  l_OD: 0.057692307692307696
+  l_OD_signed: -0.057692307692307696
+  l_AB: 0.219
+  l_DF: 0.219
+  l_AS2: 0.066
+  l_DS4: 0.066
+  phi_1: 180.0
+  d_cylinder: 0.078
+  n1_rpm: 1300
+  omega_drive_nominal: 136.1356816555577
+  V_Bcp: 5.0
+  p_max: 1100000.0
+  delta: 0.0555555556
+  I_pr0: 0.1
+  g: 9.81
+geometry:
+  points:
+    O:
+    - 0.0
+    - 0.0
+    GR0:
+    - 0.0
+    - 0.0
+    GR1:
+    - 1.0
+    - 0.0
+    GL0:
+    - 0.0
+    - 0.0
+    GL1:
+    - -1.0
+    - 0.0
+  construct:
+  - type: point_on_ray
+    point: A
+    from: O
+    length: l_OA
+    angle_deg: phi_1
+  - type: point_on_ray
+    point: D
+    from: O
+    length: l_OD_signed
+    angle_deg: phi_1
+  - type: circle_line_y
+    point: B
+    center: A
+    radius: l_AB
+    y: 0.0
+    branch: left
+  - type: circle_line_y
+    point: F
+    center: D
+    radius: l_DF
+    y: 0.0
+    branch: right
+  - type: point_towards
+    point: S2
+    from: A
+    to: B
+    length: l_AS2
+  - type: point_towards
+    point: S4
+    from: D
+    to: F
+    length: l_DS4
+  - type: point_offset
+    point: S3_marker
+    from: B
+    vector:
+    - 1
+    - 0
+    length: 0.001
+  - type: point_offset
+    point: S5_marker
+    from: F
+    vector:
+    - -1
+    - 0
+    length: 0.001
+  aliases:
+    S1: O
+bodies:
+  '1':
+    mass: 0.0
+    inertia: 0.0
+    type: rigid
+    points:
+    - O
+    - A
+    - D
+    - S1
+    frame:
+      origin: D
+      x_axis:
+        through: A
+    com: O
+  '2':
+    mass: 0.34
+    inertia: 0.002
+    type: rigid
+    points:
+    - A
+    - B
+    - S2
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: S2
+  '3':
+    mass: 0.36
+    inertia: 0.0
+    type: slider
+    points:
+    - B
+    - S3_marker
+    frame:
+      origin: B
+    com: B
+  '4':
+    mass: 0.34
+    inertia: 0.002
+    type: rigid
+    points:
+    - D
+    - F
+    - S4
+    frame:
+      origin: D
+      x_axis:
+        through: F
+    com: S4
+  '5':
+    mass: 0.36
+    inertia: 0.0
+    type: slider
+    points:
+    - F
+    - S5_marker
+    frame:
+      origin: F
+    com: F
+joints:
+- id: O
+  type: revolute
+  endpoints:
+  - body: ground
+    point: O
+  - body: '1'
+    point: O
+- id: A
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: A
+  - body: '2'
+    point: A
+- id: B
+  type: revolute
+  endpoints:
+  - body: '2'
+    point: B
+  - body: '3'
+    point: B
+- id: C
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - -0.2766923076923077
+      - 0.0
+      angle_deg: 0.0
+  slider:
+    body: '3'
+    point: B
+- id: D
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: D
+  - body: '4'
+    point: D
+- id: F
+  type: revolute
+  endpoints:
+  - body: '4'
+    point: F
+  - body: '5'
+    point: F
+- id: G
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 0.2766923076923077
+      - 0.0
+      angle_deg: 180.0
+  slider:
+    body: '5'
+    point: F
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: -1
+loads: []
+dynamics:
+  coordinate:
+    type: phi
+    range_deg:
+    - 0
+    - 720
+    - 5
+  regulation:
+    method: mertsalov
+    nominal_speed: omega_drive_nominal
+    nonuniformity: delta
+    base_inertias:
+    - id: engine_base
+      inertia: I_pr0
+      speed_ratio: 1.0
+    flywheel_speed_ratio: 1.0
+  drive_moment:
+    type: pressure_cycle
+    period_deg: 720
+    phase_span_deg: 180
+    diameter: d_cylinder
+    characteristics:
+      expansion:
+      - - 0.0
+        - 319000
+      - - 0.002884615384615385
+        - 1100000
+      - - 0.005769230769230769
+        - 990000
+      - - 0.011538461538461537
+        - 781000
+      - - 0.02307692307692308
+        - 550000
+      - - 0.03461538461538462
+        - 396000
+      - - 0.046153846153846156
+        - 319000
+      - - 0.057692307692307696
+        - 264000
+      - - 0.06923076923076923
+        - 209000
+      - - 0.08076923076923077
+        - 181500
+      - - 0.09230769230769231
+        - 148500
+      - - 0.10384615384615385
+        - 126500
+      - - 0.11538461538461539
+        - 55000
+      exhaust:
+      - - 0.0
+        - 88000
+      - - 0.10384615384615385
+        - 88000
+      - - 0.11538461538461539
+        - 55000
+      suction:
+      - - 0.0
+        - 88000
+      - - 0.002884615384615385
+        - 0
+      - - 0.005769230769230769
+        - -8800
+      - - 0.11538461538461539
+        - -8800
+      compression:
+      - - 0.0
+        - 319000
+      - - 0.002884615384615385
+        - 253000
+      - - 0.005769230769230769
+        - 220000
+      - - 0.011538461538461537
+        - 172700
+      - - 0.02307692307692308
+        - 106700
+      - - 0.03461538461538462
+        - 70400
+      - - 0.046153846153846156
+        - 47300
+      - - 0.057692307692307696
+        - 31900
+      - - 0.06923076923076923
+        - 15400
+      - - 0.08076923076923077
+        - 7700
+      - - 0.09230769230769231
+        - 0
+      - - 0.10384615384615385
+        - -4400
+      - - 0.11538461538461539
+        - -8800
+    cylinders:
+    - id: F3
+      body: '3'
+      output_point: B
+      axis: x
+      force_sign: 1
+      coordinate:
+        origin: initial
+        sign: 1
+      phases:
+      - suction
+      - compression
+      - expansion
+      - exhaust
+    - id: F5
+      body: '5'
+      output_point: F
+      axis: x
+      force_sign: -1
+      coordinate:
+        origin: initial
+        sign: -1
+      phases:
+      - expansion
+      - exhaust
+      - suction
+      - compression
+  cycle_balance:
+    id: engine_resistance
+    type: steady_cycle
+    target: resistance
+    role: balancing_couple
+schema: linkage/v2

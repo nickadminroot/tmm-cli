@@ -1,0 +1,183 @@
+units: SI
+parameters:
+  m_K: 100.0
+  m_1: 10.0
+  m_2: 10.0
+  m_3: 10.0
+  J_S1: 1.0
+  J_S2: 0.5
+  J_S3: 2.0
+  h_min: 0.05
+  h_max: 0.3
+  beta_deg: 60.0
+  theta_K_deg: 50.0
+  l_BD: 0.39
+  l_BS2: 0.195
+  l_AK: 0.2
+  alpha_deg: 150.0
+  X_D: 0.507
+  Y_D: 0.05
+  l_AB: 0.277
+  phi_1H_deg: 65.203
+  phi_3H_deg: 152.75
+  phi_3K_deg: 165.184
+  phi_1K_deg: 125.203
+  l_DC: 0.2
+  s_max: 0.25
+  s_c: 0.18
+geometry:
+  points:
+    A:
+    - -0.507
+    - -0.05
+    D:
+    - 0.0
+    - 0.0
+  construct:
+  - type: point_on_ray
+    point: B
+    from: A
+    length: l_AB
+    angle_deg: phi_1H_deg
+  - type: point_at_angle
+    point: K
+    vertex: A
+    from: B
+    length: l_AK
+    angle_deg: alpha_deg
+    side: clockwise
+  - type: point_towards
+    point: C
+    from: D
+    to: B
+    length: l_DC
+  - type: point_on_line
+    point: S2
+    from: B
+    to: D
+    distance: l_BS2
+bodies:
+  '1':
+    mass: 10.0
+    inertia: 1.0
+    type: rigid
+    points:
+    - A
+    - B
+    - K
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: A
+  '2':
+    mass: 10.0
+    inertia: 0.5
+    type: slider
+    points:
+    - B
+    - S2
+    frame:
+      origin: B
+    com: S2
+  '3':
+    mass: 10.0
+    inertia: 2.0
+    type: rigid
+    points:
+    - D
+    - C
+    frame:
+      origin: D
+      x_axis:
+        through: C
+    com: D
+attached_masses:
+- id: K
+  body: '1'
+  point: K
+  mass: 100.0
+joints:
+- id: A
+  type: revolute
+  endpoints:
+  - body: ground
+    point: A
+  - body: '1'
+    point: A
+- id: D
+  type: revolute
+  endpoints:
+  - body: ground
+    point: D
+  - body: '3'
+    point: D
+- id: B
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: B
+  - body: '2'
+    point: B
+- id: C
+  type: prismatic
+  guide:
+    body: '3'
+    axis:
+      origin:
+      - 0.19999999999999998
+      - 0.0
+      angle_deg: 0.0
+  slider:
+    body: '2'
+    point: B
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: 1
+loads: []
+dynamics:
+  coordinate:
+    type: s
+    start: 0.0
+    stop: 0.25
+    step: 0.0004166666666666667
+    source: geometry
+    output_point: B
+    axis: magnitude
+    coordinate:
+      origin: initial
+      sign: 1.0
+    path_range_deg:
+    - 0
+    - 60.026643948530094
+    - 0.1000444065808835
+  drive_force:
+    type: boundary_profile
+    topology: internal_pair
+    role: known_action
+    transition: s_c
+    actions:
+    - body: '2'
+      application_point: B
+      direction_points:
+      - D
+      - C
+    - body: '3'
+      application_point: C
+      direction_points:
+      - C
+      - D
+  resistance_force:
+    type: constant
+    value: 0.0
+  boundary_conditions:
+    start_speed: 0.0
+    stop_speed: 0.0
+    final_speed_tolerance: 0.01
+    practical_stop_speed: 0.02
+    enforce: true
+schema: linkage/v2

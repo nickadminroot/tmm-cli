@@ -1,0 +1,9 @@
+{
+  "model": "slider_crank.mean_velocity",
+  "units": {"length": "m", "frequency": "s^-1"},
+  "inputs": {
+    "v_cp": 1.5,
+    "n_1": 6,
+    "lambda_2": 3.2
+  }
+}

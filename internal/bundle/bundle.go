@@ -4,10 +4,16 @@ import (
 	"archive/zip"
 	"bytes"
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -23,7 +29,16 @@ type UsageError struct{ msg string }
 func (e *UsageError) Error() string { return e.msg }
 
 // SingleFile bundles one input file under workspace/<name>.
-func SingleFile(inputPath string, op string) (*Bundle, error) {
+func SingleFile(inputPath string) (*Bundle, error) {
+	return singleFile(inputPath, "workspace/"+filepath.Base(inputPath))
+}
+
+// ModelFile bundles a YAML mechanism under the canonical linkage entrypoint.
+func ModelFile(inputPath string) (*Bundle, error) {
+	return singleFile(inputPath, "workspace/model.yaml")
+}
+
+func singleFile(inputPath, logical string) (*Bundle, error) {
 	info, err := os.Stat(inputPath)
 	if err != nil {
 		return nil, &UsageError{msg: fmt.Sprintf("input %s: %v", inputPath, err)}
@@ -35,8 +50,6 @@ func SingleFile(inputPath string, op string) (*Bundle, error) {
 	if err != nil {
 		return nil, &UsageError{msg: err.Error()}
 	}
-	name := filepath.Base(inputPath)
-	logical := "workspace/" + name
 	buf := &bytes.Buffer{}
 	w := zip.NewWriter(buf)
 	fw, err := w.Create(logical)
@@ -44,140 +57,12 @@ func SingleFile(inputPath string, op string) (*Bundle, error) {
 		return nil, err
 	}
 	if _, werr := fw.Write(data); werr != nil {
-		return nil, err
+		return nil, werr
 	}
 	if err := w.Close(); err != nil {
 		return nil, err
 	}
 	return &Bundle{Data: buf.Bytes(), Entrypoint: logical}, nil
-}
-
-// BundleMarkdown stages a Markdown source plus every scene it references into
-// an in-memory workspace. Scene references follow the owner grammar: a
-// standalone paragraph whose sole link text is `scene` and whose
-// percent-decoded destination ends in .scene.json.
-func BundleMarkdown(sourcePath, format string) (env map[string]any, b *Bundle, err error) {
-	data, serr := os.ReadFile(sourcePath)
-	if serr != nil {
-		return nil, nil, &UsageError{msg: serr.Error()}
-	}
-	source := string(data)
-
-	refs, maxUp, rerr := discoverSceneRefs(source)
-	if rerr != nil {
-		return nil, nil, rerr
-	}
-	if maxUp < 0 {
-		maxUp = 0
-	}
-	synthDir := "workspace"
-	for i := 0; i < maxUp; i++ {
-		synthDir = synthDir + fmt.Sprintf("/_up%d", i+1)
-	}
-	logicalSource := synthDir + "/" + filepath.Base(sourcePath)
-
-	sceneDocs := map[string]string{}
-	baseDir := filepath.Dir(sourcePath)
-	for _, ref := range refs {
-		hostPath := filepath.Join(baseDir, filepath.FromSlash(ref))
-		hostPath = filepath.Clean(hostPath)
-		st, serr := os.Stat(hostPath)
-		if serr != nil || st.IsDir() {
-			return nil, nil, &UsageError{msg: fmt.Sprintf("scene reference %q: file not found", ref)}
-		}
-		text, rerr2 := os.ReadFile(hostPath)
-		if rerr2 != nil {
-			return nil, nil, &UsageError{msg: rerr2.Error()}
-		}
-		logical, lerr := resolveLogical(synthDir, ref)
-		if lerr != nil {
-			return nil, nil, &UsageError{msg: lerr.Error()}
-		}
-		if prev, dup := sceneDocs[logical]; dup && prev != string(text) {
-			return nil, nil, &UsageError{msg: fmt.Sprintf("two different local files map to %s", logical)}
-		}
-		sceneDocs[logical] = string(text)
-	}
-
-	files := map[string][]byte{
-		logicalSource: data,
-	}
-	for logical, text := range sceneDocs {
-		files[logical] = []byte(text)
-	}
-
-	zdata, zerr := zipBytes(files)
-	if zerr != nil {
-		return nil, nil, zerr
-	}
-	envMap := map[string]any{
-		"version":    1,
-		"operation":  "md",
-		"entrypoint": logicalSource,
-		"options":    map[string]any{"format": format},
-	}
-	return envMap, &Bundle{Data: zdata, Entrypoint: logicalSource}, nil
-}
-
-// resolveLogical applies `..` hops to synthDir exactly like the server resolver.
-func resolveLogical(synthDir, reference string) (string, error) {
-	segments := strings.Split(synthDir, "/")
-	for _, seg := range strings.Split(reference, "/") {
-		switch seg {
-		case "..":
-			if len(segments) <= 1 {
-				return "", fmt.Errorf("reference %q escapes the submitted workspace", reference)
-			}
-			segments = segments[:len(segments)-1]
-		case ".", "":
-			continue
-		default:
-			segments = append(segments, seg)
-		}
-	}
-	out := strings.Join(segments, "/")
-	if !strings.HasPrefix(out, "workspace/") {
-		return "", fmt.Errorf("reference %q escapes the submitted workspace", reference)
-	}
-	return out, nil
-}
-
-func zipBytes(files map[string][]byte) ([]byte, error) {
-	names := make([]string, 0, len(files))
-	for name := range files {
-		names = append(names, name)
-	}
-	sortStrings(names)
-	buf := &bytes.Buffer{}
-	w := zip.NewWriter(buf)
-	for _, name := range names {
-		if len(files[name]) > 25<<20 {
-			return nil, &UsageError{msg: fmt.Sprintf("%s exceeds the 25 MiB per-file limit", name)}
-		}
-		fw, cerr := w.Create(name)
-		if cerr != nil {
-			return nil, cerr
-		}
-		if _, werr := fw.Write(files[name]); werr != nil {
-			return nil, werr
-		}
-	}
-	if err := w.Close(); err != nil {
-		return nil, err
-	}
-	total := buf.Len()
-	if total > 25<<20 {
-		return nil, &UsageError{msg: fmt.Sprintf("bundle is %d bytes; limit is 25 MiB", total)}
-	}
-	return buf.Bytes(), nil
-}
-
-func sortStrings(list []string) {
-	for i := 1; i < len(list); i++ {
-		for j := i; j > 0 && list[j] < list[j-1]; j-- {
-			list[j], list[j-1] = list[j-1], list[j]
-		}
-	}
 }
 
 func newUUIDv4() (string, error) {
@@ -192,57 +77,178 @@ func newUUIDv4() (string, error) {
 
 // Manifest mirrors _tmm-result.json inside every result ZIP.
 type Manifest struct {
-	Version     int    `json:"version"`
-	Operation   string `json:"operation"`
-	Publication string `json:"publication"`
-	Entries     []struct {
-		Path string `json:"path"`
-		Role string `json:"role"`
-		Page int    `json:"page"`
-		Size int64  `json:"size"`
+	Version           int    `json:"version"`
+	Operation         string `json:"operation"`
+	DescriptorVersion int    `json:"descriptor_version"`
+	ProducerVersion   int    `json:"producer_version"`
+	Publication       string `json:"publication"`
+	Entries           []struct {
+		Path   string `json:"path"`
+		Role   string `json:"role"`
+		Page   int    `json:"page"`
+		Size   int64  `json:"size"`
+		SHA256 string `json:"sha256"`
 	} `json:"entries"`
 }
 
+func requiresLinkageProducerFence(operation string) bool {
+	switch operation {
+	case "linkage", "linkage-preview", "linkage-force-preview",
+		"linkage-publication-source", "linkage-worksheet-source",
+		"linkage-snapshot", "linkage-xmcd",
+		"linkage-cdw-scene-plan", "linkage-cdw-page-plan":
+		return true
+	default:
+		return false
+	}
+}
+
 func ReadManifest(zipData []byte) (*Manifest, error) {
+	const maxResultBytes = 128 << 20
 	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
 	if err != nil {
 		return nil, fmt.Errorf("result is not a valid ZIP: %w", err)
 	}
-	declared := map[string]bool{}
-	var manifest *Manifest
-	for _, f := range reader.File {
-		if f.Name == "_tmm-result.json" {
-			rc, oerr := f.Open()
-			if oerr != nil {
-				return nil, oerr
-			}
-			raw, _ := readAllLimited(rc, 1<<20)
-			rc.Close()
-			manifest = &Manifest{}
-			if jerr := json.Unmarshal(raw, manifest); jerr != nil {
-				return nil, fmt.Errorf("_tmm-result.json: %w", jerr)
-			}
-			continue
+	files := make(map[string]*zip.File, len(reader.File))
+	var total uint64
+	for _, file := range reader.File {
+		if _, duplicate := files[file.Name]; duplicate {
+			return nil, fmt.Errorf("result ZIP has duplicate member %s", file.Name)
 		}
-		declared[f.Name] = true
+		if (file.Name != "_tmm-result.json" && !validResultPath(file.Name)) || file.FileInfo().IsDir() || file.FileInfo().Mode()&os.ModeSymlink != 0 {
+			return nil, fmt.Errorf("result ZIP member path is invalid")
+		}
+		if file.UncompressedSize64 > maxResultBytes {
+			return nil, fmt.Errorf("result ZIP member is too large")
+		}
+		total += file.UncompressedSize64
+		if total > maxResultBytes {
+			return nil, fmt.Errorf("result ZIP is too large")
+		}
+		files[file.Name] = file
 	}
-	if manifest == nil {
+	manifestFile, ok := files["_tmm-result.json"]
+	if !ok {
 		return nil, fmt.Errorf("result ZIP has no _tmm-result.json")
 	}
-	for _, entry := range manifest.Entries {
-		if !declared[entry.Path] {
+	manifestReader, err := manifestFile.Open()
+	if err != nil {
+		return nil, err
+	}
+	raw, err := io.ReadAll(io.LimitReader(manifestReader, 1<<20+1))
+	manifestReader.Close()
+	if err != nil {
+		return nil, err
+	}
+	if len(raw) > 1<<20 {
+		return nil, fmt.Errorf("_tmm-result.json is too large")
+	}
+	var root map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &root); err != nil {
+		return nil, fmt.Errorf("_tmm-result.json is invalid")
+	}
+	var operation string
+	if err := json.Unmarshal(root["operation"], &operation); err != nil {
+		return nil, fmt.Errorf("_tmm-result.json is invalid")
+	}
+	var manifest Manifest
+	fenced := requiresLinkageProducerFence(operation)
+	hasBaseKeys := hasExactKeys(root, "version", "operation", "publication", "entries")
+	hasFenceKeys := hasExactKeys(root, "version", "operation", "publication", "descriptor_version", "producer_version", "entries")
+	if (!hasBaseKeys && !hasFenceKeys) || (!fenced && !hasBaseKeys) {
+		return nil, fmt.Errorf("_tmm-result.json is invalid")
+	}
+	if err := json.Unmarshal(raw, &manifest); err != nil || manifest.Version != 1 ||
+		(manifest.Publication != "tree" && manifest.Publication != "single" && manifest.Publication != "page-set") ||
+		manifest.Entries == nil {
+		return nil, fmt.Errorf("_tmm-result.json is invalid")
+	}
+	if hasFenceKeys &&
+		(!fenced || manifest.DescriptorVersion != 2 || manifest.ProducerVersion != 2) {
+		return nil, fmt.Errorf("_tmm-result.json producer fence is invalid")
+	}
+	var rawEntries []map[string]json.RawMessage
+	if err := json.Unmarshal(root["entries"], &rawEntries); err != nil || rawEntries == nil {
+		return nil, fmt.Errorf("_tmm-result.json entries are invalid")
+	}
+	if len(rawEntries) != len(manifest.Entries) {
+		return nil, fmt.Errorf("_tmm-result.json entries are invalid")
+	}
+	declared := make(map[string]bool, len(manifest.Entries))
+	for index, entry := range manifest.Entries {
+		entryKeysValid := hasExactKeys(rawEntries[index], "path", "role", "size", "sha256")
+		if manifest.Publication == "page-set" {
+			entryKeysValid = hasExactKeys(rawEntries[index], "path", "role", "page", "size", "sha256") && entry.Page > 0
+		} else if _, hasPage := rawEntries[index]["page"]; hasPage {
+			var page *int
+			entryKeysValid = hasExactKeys(rawEntries[index], "path", "role", "page", "size", "sha256") &&
+				json.Unmarshal(rawEntries[index]["page"], &page) == nil && page == nil
+		}
+		if !entryKeysValid ||
+			!validResultPath(entry.Path) || entry.Size < 0 ||
+			(entry.Role != "artifact" && entry.Role != "primary" && entry.Role != "page") ||
+			len(entry.SHA256) != sha256.Size*2 || strings.ToLower(entry.SHA256) != entry.SHA256 {
+			return nil, fmt.Errorf("_tmm-result.json entry is invalid")
+		}
+		if _, err := hex.DecodeString(entry.SHA256); err != nil {
+			return nil, fmt.Errorf("_tmm-result.json entry checksum is invalid")
+		}
+		if declared[entry.Path] {
+			return nil, fmt.Errorf("_tmm-result.json contains duplicate member %s", entry.Path)
+		}
+		file, exists := files[entry.Path]
+		if !exists {
 			return nil, fmt.Errorf("manifest declares missing member %s", entry.Path)
 		}
-		delete(declared, entry.Path)
-	}
-	if len(declared) > 0 {
-		extra := make([]string, 0, len(declared))
-		for name := range declared {
-			extra = append(extra, name)
+		if uint64(entry.Size) != file.UncompressedSize64 {
+			return nil, fmt.Errorf("manifest member %s has the wrong size", entry.Path)
 		}
-		return nil, fmt.Errorf("undeclared result members: %v", extra)
+		handle, err := file.Open()
+		if err != nil {
+			return nil, err
+		}
+		data, err := io.ReadAll(io.LimitReader(handle, maxResultBytes+1))
+		handle.Close()
+		if err != nil {
+			return nil, err
+		}
+		if int64(len(data)) != entry.Size {
+			return nil, fmt.Errorf("manifest member %s has the wrong size", entry.Path)
+		}
+		sum := sha256.Sum256(data)
+		if hex.EncodeToString(sum[:]) != entry.SHA256 {
+			return nil, fmt.Errorf("manifest member %s checksum mismatch", entry.Path)
+		}
+		declared[entry.Path] = true
 	}
-	return manifest, nil
+	delete(files, "_tmm-result.json")
+	if len(declared) != len(files) {
+		return nil, fmt.Errorf("undeclared result members")
+	}
+	for name := range files {
+		if !declared[name] {
+			return nil, fmt.Errorf("undeclared result member %s", name)
+		}
+	}
+	return &manifest, nil
+}
+
+func validResultPath(path string) bool {
+	if path == "" || path == "_tmm-result.json" || strings.HasPrefix(path, "/") ||
+		strings.ContainsAny(path, `\`+"\x00") || (len(path) > 2 && path[1] == ':') {
+		return false
+	}
+	for _, part := range strings.Split(path, "/") {
+		if part == "" || part == "." || part == ".." {
+			return false
+		}
+		for _, character := range part {
+			if character <= 0x1f || character == 0x7f {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func readAllLimited(rc interface{ Read([]byte) (int, error) }, limit int64) ([]byte, error) {
@@ -265,6 +271,486 @@ func readAllLimited(rc interface{ Read([]byte) (int, error) }, limit int64) ([]b
 		}
 	}
 	return out.Bytes(), nil
+}
+
+// ReadPrimary validates and returns the sole member of a single-file result.
+func ReadPrimary(zipData []byte, operation string) ([]byte, error) {
+	manifest, err := ReadManifest(zipData)
+	if err != nil {
+		return nil, err
+	}
+	if manifest.Version != 1 || manifest.Operation != operation || manifest.Publication != "single" {
+		return nil, fmt.Errorf("unexpected result manifest")
+	}
+	if len(manifest.Entries) != 1 || manifest.Entries[0].Role != "primary" {
+		return nil, fmt.Errorf("result does not contain one primary member")
+	}
+	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		return nil, fmt.Errorf("result is not a valid ZIP: %w", err)
+	}
+	entry := manifest.Entries[0]
+	for _, file := range reader.File {
+		if file.Name != entry.Path {
+			continue
+		}
+		handle, openErr := file.Open()
+		if openErr != nil {
+			return nil, openErr
+		}
+		data, readErr := readAllLimited(handle, 32<<20)
+		handle.Close()
+		if readErr != nil {
+			return nil, readErr
+		}
+		if int64(len(data)) != entry.Size {
+			return nil, fmt.Errorf("result member size mismatch")
+		}
+		if len(entry.SHA256) != sha256.Size*2 {
+			return nil, fmt.Errorf("result member checksum is missing")
+		}
+		expected, decodeErr := hex.DecodeString(entry.SHA256)
+		if decodeErr != nil {
+			return nil, fmt.Errorf("result member checksum is invalid")
+		}
+		sum := sha256.Sum256(data)
+		if !bytes.Equal(sum[:], expected) {
+			return nil, fmt.Errorf("result member checksum mismatch")
+		}
+		return data, nil
+	}
+	return nil, fmt.Errorf("result member %s is missing", entry.Path)
+}
+
+// ReadPrimaryNamed validates a single-file result and requires its primary path.
+func ReadPrimaryNamed(zipData []byte, operation, name string) ([]byte, error) {
+	manifest, err := ReadManifest(zipData)
+	if err != nil {
+		return nil, err
+	}
+	if manifest.Operation != operation || manifest.Publication != "single" ||
+		len(manifest.Entries) != 1 || manifest.Entries[0].Role != "primary" ||
+		manifest.Entries[0].Path != name {
+		return nil, fmt.Errorf("unexpected single-file result member")
+	}
+	return ReadPrimary(zipData, operation)
+}
+
+var planKeyIDPattern = regexp.MustCompile(`^[A-Za-z0-9_.-]{1,64}$`)
+
+// ReadPlan validates the paid KOMPAS result manifest and signed plan envelope.
+// Signature authenticity is verified by the local KOMPAS Renderer, which owns
+// the trusted server public key; this reader verifies the envelope and binding
+// fields before handing the plan to that renderer.
+func ReadPlan(zipData []byte, operation, runID, challenge string) ([]byte, error) {
+	if operation != "linkage-cdw-scene-plan" && operation != "linkage-cdw-page-plan" {
+		return nil, fmt.Errorf("unexpected KOMPAS operation")
+	}
+	manifest, err := ReadManifest(zipData)
+	if err != nil {
+		return nil, err
+	}
+	if manifest.Version != 1 || manifest.Operation != operation || manifest.Publication != "single" {
+		return nil, fmt.Errorf("unexpected KOMPAS result manifest")
+	}
+	if len(manifest.Entries) != 1 || manifest.Entries[0].Role != "primary" || manifest.Entries[0].Path != "plan.json" {
+		return nil, fmt.Errorf("KOMPAS result does not contain one plan member")
+	}
+	plan, err := readResultMember(zipData, manifest.Entries[0], 8<<20)
+	if err != nil {
+		return nil, err
+	}
+	var envelope map[string]json.RawMessage
+	if err := json.Unmarshal(plan, &envelope); err != nil {
+		return nil, fmt.Errorf("KOMPAS plan is not valid JSON: %w", err)
+	}
+	if !hasExactKeys(envelope, "format", "version", "algorithm", "key_id", "payload", "signature") {
+		return nil, fmt.Errorf("KOMPAS plan envelope is invalid")
+	}
+	var format, algorithm, keyID, signature string
+	var version int
+	if json.Unmarshal(envelope["format"], &format) != nil ||
+		json.Unmarshal(envelope["version"], &version) != nil ||
+		json.Unmarshal(envelope["algorithm"], &algorithm) != nil ||
+		json.Unmarshal(envelope["key_id"], &keyID) != nil ||
+		json.Unmarshal(envelope["signature"], &signature) != nil ||
+		format != "tmm-kompas-plan" || version != 1 || algorithm != "ed25519" ||
+		!planKeyIDPattern.MatchString(keyID) {
+		return nil, fmt.Errorf("KOMPAS plan envelope is invalid")
+	}
+	if len(signature) != 86 {
+		return nil, fmt.Errorf("KOMPAS plan signature is invalid")
+	}
+	decodedSignature, err := base64.RawURLEncoding.Strict().DecodeString(signature)
+	if err != nil || len(decodedSignature) != 64 {
+		return nil, fmt.Errorf("KOMPAS plan signature is invalid")
+	}
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(envelope["payload"], &payload); err != nil {
+		return nil, fmt.Errorf("KOMPAS plan payload is invalid")
+	}
+	if !hasExactKeys(payload, "operation", "job_id", "agent_challenge", "issued_at", "expires_at", "scene_sha256", "document", "operations") {
+		return nil, fmt.Errorf("KOMPAS plan payload is invalid")
+	}
+	var payloadOperation, payloadJob, payloadChallenge, issuedAt, expiresAt, sceneSHA string
+	var document map[string]json.RawMessage
+	var operations []json.RawMessage
+	if json.Unmarshal(payload["operation"], &payloadOperation) != nil ||
+		json.Unmarshal(payload["job_id"], &payloadJob) != nil ||
+		json.Unmarshal(payload["agent_challenge"], &payloadChallenge) != nil ||
+		json.Unmarshal(payload["issued_at"], &issuedAt) != nil ||
+		json.Unmarshal(payload["expires_at"], &expiresAt) != nil ||
+		json.Unmarshal(payload["scene_sha256"], &sceneSHA) != nil ||
+		json.Unmarshal(payload["document"], &document) != nil ||
+		json.Unmarshal(payload["operations"], &operations) != nil ||
+		payloadOperation != "kompas-plan" || payloadJob != runID || payloadChallenge != challenge ||
+		issuedAt == "" || expiresAt == "" || len(sceneSHA) != 64 {
+		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
+	}
+	if _, err := hex.DecodeString(sceneSHA); err != nil {
+		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
+	}
+	return plan, nil
+}
+
+func hasExactKeys(values map[string]json.RawMessage, keys ...string) bool {
+	if len(values) != len(keys) {
+		return false
+	}
+	for _, key := range keys {
+		if _, ok := values[key]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func readResultMember(zipData []byte, entry struct {
+	Path   string `json:"path"`
+	Role   string `json:"role"`
+	Page   int    `json:"page"`
+	Size   int64  `json:"size"`
+	SHA256 string `json:"sha256"`
+}, limit int64) ([]byte, error) {
+	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		return nil, fmt.Errorf("result is not a valid ZIP: %w", err)
+	}
+	for _, file := range reader.File {
+		if file.Name != entry.Path {
+			continue
+		}
+		handle, err := file.Open()
+		if err != nil {
+			return nil, err
+		}
+		data, readErr := io.ReadAll(io.LimitReader(handle, limit+1))
+		handle.Close()
+		if readErr != nil {
+			return nil, readErr
+		}
+		if int64(len(data)) > limit || int64(len(data)) != entry.Size {
+			return nil, fmt.Errorf("result member size mismatch")
+		}
+		if len(entry.SHA256) != sha256.Size*2 {
+			return nil, fmt.Errorf("result member checksum is missing")
+		}
+		expected, decodeErr := hex.DecodeString(entry.SHA256)
+		if decodeErr != nil {
+			return nil, fmt.Errorf("result member checksum is invalid")
+		}
+		sum := sha256.Sum256(data)
+		if !bytes.Equal(sum[:], expected) {
+			return nil, fmt.Errorf("result member checksum mismatch")
+		}
+		return data, nil
+	}
+	return nil, fmt.Errorf("result member %s is missing", entry.Path)
+}
+
+// ReadMarkdownPreview validates the server-produced Markdown preview ZIP.
+func ReadMarkdownPreview(zipData []byte, paperFormat string) error {
+	const maxBytes = 20 << 20
+	const maxEntries = 1025
+	if len(zipData) > maxBytes {
+		return fmt.Errorf("Markdown preview ZIP is too large")
+	}
+	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		return fmt.Errorf("Markdown preview ZIP is invalid: %w", err)
+	}
+	if len(reader.File) == 0 || len(reader.File) > maxEntries {
+		return fmt.Errorf("Markdown preview ZIP members are invalid")
+	}
+	files := make(map[string][]byte, len(reader.File))
+	var total int64
+	for _, file := range reader.File {
+		if _, exists := files[file.Name]; exists || !validPreviewPath(file.Name) {
+			return fmt.Errorf("Markdown preview ZIP member path is invalid")
+		}
+		if file.FileInfo().IsDir() || file.FileInfo().Mode()&os.ModeSymlink != 0 ||
+			file.UncompressedSize64 > maxBytes || file.CompressedSize64 > maxBytes ||
+			(file.UncompressedSize64 > 0 && file.CompressedSize64 > 0 &&
+				file.UncompressedSize64 > 200*file.CompressedSize64) {
+			return fmt.Errorf("Markdown preview ZIP member is invalid")
+		}
+		total += int64(file.UncompressedSize64)
+		if total > maxBytes {
+			return fmt.Errorf("Markdown preview ZIP is too large")
+		}
+		handle, openErr := file.Open()
+		if openErr != nil {
+			return openErr
+		}
+		data, readErr := io.ReadAll(io.LimitReader(handle, maxBytes+1))
+		handle.Close()
+		if readErr != nil {
+			return readErr
+		}
+		if len(data) > maxBytes || uint64(len(data)) != file.UncompressedSize64 {
+			return fmt.Errorf("Markdown preview ZIP member size is invalid")
+		}
+		files[file.Name] = data
+	}
+	rawManifest, ok := files["_tmm-md-preview.json"]
+	if !ok {
+		return fmt.Errorf("Markdown preview manifest is missing")
+	}
+	var root map[string]json.RawMessage
+	if err := json.Unmarshal(rawManifest, &root); err != nil ||
+		!hasExactKeys(root, "version", "format", "documents", "entries") {
+		return fmt.Errorf("Markdown preview manifest is invalid")
+	}
+	var version int
+	var format string
+	if json.Unmarshal(root["version"], &version) != nil || version != 2 ||
+		json.Unmarshal(root["format"], &format) != nil || format != paperFormat {
+		return fmt.Errorf("Markdown preview manifest is invalid")
+	}
+	var entries []map[string]json.RawMessage
+	if err := json.Unmarshal(root["entries"], &entries); err != nil || entries == nil {
+		return fmt.Errorf("Markdown preview manifest entries are invalid")
+	}
+	declared := make(map[string]string, len(entries))
+	for _, entry := range entries {
+		if !hasExactKeys(entry, "path", "role", "size", "sha256") {
+			return fmt.Errorf("Markdown preview manifest entry is invalid")
+		}
+		var path, role, hash string
+		var size int64
+		if json.Unmarshal(entry["path"], &path) != nil || json.Unmarshal(entry["role"], &role) != nil ||
+			json.Unmarshal(entry["size"], &size) != nil || json.Unmarshal(entry["sha256"], &hash) != nil ||
+			!validPreviewPath(path) || path == "_tmm-md-preview.json" ||
+			(role != "preview" && role != "scene") || size < 0 ||
+			len(hash) != 64 || strings.ToLower(hash) != hash {
+			return fmt.Errorf("Markdown preview manifest entry is invalid")
+		}
+		if _, duplicate := declared[path]; duplicate {
+			return fmt.Errorf("Markdown preview manifest entry is duplicated")
+		}
+		data, present := files[path]
+		if !present || int64(len(data)) != size {
+			return fmt.Errorf("Markdown preview member is missing or has the wrong size")
+		}
+		digest := sha256.Sum256(data)
+		if hex.EncodeToString(digest[:]) != hash {
+			return fmt.Errorf("Markdown preview member hash is invalid")
+		}
+		if role == "preview" {
+			if !strings.HasSuffix(path, ".svg") || !validSVG(data) {
+				return fmt.Errorf("Markdown preview SVG is invalid")
+			}
+		} else if !strings.HasSuffix(path, ".scene.json") || !validScene(data) {
+			return fmt.Errorf("Markdown preview scene is invalid")
+		}
+		declared[path] = role
+	}
+	if len(declared) != len(files)-1 {
+		return fmt.Errorf("Markdown preview manifest entries are incomplete")
+	}
+	for path := range files {
+		if path != "_tmm-md-preview.json" {
+			if _, ok := declared[path]; !ok {
+				return fmt.Errorf("Markdown preview manifest entries are incomplete")
+			}
+		}
+	}
+	var documents []map[string]json.RawMessage
+	if err := json.Unmarshal(root["documents"], &documents); err != nil || documents == nil {
+		return fmt.Errorf("Markdown preview documents are invalid")
+	}
+	documentPaths := map[string]bool{}
+	references := map[string]int{}
+	for _, document := range documents {
+		if !hasKeys(document, "source_path", "title", "status", "pages") {
+			return fmt.Errorf("Markdown preview document is invalid")
+		}
+		var sourcePath, title, status string
+		if json.Unmarshal(document["source_path"], &sourcePath) != nil ||
+			json.Unmarshal(document["title"], &title) != nil ||
+			json.Unmarshal(document["status"], &status) != nil ||
+			!validPreviewPath(sourcePath) || !strings.HasSuffix(sourcePath, ".md") ||
+			documentPaths[sourcePath] || (status != "ready" && status != "error") {
+			return fmt.Errorf("Markdown preview document is invalid")
+		}
+		documentPaths[sourcePath] = true
+		if status == "error" {
+			if !hasExactKeys(document, "source_path", "title", "status", "pages", "error") ||
+				!validPreviewError(document["error"]) {
+				return fmt.Errorf("Markdown preview document is invalid")
+			}
+		} else if !hasExactKeys(document, "source_path", "title", "status", "pages") {
+			return fmt.Errorf("Markdown preview document is invalid")
+		}
+		var pages []map[string]json.RawMessage
+		if err := json.Unmarshal(document["pages"], &pages); err != nil || pages == nil {
+			return fmt.Errorf("Markdown preview pages are invalid")
+		}
+		indices := map[int]bool{}
+		for _, page := range pages {
+			if !hasKeys(page, "index", "status") {
+				return fmt.Errorf("Markdown preview page is invalid")
+			}
+			var index int
+			var pageStatus string
+			if json.Unmarshal(page["index"], &index) != nil || json.Unmarshal(page["status"], &pageStatus) != nil ||
+				index < 0 || indices[index] || (pageStatus != "ready" && pageStatus != "error") {
+				return fmt.Errorf("Markdown preview page is invalid")
+			}
+			indices[index] = true
+			if pageStatus == "ready" {
+				if !hasExactKeys(page, "index", "status", "preview_path", "scene_path") {
+					return fmt.Errorf("Markdown preview page is invalid")
+				}
+				var previewPath, scenePath string
+				if json.Unmarshal(page["preview_path"], &previewPath) != nil ||
+					json.Unmarshal(page["scene_path"], &scenePath) != nil ||
+					previewPath == scenePath || declared[previewPath] != "preview" ||
+					declared[scenePath] != "scene" {
+					return fmt.Errorf("Markdown preview page is invalid")
+				}
+				references[previewPath]++
+				references[scenePath]++
+			} else if !hasExactKeys(page, "index", "status", "error") || !validPreviewError(page["error"]) {
+				return fmt.Errorf("Markdown preview page is invalid")
+			}
+		}
+	}
+	if len(references) != len(declared) {
+		return fmt.Errorf("Markdown preview pages are not fully indexed")
+	}
+	for path := range declared {
+		if references[path] != 1 {
+			return fmt.Errorf("Markdown preview pages are not fully indexed")
+		}
+	}
+	return nil
+}
+
+func hasKeys(values map[string]json.RawMessage, keys ...string) bool {
+	for _, key := range keys {
+		if _, ok := values[key]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func validPreviewError(raw json.RawMessage) bool {
+	var value map[string]json.RawMessage
+	if json.Unmarshal(raw, &value) != nil || value == nil ||
+		!hasKeys(value, "code", "message", "field", "line", "column", "stage") {
+		return false
+	}
+	var code, message, stage string
+	if json.Unmarshal(value["code"], &code) != nil || code == "" ||
+		json.Unmarshal(value["message"], &message) != nil || message == "" ||
+		json.Unmarshal(value["stage"], &stage) != nil || stage == "" {
+		return false
+	}
+	for key := range value {
+		if key != "code" && key != "message" && key != "field" && key != "line" &&
+			key != "column" && key != "stage" && key != "issues" && key != "plotId" {
+			return false
+		}
+	}
+	if code != "annotation_layout_failed" {
+		if _, ok := value["plotId"]; ok {
+			return false
+		}
+	}
+	if field := value["field"]; string(field) != "null" {
+		var text string
+		if json.Unmarshal(field, &text) != nil {
+			return false
+		}
+	}
+	for _, key := range []string{"line", "column"} {
+		rawNumber := value[key]
+		if string(rawNumber) == "null" {
+			continue
+		}
+		var number int
+		if json.Unmarshal(rawNumber, &number) != nil || number < 1 {
+			return false
+		}
+	}
+	if plotID, ok := value["plotId"]; ok {
+		var text string
+		if json.Unmarshal(plotID, &text) != nil || text == "" || len(text) > 64 || !validPreviewPath(text) {
+			return false
+		}
+	}
+	if issues, ok := value["issues"]; ok && string(issues) != "null" {
+		var list []json.RawMessage
+		if json.Unmarshal(issues, &list) != nil || list == nil || len(list) > 8 {
+			return false
+		}
+	}
+	return true
+}
+
+func validPreviewPath(path string) bool {
+	if path == "" || strings.HasPrefix(path, "/") || strings.ContainsAny(path, "\\\x00") ||
+		(len(path) > 2 && path[1] == ':') {
+		return false
+	}
+	for _, segment := range strings.Split(path, "/") {
+		if segment == "" || segment == "." || segment == ".." {
+			return false
+		}
+		for _, character := range segment {
+			if character < 0x20 || character == 0x7f {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func validSVG(data []byte) bool {
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	for {
+		token, err := decoder.Token()
+		if err != nil {
+			return false
+		}
+		if start, ok := token.(xml.StartElement); ok {
+			return start.Name.Local == "svg" && start.Name.Space == "http://www.w3.org/2000/svg"
+		}
+	}
+}
+
+func validScene(data []byte) bool {
+	var scene map[string]json.RawMessage
+	if json.Unmarshal(data, &scene) != nil {
+		return false
+	}
+	var format, units string
+	var version int
+	return json.Unmarshal(scene["format"], &format) == nil && format == "tmm-scene" &&
+		json.Unmarshal(scene["version"], &version) == nil && version == 2 &&
+		json.Unmarshal(scene["units"], &units) == nil && units == "mm"
 }
 
 // NewUUIDv4 returns a random RFC 4122 version 4 UUID string.

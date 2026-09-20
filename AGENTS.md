@@ -1,19 +1,91 @@
-# tmm-cli agent rules
+# tmm-cli agent guide
 
-Public thin client for the TMM remote execution service. This is the only
-customer-facing executable of the TMM project: it bundles authored inputs,
-sends them to the private `tmm-server` over HTTPS, polls run status, and
-publishes returned artifacts locally.
+Public thin client for the TMM remote execution service. It sends authored
+inputs to the private server over HTTPS and publishes returned artifacts
+locally. KOMPAS CDW creation obtains a server-signed plan and sends it to the
+installed localhost KOMPAS Renderer only after the server has accepted the paid
+run. Mathcad 15 XMCD creation uses a dedicated server compiler and never needs
+the local renderer.
 
-## Local constraints
-- This repository is PUBLIC by design. Never place implementation source,
-  private package names, component SHAs, checkout URLs, or server deployment
-  files here.
-- The client is a thin transport/publication layer only: no parsing beyond
-  Markdown dependency discovery (goldmark), no local fallback execution.
-- Every domain command requires `--output`. No token flags: credentials come
-  only from `TMM_API_TOKEN`.
-- Text contract: stdout carries only final written paths or fixed quota
-  fields. Diagnostics go to stderr with stable exit classes (see README).
-- Never log the Authorization header, even in debug builds.
-- Run `go test ./...` before committing.
+Read [`README.md`](README.md) before changing the client; it is the consumer
+contract for commands, environment variables, output, and exit classes.
+
+Keep this application a thin transport and publication layer. Markdown
+rendering, mechanism classification, linkage generation, worksheet/XMCD
+compilation, and plan compilation remain server-side. KOMPAS commands transport
+a signed plan to the installed native renderer; they do not solve or render on
+the client.
+
+## Public-repository boundary
+
+This repository is public by design. Keep private implementation, component
+SHAs, checkout URLs, and server deployment files outside it. Keep local
+fallback execution out of the client.
+
+## Transport and output invariants
+
+- Require `--output` for every artifact-producing command.
+- Require `TMM_API_TOKEN` for every API request, including loopback HTTP
+  development URLs. Keep tokens out of argv and URLs.
+- Keep stdout limited to final written paths or the fixed fields of
+`tmm mechanisms`.
+- Send diagnostics, including mechanism quote information, to stderr and
+preserve the exit classes in the README.
+- Send the model YAML and Markdown bytes supplied by the user without local
+  scene discovery or calculation. Generic `tmm linkage` publishes the free
+  worksheet JSON and never compiles XMCD.
+- `tmm xmcd` sends only YAML plus exact version/allowance options, validates the
+  server's two-member result ZIP, and publishes only `worksheet.xmcd` bytes.
+- Treat uploaded inputs and returned artifacts as transport data, not as
+  client-side solver state.
+
+KOMPAS commands first obtain a fresh renderer challenge, then quote the exact
+model bytes. Exact built-in stock YAML and known mechanisms are free; stock YAML
+is not registered in the user's mechanism library. A new mechanism requires the
+explicit `--accept-new-mechanism` flag before the paid scene or page request is
+submitted. Scene requests name a generated catalog scene; page requests name one
+document page and sheet format. Their options include the renderer challenge and
+admission decision.
+
+XMCD quotes the exact model bytes without a renderer challenge. Stock and known
+mechanisms are free; a new mechanism requires `--allow-new-mechanism`. Its
+options contain only version and admission decision. Require exact
+`worksheet.xmcd`/manifest member set, size, and SHA-256 before publishing.
+
+Require protocol-v2 renderer capabilities, validate the paid KOMPAS result
+manifest and member checksum, validate the signed plan envelope and its
+run/challenge binding, and verify the renderer CDW response checksum before
+publishing bytes. Unavailable, incompatible, busy, and integrity renderer
+failures use exit code `6` and do not emit resume guidance; an accepted XMCD
+result-fetch failure prints same-run resume guidance. Paid KOMPAS runs are not
+resumable through `tmm resume`.
+
+Never log the `Authorization` header, including in debug builds.
+
+## Local workflow
+
+From `apps/tmm-cli/`, use the Go toolchain for local builds and tests:
+
+```bash
+go build ./...
+go test ./...
+```
+
+Exercise a changed domain command with a local API fixture or development
+service. Confirm stdout, stderr, exit code, output path, and transport-failure
+behavior; do not substitute a local calculation fallback.
+
+Repo-local regeneration discovers `.tmm/dev/credentials.json` only after
+`pnpm db:init -- dev`, `pnpm dev`, and `pnpm dev -- credentials`; installed CLI
+invocations always require an explicit `TMM_API_TOKEN`.
+
+## Checks
+
+`skills/` contains the portable CLI/YAML guides and standalone metric-synthesis
+runtime. Preserve complete skill directories, including references and examples.
+After changing synthesis code, run `uv sync --extra dev --locked`,
+`uv run --locked pytest -q ../tests` and `uv run --locked ruff check .` from
+`skills/metric-synthesis/scripts`.
+
+Before committing, update the public README when a command, environment
+variable, output field, or exit class changes, then run both Go commands above.

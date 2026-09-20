@@ -1,0 +1,288 @@
+schema: linkage/v2
+units: SI
+gravity:
+  - 0
+  - -9.81
+  - 0
+output_body: "5"
+parameters:
+  m_2: 0.5
+  m_3: 15
+  m_4: 10
+  m_5: 50
+  l_OE: 0.04
+  H_D: 0.28
+  l_n: 0.015
+  lambda: 0.3333333333333333
+  K_V: 1.3
+  n_1: 90
+  n_dv: 1440
+  l_p: 0.08
+  delta: 0.075
+  l_S5: 0.15
+  l_CS4: 0.126
+  l_ES3: 0.09333333333333334
+  I_4S: 0.294
+  I_3S: 0.049
+  I_np0: 49
+  F_5tr: 196.2
+  f_deg: 330
+  l_d: 0.25
+  H_1: 0.125
+  P_1: 380
+  H_2: 0.125
+  P_2: 3000
+  H_3: 0.1625
+  P_3: 3000
+  theta_deg: 23.47826086956522
+  phi_0_deg: -78.26086956521738
+  phi_1_f_deg: -408.2608695652173
+  phi_3_f_deg: -58.220491551127544
+  phi_3_c_f_deg: -148.22049155112754
+  phi_3_s3_f_deg: -103.22049155112755
+  phi_4_f_deg: 10.110701245751104
+  l_1: 0.19660269264026153
+  l_EC: 0.14
+  l_4: 0.42000000000000004
+  omega_q1: -1
+  phi_start_deg: 0
+  phi_step_deg: 1
+  phi_end_deg: 360
+  omega_cp: 9.42477796076938
+  alpha_1: 0
+geometry:
+  points:
+    O:
+      - 0
+      - 0
+    E:
+      - 0.04
+      - 0
+  construct:
+    - type: point_on_ray
+      point: A
+      from: O
+      length: l_1
+      angle_deg: phi_1_f_deg
+    - type: point_at_angle
+      point: C
+      vertex: E
+      from: A
+      length: l_EC
+      angle_deg: 90
+      side: clockwise
+    - type: circle_line_y
+      point: D
+      center: C
+      radius: l_4
+      y: 0
+      branch: right
+    - type: point_at_angle
+      point: S3
+      vertex: E
+      from: A
+      length: l_ES3
+      angle_deg: 45
+      side: clockwise
+    - type: point_towards
+      point: S4
+      from: C
+      to: D
+      length: l_CS4
+    - type: point_offset
+      point: S5
+      from: D
+      vector:
+        - -1
+        - 0
+      length: l_S5
+    - type: point_towards
+      point: B2
+      from: A
+      to: E
+      length: l_n
+    - type: point_offset
+      point: P5
+      from: S5
+      vector:
+        - 0
+        - -1
+      length: l_p
+  aliases:
+    S2: A
+bodies:
+  "1":
+    frame:
+      origin: O
+      x_axis:
+        through: A
+    mass: 0
+    inertia: 49
+    com: O
+    points:
+      - A
+      - O
+    type: rigid
+  "2":
+    frame:
+      origin: A
+    mass: 0.5
+    inertia: 0
+    com: A
+    points:
+      - A
+      - B2
+    type: slider
+  "3":
+    frame:
+      origin: E
+      x_axis:
+        through: C
+    mass: 15
+    inertia: 0.049
+    com: S3
+    points:
+      - S3
+      - E
+      - C
+    type: rigid
+  "4":
+    frame:
+      origin: C
+      x_axis:
+        through: D
+    mass: 10
+    inertia: 0.294
+    com: S4
+    points:
+      - S4
+      - C
+      - D
+    type: rigid
+  "5":
+    frame:
+      origin: D
+    mass: 50
+    inertia: 0
+    com: S5
+    points:
+      - S5
+      - P5
+      - D
+    type: slider
+joints:
+  - id: O
+    type: revolute
+    endpoints:
+      - body: ground
+        point: O
+      - body: "1"
+        point: O
+  - id: E
+    type: revolute
+    endpoints:
+      - body: ground
+        point: E
+      - body: "3"
+        point: E
+  - id: F
+    type: revolute
+    endpoints:
+      - body: "1"
+        point: A
+      - body: "2"
+        point: A
+  - id: A
+    type: prismatic
+    guide:
+      body: "3"
+      axis:
+        origin: E
+        angle_deg: 90
+    slider:
+      body: "2"
+      point: A
+  - id: C
+    type: revolute
+    endpoints:
+      - body: "3"
+        point: C
+      - body: "4"
+        point: C
+  - id: D
+    type: revolute
+    endpoints:
+      - body: "4"
+        point: D
+      - body: "5"
+        point: D
+  - id: G
+    type: prismatic
+    guide:
+      body: ground
+      axis:
+        origin:
+          - 0
+          - 0
+        angle_deg: 0
+    slider:
+      body: "5"
+      point: D
+drive:
+  body: "1"
+  q_ratio: -1
+  omega: omega_cp
+  alpha: alpha_1
+loads:
+  - id: cutting_at_f
+    body: "5"
+    point: P5
+    vector:
+      - 0
+      - 0
+  - id: friction_at_f
+    body: "5"
+    point: S5
+    vector:
+      - 196.2
+      - 0
+dynamics:
+  solver: integral
+  coordinate:
+    type: phi
+    range_deg:
+      - 0
+      - -360
+      - 1
+  resistances:
+    - id: cutting
+      type: piecewise_linear
+      output_point: P5
+      axis: x
+      coordinate:
+        origin: initial
+        sign: 1
+      gate:
+        variable: velocity
+        coordinate: raw
+        condition: positive
+      points:
+        - - 0
+          - 0
+        - - 0.015
+          - 0
+        - - 0.14
+          - 380
+        - - 0.141
+          - 3000
+        - - 0.1775
+          - 3000
+        - - 0.265
+          - 0
+    - id: friction
+      type: constant
+      kind: force
+      value: 196.2
+      output_point: S5
+      axis: x
+      direction: opposes_motion

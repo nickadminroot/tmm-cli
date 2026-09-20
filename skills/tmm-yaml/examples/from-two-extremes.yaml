@@ -1,0 +1,75 @@
+# One H-pose of a four-bar synthesized from two extreme rocker positions.
+schema: linkage/v2
+units: SI
+output_body: "3"
+gravity: [0.0, -9.81, 0.0]
+
+parameters:
+  X_D: 0.8
+  Y_D: -0.1
+  l_OA: 0.24151703160264398
+  l_AB: 0.7975435309161845
+  l_DB: 0.5
+  gamma_H: 70.0
+  phi_1H: 20.851248356858576
+  omega_1: 6.0
+  alpha_1: 0.0
+
+geometry:
+  points:
+    O: [0.0, 0.0]
+    D: [0.8, -0.1]
+  construct:
+    - type: point_on_ray
+      point: A
+      from: O
+      length: l_OA
+      angle_deg: phi_1H
+    - type: circle_circle
+      point: B
+      center1: A
+      radius1: l_AB
+      center2: D
+      radius2: l_DB
+      branch: upper
+  aliases: {}
+
+bodies:
+  "1":
+    type: rigid
+    points: [O, A]
+    frame: {origin: O, x_axis: {through: A}}
+    com: mid
+    mass: 1.8
+    inertia: 0.04
+  "2":
+    type: rigid
+    points: [A, B]
+    frame: {origin: A, x_axis: {through: B}}
+    com: mid
+    mass: 2.8
+    inertia: 0.10
+  "3":
+    type: rigid
+    points: [D, B]
+    frame: {origin: D, x_axis: {through: B}}
+    com: mid
+    mass: 2.0
+    inertia: 0.07
+
+joints:
+  - id: O
+    type: revolute
+    endpoints: [{body: ground, point: O}, {body: "1", point: O}]
+  - id: A
+    type: revolute
+    endpoints: [{body: "1", point: A}, {body: "2", point: A}]
+  - id: D
+    type: revolute
+    endpoints: [{body: ground, point: D}, {body: "3", point: D}]
+  - id: B
+    type: revolute
+    endpoints: [{body: "2", point: B}, {body: "3", point: B}]
+
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
+loads: []

@@ -1,0 +1,243 @@
+units: SI
+gravity:
+- 0.0
+- -9.81
+- 0.0
+parameters:
+  H: 0.28
+  l_OA: 0.197
+  l_EC: 0.14
+  l_CD: 0.42
+  l_DS5: 0.15
+  l_ES3: 0.093
+  l_CS4: 0.126
+  x_E_ref: 0.04
+  y_E_ref: 0.0
+  l_p: 0.08
+  l_n: 0.015
+  delta: 0.075
+  phi_1: -78.261
+  omega_1: 9.425
+  epsilon_1: 0.0
+  alpha_AEC: 90.0
+geometry:
+  points:
+    O:
+    - 0.0
+    - 0.0
+    E:
+    - 0.04
+    - 0.0
+  construct:
+  - type: point_on_ray
+    point: A
+    from: O
+    length: l_OA
+    angle_deg: phi_1
+  - type: point_at_angle
+    point: C
+    vertex: E
+    from: A
+    length: l_EC
+    angle_deg: alpha_AEC
+    side: clockwise
+  - type: circle_line_y
+    point: D
+    center: C
+    radius: l_CD
+    y: 0.0
+    branch: right
+  - type: point_at_angle
+    point: S3
+    vertex: E
+    from: A
+    length: l_ES3
+    angle_deg: 45.0
+    side: clockwise
+  - type: point_towards
+    point: S4
+    from: C
+    to: D
+    length: l_CS4
+  - type: point_offset
+    point: S5
+    from: D
+    angle_deg: 180.0
+    length: l_DS5
+  - type: point_towards
+    point: A2_axis
+    from: A
+    to: E
+    length: 0.01
+  aliases:
+    S1: O
+bodies:
+  '1':
+    mass: 0.0
+    inertia: 0.0
+    type: rigid
+    points:
+    - A
+    - S1
+    - O
+    frame:
+      origin: O
+      x_axis:
+        through: A
+    com: S1
+  '2':
+    mass: 0.0
+    inertia: 0.0
+    type: slider
+    points:
+    - A2_axis
+    - A
+    frame:
+      origin: A
+    com: A
+  '3':
+    mass: 20.0
+    inertia: 0.6
+    type: rigid
+    points:
+    - C
+    - S3
+    - E
+    frame:
+      origin: E
+      x_axis:
+        through: C
+    com: S3
+  '4':
+    mass: 12.5
+    inertia: 0.3
+    type: rigid
+    points:
+    - S4
+    - C
+    - D
+    frame:
+      origin: C
+      x_axis:
+        through: D
+    com: S4
+  '5':
+    mass: 30.0
+    inertia: 0.0
+    type: slider
+    points:
+    - D
+    - S5
+    frame:
+      origin: D
+    com: S5
+joints:
+- id: O
+  type: revolute
+  endpoints:
+  - body: ground
+    point: O
+  - body: '1'
+    point: O
+- id: D
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: A
+  - body: '2'
+    point: A
+- id: F
+  type: prismatic
+  guide:
+    body: '3'
+    axis:
+      origin:
+      - 0.0
+      - 0.0
+      angle_deg: 90.0
+  slider:
+    body: '2'
+    point: A
+- id: E
+  type: revolute
+  endpoints:
+  - body: ground
+    point: E
+  - body: '3'
+    point: E
+- id: C
+  type: revolute
+  endpoints:
+  - body: '3'
+    point: C
+  - body: '4'
+    point: C
+- id: G
+  type: revolute
+  endpoints:
+  - body: '4'
+    point: D
+  - body: '5'
+    point: D
+- id: H
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 0.04
+      - 0.0
+      angle_deg: 0.0
+  slider:
+    body: '5'
+    point: D
+drive:
+  body: '1'
+  q_ratio: 1
+  omega: omega_1
+  alpha: epsilon_1
+loads: []
+dynamics:
+  coordinate:
+    type: phi
+    range_deg:
+    - 0
+    - 360
+    - 5
+  J_flywheel: 40.0
+  resistances:
+  - id: cutting
+    type: piecewise_linear
+    output_point: S5
+    axis: x
+    coordinate:
+      origin: initial
+      sign: 1.0
+    moment_sign: -1.0
+    gate:
+      condition: positive
+    points:
+    - - 0.0
+      - 0.0
+    - - 0.015
+      - 0.0
+    - - 0.015001
+      - 1800.0
+    - - 0.105
+      - 1800.0
+    - - 0.264999
+      - 1200.0
+    - - 0.265
+      - 0.0
+    - - 0.28
+      - 0.0
+  - id: friction
+    type: constant
+    kind: force
+    value: 100.0
+    output_point: S5
+    axis: x
+    direction: opposes_motion
+  cycle_balance:
+    type: steady_cycle
+schema: linkage/v2

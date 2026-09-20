@@ -1,0 +1,11 @@
+{
+  "model": "slider_crank.two_positions_stroke",
+  "units": {"length": "m", "angle": "deg"},
+  "inputs": {
+    "lambda_2": 2.5,
+    "lambda_e": 0.4,
+    "phi_1H": 60,
+    "phi_1K": 150,
+    "h_C": 0.15
+  }
+}

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "msynth-agent-tools"
+version = "0.2.0"
+description = "Standalone CLI and numerical runtime for metric synthesis of planar mechanisms."
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10"
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "pytest>=8",
+  "ruff>=0.9"
+]
+
+[project.scripts]
+msynth = "msynth.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["msynth*"]
+
+[tool.pytest.ini_options]
+testpaths = ["../tests"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

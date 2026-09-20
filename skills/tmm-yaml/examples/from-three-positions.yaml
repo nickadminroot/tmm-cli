@@ -1,0 +1,75 @@
+# Position 1 of a three-position synthesis; positions 2 and 3 are provenance.
+schema: linkage/v2
+units: SI
+output_body: "3"
+gravity: [0.0, -9.81, 0.0]
+
+parameters:
+  X_D: 0.5
+  Y_D: -0.1
+  l_OA: 0.23551066105537594
+  l_AB: 0.5385786040132194
+  l_DB: 0.5
+  gamma_1: 70.0
+  phi_1H: 41.28623088400974
+  omega_1: 5.0
+  alpha_1: 0.0
+
+geometry:
+  points:
+    O: [0.0, 0.0]
+    D: [0.5, -0.1]
+  construct:
+    - type: point_on_ray
+      point: A
+      from: O
+      length: l_OA
+      angle_deg: phi_1H
+    - type: circle_circle
+      point: B
+      center1: A
+      radius1: l_AB
+      center2: D
+      radius2: l_DB
+      branch: upper
+  aliases: {}
+
+bodies:
+  "1":
+    type: rigid
+    points: [O, A]
+    frame: {origin: O, x_axis: {through: A}}
+    mass: 1.4
+    inertia: 0.025
+    com: mid
+  "2":
+    type: rigid
+    points: [A, B]
+    frame: {origin: A, x_axis: {through: B}}
+    mass: 2.1
+    inertia: 0.07
+    com: mid
+  "3":
+    type: rigid
+    points: [D, B]
+    frame: {origin: D, x_axis: {through: B}}
+    mass: 1.5
+    inertia: 0.05
+    com: mid
+
+joints:
+  - id: O
+    type: revolute
+    endpoints: [{body: ground, point: O}, {body: "1", point: O}]
+  - id: A
+    type: revolute
+    endpoints: [{body: "1", point: A}, {body: "2", point: A}]
+  - id: D
+    type: revolute
+    endpoints: [{body: ground, point: D}, {body: "3", point: D}]
+  - id: B
+    type: revolute
+    endpoints: [{body: "2", point: B}, {body: "3", point: B}]
+
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: alpha_1}
+loads: []

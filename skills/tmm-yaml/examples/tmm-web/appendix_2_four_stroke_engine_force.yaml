@@ -1,0 +1,229 @@
+units: SI
+parameters:
+  H: 0.115
+  l_OA: 0.058
+  l_OD: 0.058
+  l_AB: 0.219
+  l_DF: 0.219
+  l_AS2: 0.066
+  l_DS4: 0.066
+  phi_1: 120.0
+  omega_1: -136.0
+  epsilon_1: -471.7
+  d_cylinder: 0.078
+  n1_rpm: 1300
+  V_Bcp: 5.0
+  p_max: 1100000.0
+  delta: 0.0555555556
+  I_pr0: 0.1
+  g: 9.81
+geometry:
+  points:
+    O:
+    - 0.0
+    - 0.0
+    GR0:
+    - 0.0
+    - 0.0
+    GR1:
+    - 1.0
+    - 0.0
+    GL0:
+    - 0.0
+    - 0.0
+    GL1:
+    - -1.0
+    - 0.0
+  construct:
+  - type: point_on_ray
+    point: A
+    from: O
+    length: l_OA
+    angle_deg: phi_1
+  - type: point_on_ray
+    point: D
+    from: O
+    length: -0.058
+    angle_deg: phi_1
+  - type: circle_line_y
+    point: B
+    center: A
+    radius: l_AB
+    y: 0.0
+    branch: left
+  - type: circle_line_y
+    point: F
+    center: D
+    radius: l_DF
+    y: 0.0
+    branch: right
+  - type: point_towards
+    point: S2
+    from: A
+    to: B
+    length: l_AS2
+  - type: point_towards
+    point: S4
+    from: D
+    to: F
+    length: l_DS4
+  - type: point_offset
+    point: S3_marker
+    from: B
+    vector:
+    - 1
+    - 0
+    length: 0.001
+  - type: point_offset
+    point: S5_marker
+    from: F
+    vector:
+    - -1
+    - 0
+    length: 0.001
+  aliases:
+    S1: O
+bodies:
+  '1':
+    mass: 7.882
+    inertia: 0.135
+    type: rigid
+    points:
+    - O
+    - A
+    - D
+    - S1
+    frame:
+      origin: D
+      x_axis:
+        through: A
+    com: O
+  '2':
+    mass: 0.34
+    inertia: 0.002
+    type: rigid
+    points:
+    - A
+    - B
+    - S2
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: S2
+  '3':
+    mass: 0.36
+    inertia: 0.0
+    type: slider
+    points:
+    - B
+    - S3_marker
+    frame:
+      origin: B
+    com: B
+  '4':
+    mass: 0.34
+    inertia: 0.002
+    type: rigid
+    points:
+    - D
+    - F
+    - S4
+    frame:
+      origin: D
+      x_axis:
+        through: F
+    com: S4
+  '5':
+    mass: 0.36
+    inertia: 0.0
+    type: slider
+    points:
+    - F
+    - S5_marker
+    frame:
+      origin: F
+    com: F
+joints:
+- id: O
+  type: revolute
+  endpoints:
+  - body: ground
+    point: O
+  - body: '1'
+    point: O
+- id: A
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: A
+  - body: '2'
+    point: A
+- id: B
+  type: revolute
+  endpoints:
+  - body: '2'
+    point: B
+  - body: '3'
+    point: B
+- id: C
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - -0.24216191029356066
+      - 0.0
+      angle_deg: 0.0
+  slider:
+    body: '3'
+    point: B
+- id: D
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: D
+  - body: '4'
+    point: D
+- id: F
+  type: revolute
+  endpoints:
+  - body: '4'
+    point: F
+  - body: '5'
+    point: F
+- id: G
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 0.24216191029356066
+      - 0.0
+      angle_deg: 180.0
+  slider:
+    body: '5'
+    point: F
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: -1
+  omega: omega_1
+  alpha: epsilon_1
+loads:
+- id: F3X
+  body: '3'
+  point: B
+  vector:
+  - -42.05
+  - 0.0
+- id: F5X
+  body: '5'
+  point: F
+  vector:
+  - -1892.0
+  - 0.0
+schema: linkage/v2

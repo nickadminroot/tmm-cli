@@ -1,44 +1,151 @@
 # tmm-cli
 
-Public thin client for the TMM remote execution service. This is the only
-customer-facing executable of the TMM project: it bundles authored inputs,
-sends them to the private `tmm-server` over HTTPS, polls run status, and
-publishes returned artifacts locally.
+Public thin client for the TMM remote execution service. It sends authored
+inputs to the private server over HTTPS and publishes returned artifacts
+locally. KOMPAS CDW creation obtains a server-signed plan and sends it to the
+installed localhost KOMPAS Renderer only after the server has accepted the paid run.
 
 ## Commands
 
-- `tmm linkage INPUT --output DIR`
-- `tmm md INPUT --format A1|A2|A3 --output FILE`
-- `tmm render INPUT --output FILE [--scale N | --target-max-side N]`
-- `tmm svg INPUT --output FILE [--format svg|png] [render/SVG/PNG options]`
-- `tmm kompas INPUT --output FILE`
-- `tmm quota`
-- `tmm resume UUID --output PATH`
-- `tmm cancel UUID`
-- `tmm version`
+| Command | Result |
+| --- | --- |
+| `tmm linkage INPUT --output DIR` | Run linkage analysis and write the generic result tree, including free `mathcad/worksheet.json` but no XMCD. |
+| `tmm xmcd INPUT --output FILE.xmcd [--allow-new-mechanism]` | Quote the exact model, submit a paid `linkage-xmcd` run, and write only the server-generated Mathcad 15 XMCD bytes. |
+| `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render a Markdown document against the model and write the preview ZIP. The two input files are sent as-is; `PATH` is an optional logical publication path used to resolve relative scene references. |
+| `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Render one Scene v2 document. |
+| `tmm svg INPUT --output FILE [--format svg\|png] [render/SVG/PNG options]` | Produce an SVG or PNG preview. |
+| `tmm kompas scene MODEL.yaml SCENE_NAME --output FILE [--scale N] [--accept-new-mechanism]` | Generate the named linkage scene, render it through the installed KOMPAS Renderer, and write the CDW. |
+| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--accept-new-mechanism]` | Generate and render one Markdown page through the installed KOMPAS Renderer, then write the CDW. |
+| `tmm mechanisms` | Print the mechanism balance and registry fields. This command is read-only. |
+| `tmm resume UUID --output PATH` | Resume a free operation or an accepted XMCD run and write its result. |
+| `tmm cancel UUID` | Cancel a submitted run. |
+| `tmm version` | Print the client version. |
+
+The `linkage` command materializes the free generic result tree under `DIR`.
+The server owns worksheet generation and the client writes declared bytes
+unchanged; no XMCD compiler runs locally or as part of generic linkage.
+`tmm xmcd` sends only the authored YAML and exact options to the dedicated paid
+route. It does not send worksheet/descriptor/XML and does not use KOMPAS.
+
+## Mechanism admission
+
+KOMPAS commands first obtain a fresh protocol-v2 challenge from the local
+KOMPAS Renderer, then quote the exact model bytes. An exact built-in stock
+model proceeds without a credit and is not added to the user registry. Known
+mechanisms also proceed without a credit. A new mechanism requires
+`--accept-new-mechanism`; without it the CLI exits before submitting the paid
+run. An insufficient balance or inactive account also stops before submission.
+
+`tmm xmcd` quotes the same exact model bytes but sends no renderer challenge.
+Its paid request contains exactly `mechanism` and
+`options={"version":1,"allow_new_mechanism":...}`. Stock and known mechanisms
+remain free; a new mechanism requires `--allow-new-mechanism`. The server repeats
+classification under the account admission lock, so the quote is advisory and
+the same registry/balance is shared with CDW.
+
+Physical inputs must declare `schema: linkage/v2`; the CLI does not convert
+legacy YAML. `tmm mechanisms` prints each row's `descriptor_version`.
+Version-one rows are retained history, not recognition candidates for v2.
+An earlier activation can therefore require a new explicit admission; existing
+balances, payments, history, and downloadable artifacts remain unchanged.
+
+The server accepts only the named `SCENE_NAME` from the generated linkage
+catalog. Markdown page requests send exactly `mechanism`, `document`, and
+`options` multipart fields. Scene requests send exactly `mechanism` and
+`options`; the server generates and verifies the selected scene.
+For `tmm md`, `--source-path` is sent as `options.source_path` and is not read as a local file. Use the document's logical path inside the publication tree (for example, `kinematics/velocity-analysis.md`) when its scene directives use bare scene names. If omitted, the server uses `input/document.md`.
 
 ## Environment
 
-- `TMM_API_TOKEN` — required execution token (never passed on argv/URL).
-- `TMM_API_URL` — optional base URL override; release builds embed the
-  production HTTPS URL. Plain HTTP is accepted only for loopback hosts.
+| Variable | Contract |
+| --- | --- |
+| `TMM_API_TOKEN` | Required for every API URL, including loopback development URLs. Keep it in the environment, never argv, YAML, logs, or a URL. |
+| `TMM_API_URL` | Required for repository development/source builds; release builds embed the production HTTPS URL. Plain HTTP is accepted only for loopback hosts. |
+| `TMM_KOMPAS_RENDERER_URL` | Optional localhost KOMPAS Renderer URL; defaults to `http://127.0.0.1:17342`. The CLI accepts only plain HTTP `localhost` or `127.0.0.1` URLs with an explicit port. |
+
+KOMPAS plan ZIPs, manifests, checksums, signed envelopes, run IDs, and
+challenge bindings are verified before a plan reaches the local renderer; the
+API token is never sent to that renderer. The renderer response must be
+non-empty CDW bytes with the required SHA-256 checksum. If the local renderer
+fails after the server succeeds, stderr states that the mechanism is already
+activated and a retry will not charge it again. Renderer failures use exit code
+`6` and do not emit resume guidance.
+
+XMCD results are downloaded only after the server run succeeds. The client
+verifies the exact two-member result ZIP, manifest, member size, and SHA-256,
+then writes unchanged `worksheet.xmcd` bytes. If result retrieval fails after
+acceptance, stderr includes `Run ID:` and a `Resume:` command for the same run;
+`tmm resume UUID --output FILE.xmcd` does not submit a new paid run.
+
+Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
+the `apiUrl` in `.tmm/dev/credentials.json` and set `TMM_API_TOKEN` explicitly;
+repo-local regeneration helpers discover both values from the mode-0600
+manifest after `pnpm db:init -- dev`, `pnpm dev`, and `pnpm dev -- credentials`.
+
+## Release installation
+
+Public releases are published in
+[`tmm-cli`](https://github.com/nickadminroot/tmm-cli/releases) with tags
+`tmm-cli/v*`. Each release contains archives for Linux, macOS, and Windows on
+`amd64` and `arm64`, plus `checksums.txt`. Verify the archive checksum before
+extracting:
+
+```bash
+archive="$(find . -maxdepth 1 -type f -name 'tmm-cli_*' -print -quit)"
+test -n "$archive"
+filename="$(basename "$archive")"
+grep -F "  $filename" checksums.txt | sha256sum -c -
+```
+
+The checksum file lists every release archive; checking it without the filename
+filter requires downloading all of them. On macOS pipe the matching row to
+`shasum -a 256 -c -`; on Windows compare `Get-FileHash` with the matching row.
+
+The release embeds the production HTTPS API URL. `TMM_API_URL` is only needed
+for an explicit endpoint override; plain HTTP remains valid only for
+`localhost` and `127.0.0.1`.
+
+## Diagnostics
+
+Failed remote calculations print the server diagnostic to stderr: the stable
+error code and message, pipeline stage, input field and YAML position when
+available, followed by ordered `[пройден]`, `[ошибка]`, or `[пропущен]` steps.
+Successful commands keep stdout reserved for published paths or the fixed
+fields of `tmm mechanisms`.
 
 ## Exit codes
 
 | Code | Meaning |
-|------|---------|
-| 0 | success |
-| 2 | usage / local input error |
-| 3 | auth or quota failure |
-| 4 | remote domain failure |
-| 5 | resumable transport failure (prints `Run ID:` + `Resume:` lines) |
-| 6 | server/worker failure |
+| ---: | --- |
+| `0` | Success. |
+| `2` | Usage or local input error. |
+| `3` | Authentication, account, or mechanism-balance failure. |
+| `4` | Remote domain failure. |
+| `5` | Resumable free-operation transport failure; output includes `Run ID:` and `Resume:` lines. |
+| `6` | Server, worker, KOMPAS Renderer, or accepted XMCD result retrieval failure. |
 
-## Development
+`result_expired` and `result_lost` are reported as distinct remote domain
+errors. A pending refund makes the corresponding unused balance zero for new
+mechanism admissions; it does not block the account, free operations, or CDW/
+XMCD exports for already registered mechanisms. Such a new paid admission
+fails with `mechanism_balance_exhausted`.
 
-```
-go build ./...
-go test ./...
-```
+## AI-agent skills
 
-The client owns no calculation logic; all computation happens server-side.
+The portable installation, security, command, and synthesis-to-YAML workflow
+is documented in this public [CLI and skills repository](https://github.com/nickadminroot/tmm-cli/tree/main/skills).
+Install a complete skill directory with its references, examples, and (for
+`metric-synthesis`) the standalone `scripts/` runtime.
+
+- [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, authentication, commands and diagnostics.
+- [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.
+- [`metric-synthesis`](skills/metric-synthesis/SKILL.md): numerical dimension synthesis with its standalone Python runtime.
+
+`tmm --help` and `tmm help` show both the public repository and skills links,
+without requiring an API token or a network request.
+
+## Boundary
+
+The client owns transport, polling, plan/result integrity checks, and local
+publication. It owns no calculation logic; computation happens in the private
+service or the installed KOMPAS Renderer.

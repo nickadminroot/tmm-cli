@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"path/filepath"
 
-	"tmm-cli/internal/bundle"
-	"tmm-cli/internal/client"
-
+	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/bundle"
+	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/client"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +17,9 @@ func main() {
 		Use:   "tmm",
 		Short: "TMM remote execution client",
 		Long: "Thin client for the TMM remote execution service. All computation\n" +
-			"happens server-side; this command bundles inputs and publishes results.",
+			"happens server-side; this command sends authored inputs and publishes results.\n" +
+			"Repository: https://github.com/nickadminroot/tmm-cli\n" +
+			"Agent skills: https://github.com/nickadminroot/tmm-cli/tree/main/skills",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
@@ -65,16 +69,33 @@ func main() {
 	}
 	addOutput(linkageCmd)
 
-	var mdFormat string
-	mdCmd := &cobra.Command{
-		Use:   "md INPUT",
-		Short: "Compile authored Markdown sheets into packed scene pages",
+	var xmcdAllowNew bool
+	xmcdCmd := &cobra.Command{
+		Use:   "xmcd INPUT",
+		Short: "Compile a linkage worksheet into one Mathcad XMCD file",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			input, err := requireInput(cmd, args)
+			out, err := requireOutput(cmd)
 			if err != nil {
 				return err
 			}
+			if filepath.Ext(out) != ".xmcd" {
+				return fmt.Errorf("--output must name a .xmcd file")
+			}
+			os.Exit(runXMCD(args[0], out, xmcdAllowNew))
+			return nil
+		},
+	}
+	addOutput(xmcdCmd)
+	xmcdCmd.Flags().BoolVar(&xmcdAllowNew, "allow-new-mechanism", false, "authorize one new mechanism credit")
+
+	var mdFormat string
+	var mdSourcePath string
+	mdCmd := &cobra.Command{
+		Use:   "md MODEL.yaml DOCUMENT.md",
+		Short: "Render a Markdown document against a linkage mechanism",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
 			out, oerr := requireOutput(cmd)
 			if oerr != nil {
 				return oerr
@@ -82,13 +103,14 @@ func main() {
 			if mdFormat != "A1" && mdFormat != "A2" && mdFormat != "A3" {
 				return fmt.Errorf("--format must be one of A1|A2|A3")
 			}
-			os.Exit(runDomain("md", input, out, map[string]any{"format": mdFormat}))
+			os.Exit(runMarkdown(args[0], args[1], mdFormat, out, mdSourcePath))
 			return nil
 		},
 	}
 	addOutput(mdCmd)
 	mdCmd.Flags().StringVar(&mdFormat, "format", "", "sheet format A1|A2|A3 (required)")
 	_ = mdCmd.MarkFlagRequired("format")
+	mdCmd.Flags().StringVar(&mdSourcePath, "source-path", "", "logical Markdown source path")
 
 	renderCmd := &cobra.Command{
 		Use:   "render INPUT",
@@ -104,10 +126,16 @@ func main() {
 				return oerr
 			}
 			options := map[string]any{}
-			if scale > 0 {
+			if cmd.Flags().Changed("scale") {
+				if !positiveFinite(scale) {
+					return fmt.Errorf("--scale must be a positive finite number")
+				}
 				options["scale"] = scale
 			}
-			if targetMaxSide > 0 {
+			if cmd.Flags().Changed("target-max-side") {
+				if !positiveFinite(targetMaxSide) {
+					return fmt.Errorf("--target-max-side must be a positive finite number")
+				}
 				options["target_max_side"] = targetMaxSide
 			}
 			if len(options) == 0 {
@@ -141,6 +169,12 @@ func main() {
 			out, oerr := requireOutput(cmd)
 			if oerr != nil {
 				return oerr
+			}
+			if cmd.Flags().Changed("scale") && !positiveFinite(scale) {
+				return fmt.Errorf("--scale must be a positive finite number")
+			}
+			if cmd.Flags().Changed("target-max-side") && !positiveFinite(targetMaxSide) {
+				return fmt.Errorf("--target-max-side must be a positive finite number")
 			}
 			options := map[string]any{}
 			if cmd.Flags().Changed("png-width") || cmd.Flags().Changed("png-height") {
@@ -187,40 +221,72 @@ func main() {
 	svgCmd.Flags().IntVar(&pngWidth, "png-width", 1600, "PNG width in pixels")
 	svgCmd.Flags().IntVar(&pngHeight, "png-height", 1200, "PNG height in pixels")
 
+	var (
+		sceneScale     float64
+		sceneAcceptNew bool
+		pageFormat     string
+		pageNumber     int
+		pageAcceptNew  bool
+	)
 	kompasCmd := &cobra.Command{
-		Use:   "kompas INPUT",
-		Short: "Render one tmm-scene v2 document to a native KOMPAS CDW",
-		Args:  cobra.ExactArgs(1),
+		Use:   "kompas",
+		Short: "Create native KOMPAS drawings from linkage mechanisms",
+		Args:  cobra.NoArgs,
+	}
+	sceneCmd := &cobra.Command{
+		Use:   "scene MODEL.yaml SCENE_NAME",
+		Short: "Create one linkage scene as a native KOMPAS CDW",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			input, err := requireInput(cmd, args)
-			if err != nil {
-				return err
-			}
 			out, oerr := requireOutput(cmd)
 			if oerr != nil {
 				return oerr
 			}
-			os.Exit(runDomain("kompas", input, out, map[string]any{}))
+			if cmd.Flags().Changed("scale") && !positiveFinite(sceneScale) {
+				return fmt.Errorf("--scale must be a positive finite number")
+			}
+			os.Exit(runKompasScene(args[0], args[1], sceneScale, sceneAcceptNew, out))
 			return nil
 		},
 	}
-	addOutput(kompasCmd)
+	addOutput(sceneCmd)
+	sceneCmd.Flags().Float64Var(&sceneScale, "scale", 0, "explicit positive scene scale")
+	sceneCmd.Flags().BoolVar(&sceneAcceptNew, "accept-new-mechanism", false, "authorize one new mechanism credit")
+	kompasCmd.AddCommand(sceneCmd)
 
-	quotaCmd := &cobra.Command{
-		Use:   "quota",
-		Short: "Print quota fields for the execution token",
+	pageCmd := &cobra.Command{
+		Use:   "page MODEL.yaml DOCUMENT.md",
+		Short: "Create one Markdown page as a native KOMPAS CDW",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, cerr := client.New()
-			if cerr != nil {
-				fmt.Fprintln(os.Stderr, cerr)
-				os.Exit(client.ExitUsage)
+			out, oerr := requireOutput(cmd)
+			if oerr != nil {
+				return oerr
 			}
-			q, qerr := c.Quota()
-			if qerr != nil {
-				return qerr
+			if pageNumber < 1 {
+				return fmt.Errorf("--page must be a positive page number")
 			}
-			fmt.Printf("run_limit: %d\nruns_used: %d\nruns_reserved: %d\nruns_remaining: %d\nexpires_at: %s\n",
-				q.RunLimit, q.RunsUsed, q.RunsReserved, q.RunsRemaining, q.ExpiresAt)
+			if pageFormat != "A1" && pageFormat != "A2" && pageFormat != "A3" {
+				return fmt.Errorf("--format must be one of A1|A2|A3")
+			}
+			os.Exit(runKompasPage(args[0], args[1], pageNumber, pageFormat, pageAcceptNew, out))
+			return nil
+		},
+	}
+	addOutput(pageCmd)
+	pageCmd.Flags().IntVar(&pageNumber, "page", 0, "one-based page number (required)")
+	_ = pageCmd.MarkFlagRequired("page")
+	pageCmd.Flags().StringVar(&pageFormat, "format", "", "sheet format A1|A2|A3 (required)")
+	_ = pageCmd.MarkFlagRequired("format")
+	pageCmd.Flags().BoolVar(&pageAcceptNew, "accept-new-mechanism", false, "authorize one new mechanism credit")
+	kompasCmd.AddCommand(pageCmd)
+
+	mechanismsCmd := &cobra.Command{
+		Use:   "mechanisms",
+		Short: "Print mechanism balance and registry",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			os.Exit(runMechanisms())
 			return nil
 		},
 	}
@@ -239,7 +305,14 @@ func main() {
 				fmt.Fprintln(os.Stderr, cerr)
 				os.Exit(client.ExitUsage)
 			}
-			final, werr := c.Wait(args[0])
+			ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+			defer stop()
+			final, werr := c.WaitContext(ctx, args[0])
+			if ctx.Err() != nil {
+				cancelRun(c, args[0])
+				fmt.Fprintln(os.Stderr, "run was cancelled")
+				os.Exit(client.ExitInterrupted)
+			}
 			if werr != nil {
 				fmt.Fprintln(os.Stderr, werr)
 				if apiErr, ok := werr.(*client.APIError); ok && apiErr.Status != 0 {
@@ -248,15 +321,43 @@ func main() {
 				printResume(args[0], out)
 				os.Exit(client.ExitTransport)
 			}
+			if err := validateRunStatus(final, args[0], final.Operation); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(client.ExitServer)
+			}
 			if final.State == "succeeded" {
-				data, rerr := c.Result(final)
+				if resumeErr := resumableOperationError(final.Operation); resumeErr != nil {
+					fmt.Fprintln(os.Stderr, resumeErr)
+					os.Exit(client.ExitDomain)
+				}
+				data, rerr := c.ResultContext(ctx, final)
 				if rerr != nil {
 					fmt.Fprintln(os.Stderr, rerr)
 					os.Exit(client.ExitServer)
 				}
+				if final.Operation == "linkage-xmcd" {
+					if xerr := publishXMCDResult(data, out); xerr != nil {
+						fmt.Fprintln(os.Stderr, xerr)
+						os.Exit(client.ExitServer)
+					}
+					os.Exit(client.ExitOK)
+				}
 				manifest, merr := bundle.ReadManifest(data)
 				if merr != nil {
 					fmt.Fprintln(os.Stderr, merr)
+					os.Exit(client.ExitServer)
+				}
+				if final.Result.EntryCount != len(manifest.Entries) {
+					fmt.Fprintln(os.Stderr, "result entry count does not match the manifest")
+					os.Exit(client.ExitServer)
+				}
+				if manifest.Operation != final.Operation {
+					fmt.Fprintln(os.Stderr, "result manifest operation does not match the run")
+					os.Exit(client.ExitServer)
+				}
+				expectedPublication := map[string]string{"linkage": "tree", "render": "single", "svg": "single"}[final.Operation]
+				if manifest.Publication != expectedPublication {
+					fmt.Fprintln(os.Stderr, "result manifest publication does not match the run")
 					os.Exit(client.ExitServer)
 				}
 				p := bundle.Publisher{}
@@ -265,18 +366,22 @@ func main() {
 					os.Exit(finish(p.PublishTree(data, manifest, out)))
 				case "page-set":
 					os.Exit(finish(p.PublishPageSet(data, manifest, out)))
-				default:
+				case "single":
 					os.Exit(finish(p.PublishSingle(data, manifest, out)))
+				default:
+					fmt.Fprintln(os.Stderr, "result manifest publication is unsupported")
+					os.Exit(client.ExitServer)
 				}
 			}
 			if final.State == "cancelled" {
 				fmt.Fprintln(os.Stderr, "run was cancelled")
 				os.Exit(client.ExitDomain)
 			}
-			if final.Error != nil {
-				fmt.Fprintf(os.Stderr, "%s (%s)\n", final.Error.Message, final.Error.Code)
-				os.Exit(client.ExitDomain)
+			if final.State == "failed" {
+				os.Exit(handleTerminalDiagnostic(final.Error))
 			}
+			fmt.Fprintln(os.Stderr, "server returned an unknown run state")
+			os.Exit(client.ExitServer)
 			return nil
 		},
 	}
@@ -315,8 +420,8 @@ func main() {
 		},
 	}
 
-	root.AddCommand(linkageCmd, mdCmd, renderCmd, svgCmd, kompasCmd,
-		quotaCmd, resumeCmd, cancelCmd, versionCmd)
+	root.AddCommand(linkageCmd, xmcdCmd, mdCmd, renderCmd, svgCmd, kompasCmd,
+		mechanismsCmd, resumeCmd, cancelCmd, versionCmd)
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(client.ExitUsage)
@@ -325,4 +430,15 @@ func main() {
 
 func printResume(runID, outputPath string) {
 	bundle.PrintResumeLines(runID, outputPath)
+}
+
+func resumableOperationError(operation string) error {
+	switch operation {
+	case "linkage", "render", "svg", "linkage-xmcd":
+		return nil
+	case "linkage-cdw-scene-plan", "linkage-cdw-page-plan":
+		return fmt.Errorf("KOMPAS CDW plans cannot be resumed; rerun the original tmm kompas command")
+	default:
+		return fmt.Errorf("operation %s cannot be resumed", operation)
+	}
 }

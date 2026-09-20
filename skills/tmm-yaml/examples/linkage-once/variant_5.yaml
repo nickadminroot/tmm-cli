@@ -1,0 +1,131 @@
+units: SI
+gravity:
+- 0.0
+- -9.81
+- 0.0
+parameters:
+  l_AB: 0.075
+  l_BC: 0.32
+  phi_1: 210.0
+  lambda_BS2: 0.35
+  l_CCx: 0.05
+  omega_1: 40.0
+  epsilon_1: 200.0
+  F_C: 6630.0
+geometry:
+  points:
+    A:
+    - 0.0
+    - 0.0
+    G:
+    - 0.0
+    - -1.0
+  construct:
+  - type: point_on_ray
+    point: B
+    from: A
+    length: l_AB
+    angle_deg: phi_1
+  - type: circle_line_x
+    point: C
+    center: B
+    radius: l_BC
+    x: 0.0
+    branch: lower
+  - type: point_on_line
+    point: S2
+    from: B
+    to: C
+    fraction: lambda_BS2
+  - type: point_offset
+    point: Cx
+    from: C
+    vector:
+    - 1.0
+    - 0.0
+    length: l_CCx
+  aliases: {}
+bodies:
+  '1':
+    mass: 8.0
+    inertia: 0.008
+    type: rigid
+    points:
+    - A
+    - B
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: mid
+  '2':
+    mass: 10.0
+    inertia: 0.06
+    type: rigid
+    points:
+    - S2
+    - B
+    - C
+    frame:
+      origin: B
+      x_axis:
+        through: C
+    com: S2
+  '3':
+    mass: 18.0
+    inertia: 0.02
+    type: slider
+    points:
+    - Cx
+    - C
+    frame:
+      origin: C
+    com: C
+joints:
+- id: A
+  type: revolute
+  endpoints:
+  - body: ground
+    point: A
+  - body: '1'
+    point: A
+- id: B
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: B
+  - body: '2'
+    point: B
+- id: C
+  type: revolute
+  endpoints:
+  - body: '2'
+    point: C
+  - body: '3'
+    point: C
+- id: D
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 0.0
+      - 0.0
+      angle_deg: -90.0
+  slider:
+    body: '3'
+    point: C
+drive:
+  body: '1'
+  q_ratio: 1
+  omega: omega_1
+  alpha: epsilon_1
+loads:
+- id: F_C
+  body: '3'
+  point: C
+  magnitude: 6630.0
+  direction_points:
+  - C
+  - A
+schema: linkage/v2

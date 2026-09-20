@@ -1,0 +1,291 @@
+units: SI
+parameters:
+  H: 0.3
+  l_t: 0.015
+  K_V5: 1.4
+  v_cut: 0.5
+  lambda: 1.4
+  l_CD_ref: 0.5
+  l_DE_ref: 0.7
+  l_AD_ref: 0.3
+  l_ES5: 0.164
+  l_tool: 0.09
+  F_f: 100.0
+  m_5: 60.0
+  m_3: 38.0
+  m_2: 25.0
+  J_S3: 1.2
+  J_S2: 0.6
+  delta: 0.05
+  J_0: 0.2
+  omega_motor_nominal: 99.4837673637
+  w_q_nominal: 6.10865238198
+  r_motor_to_q: 16.2857142857
+  g: 9.81
+  Delta_phi_idle_deg: 150.0
+  Delta_phi_work_deg: 210.0
+  gamma_deg: 12.374
+  l_AB_ref: 0.062
+  l_BC_ref: 0.342
+  phi_0_deg: 40.762
+  beta_deg: -48.358
+  y_S5_ref: 0.468
+  l_BS2_ref: 0.171
+  l_DS3_ref: 0.35
+  l_AB: 0.062
+  l_BC: 0.342
+  l_CD: 0.5
+  l_AD: 0.3
+  l_DE: 0.7
+  phi_1: 250.762
+geometry:
+  points:
+    A:
+    - 0.0
+    - 0.0
+    G0:
+    - 0.0
+    - 0.468
+    G1:
+    - 1.0
+    - 0.468
+  construct:
+  - type: point_on_ray
+    point: D
+    from: A
+    length: l_AD
+    angle_deg: beta_deg
+  - type: point_on_ray
+    point: B
+    from: A
+    length: l_AB
+    angle_deg: phi_1
+  - type: circle_circle
+    point: C
+    center1: B
+    radius1: l_BC
+    center2: D
+    radius2: l_CD
+    branch: upper
+  - type: point_on_line
+    point: E
+    from: D
+    to: C
+    distance: l_DE
+  - type: project_to_line
+    point: H
+    from: E
+    line:
+    - G0
+    - G1
+  - type: point_offset
+    point: R
+    from: H
+    vector:
+    - 1
+    - 0
+    length: l_ES5
+  - type: point_offset
+    point: S5
+    from: H
+    vector:
+    - 1
+    - 0
+    length: l_ES5
+  - type: point_offset
+    point: V
+    from: H
+    vector:
+    - 0
+    - 1
+    length: 0.5
+  - type: point_on_line
+    point: S2
+    from: B
+    to: C
+    distance: l_BS2_ref
+  - type: point_on_line
+    point: S3
+    from: D
+    to: C
+    distance: l_DS3_ref
+  aliases: {}
+bodies:
+  '1':
+    mass: 0.0
+    inertia: 0.0
+    type: rigid
+    points:
+    - A
+    - B
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: A
+  '2':
+    mass: 25.0
+    inertia: 0.6
+    type: rigid
+    points:
+    - B
+    - C
+    - S2
+    frame:
+      origin: B
+      x_axis:
+        through: C
+    com: S2
+  '3':
+    mass: 38.0
+    inertia: 1.2
+    type: rigid
+    points:
+    - D
+    - C
+    - E
+    - S3
+    frame:
+      origin: D
+      x_axis:
+        through: C
+    com: S3
+  '4':
+    mass: 0.0
+    inertia: 0.0
+    type: slider
+    points:
+    - E
+    frame:
+      origin: E
+    com: E
+  '5':
+    mass: 60.0
+    type: slider
+    points:
+    - H
+    - R
+    - S5
+    frame:
+      origin: H
+    com: S5
+joints:
+- id: A
+  type: revolute
+  endpoints:
+  - body: ground
+    point: A
+  - body: '1'
+    point: A
+- id: B
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: B
+  - body: '2'
+    point: B
+- id: C
+  type: revolute
+  endpoints:
+  - body: '2'
+    point: C
+  - body: '3'
+    point: C
+- id: D
+  type: revolute
+  endpoints:
+  - body: ground
+    point: D
+  - body: '3'
+    point: D
+- id: E
+  type: revolute
+  endpoints:
+  - body: '3'
+    point: E
+  - body: '4'
+    point: E
+- id: F
+  type: prismatic
+  guide:
+    body: '5'
+    axis:
+      origin:
+      - 0.0
+      - 0.0
+      angle_deg: 90.0
+  slider:
+    body: '4'
+    point: E
+- id: G
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 0.0
+      - 0.468
+      angle_deg: 0.0
+  slider:
+    body: '5'
+    point: H
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: -1
+loads: []
+dynamics:
+  coordinate:
+    type: phi
+    range_deg:
+    - 0
+    - 360
+    - 5
+  regulation:
+    method: energy_envelope
+    nominal_speed: w_q_nominal
+    nonuniformity: delta
+    base_inertias:
+    - id: motor_rotor
+      inertia: J_0
+      speed_ratio: r_motor_to_q
+    flywheel_speed_ratio: 1.8333333333333333
+  resistances:
+  - id: cutting
+    type: piecewise_linear
+    output_point: S5
+    axis: x
+    coordinate:
+      origin: initial
+      sign: 1.0
+    moment_sign: -1.0
+    gate:
+      condition: positive
+    points:
+    - - 0.0
+      - 0.0
+    - - 0.015
+      - 0.0
+    - - 0.015001
+      - 400.0
+    - - 0.105
+      - 800.0
+    - - 0.284999
+      - 600.0
+    - - 0.285
+      - 0.0
+    - - 0.3
+      - 0.0
+  - id: friction
+    type: constant
+    kind: force
+    value: 100.0
+    output_point: S5
+    axis: x
+    direction: opposes_motion
+  cycle_balance:
+    type: steady_cycle
+schema: linkage/v2
