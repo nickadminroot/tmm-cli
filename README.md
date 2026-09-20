@@ -39,6 +39,13 @@ The directory layout has been checked with `uv` for the bundled
 `metric-synthesis/scripts` runtime. Other clients may use the same files, but
 their installation behavior is not verified here.
 
+The physical YAML skill also includes the complete mechanism example corpus:
+the [tmm-web snapshots](skills/tmm-yaml/examples/tmm-web/), the
+[working linkage-once variants](skills/tmm-yaml/examples/linkage-once/), and
+the smaller synthesis handoff examples at
+[`skills/tmm-yaml/examples/`](skills/tmm-yaml/examples/). See that directory's
+README for provenance and verification scope.
+
 ## Metric-synthesis runtime
 
 The numerical runtime is a standalone Python project under

@@ -1,0 +1,95 @@
+schema: linkage/v2
+units: SI
+gravity: [0, -9.81, 0]
+parameters: {l_OC: 1.0, l_OA: 0.5, l_AB: 1.0, l_CB: 1.0, l_CD: 1.5, l_DE: 1.8, l_DS4: 0.5, phi_1: -15.0, slot_angle_AB: 90.0, omega_1: 10.0, epsilon_1: 50.0}
+geometry:
+  points:
+    O: [0.0, 0.0]
+  construct:
+  - {type: point_on_ray, point: C, from: O, length: l_OC, angle_deg: 0.0}
+  - {type: point_on_ray, point: A, from: O, length: l_OA, angle_deg: phi_1}
+  - {type: circle_circle, point: B, center1: A, radius1: l_AB, center2: C, radius2: l_CB, branch: upper}
+  - {type: point_on_line, point: D, from: C, to: B, distance: l_CD}
+  - {type: circle_ray, point: E, from: A, through: B, rotate_deg: slot_angle_AB, center: D, radius: l_DE, branch: positive}
+  - {type: point_on_line, point: S2, from: A, to: B, fraction: 0.5}
+  - {type: point_on_line, point: S4, from: D, to: E, distance: l_DS4}
+  aliases: {S1: O, S3: C, S5: E}
+bodies:
+  "1":
+    type: rigid
+    points: [O, A, S1]
+    frame: {origin: O, x_axis: {through: A}}
+    mass: 26.0
+    inertia: 10.0
+    com: S1
+  "2":
+    type: rigid
+    points: [A, B, S2]
+    frame: {origin: A, x_axis: {through: B}}
+    mass: 30.0
+    inertia: 2.5
+    com: S2
+  "3":
+    type: rigid
+    points: [C, B, D, S3]
+    frame: {origin: C, x_axis: {through: B}}
+    mass: 25.0
+    inertia: 2.0
+    com: S3
+  "4":
+    type: rigid
+    points: [D, E, S4]
+    frame: {origin: D, x_axis: {through: E}}
+    mass: 10.0
+    inertia: 1.0
+    com: S4
+  "5":
+    type: slider
+    points: [E, S5]
+    frame: {origin: E}
+    mass: 0.0
+    inertia: 0.0
+    com: S5
+joints:
+- id: O
+  type: revolute
+  endpoints:
+  - {body: ground, point: O}
+  - {body: "1", point: O}
+- id: A
+  type: revolute
+  endpoints:
+  - {body: "1", point: A}
+  - {body: "2", point: A}
+- id: C
+  type: revolute
+  endpoints:
+  - {body: ground, point: C}
+  - {body: "3", point: C}
+- id: B
+  type: revolute
+  endpoints:
+  - {body: "2", point: B}
+  - {body: "3", point: B}
+- id: D
+  type: revolute
+  endpoints:
+  - {body: "3", point: D}
+  - {body: "4", point: D}
+- id: E
+  type: revolute
+  endpoints:
+  - {body: "4", point: E}
+  - {body: "5", point: E}
+- id: H
+  type: prismatic
+  guide:
+    body: "2"
+    axis: {origin: A, angle_deg: slot_angle_AB}
+  slider: {body: "5", point: E}
+drive: {body: "1", q_ratio: 1, omega: omega_1, alpha: epsilon_1}
+loads:
+- id: F5
+  body: "5"
+  point: E
+  vector: [499.8498, -12.2506, 0]

@@ -1,0 +1,193 @@
+units: SI
+parameters:
+  l_OC: 1.0
+  l_OA: 0.55
+  l_CD: 0.75
+  l_DE: 1.1
+  y_E_ref: 0.2
+  l_S2A: 0.1
+  l_S5E: 0.2
+  phi_1: 65.0
+  omega_1: 10.0
+  epsilon_1: 50.0
+geometry:
+  points:
+    O:
+    - 0.0
+    - 0.0
+    G0:
+    - 0.0
+    - 0.2
+    G1:
+    - 1.0
+    - 0.2
+  construct:
+  - type: point_on_ray
+    point: C
+    from: O
+    length: l_OC
+    angle_deg: 0.0
+  - type: point_on_ray
+    point: A
+    from: O
+    length: l_OA
+    angle_deg: phi_1
+  - type: point_on_line
+    point: D
+    from: C
+    to: A
+    distance: l_CD
+  - type: circle_line_y
+    point: E
+    center: D
+    radius: l_DE
+    y: y_E_ref
+    branch: right
+  - type: point_offset
+    point: S2
+    from: A
+    vector:
+    - 1
+    - 0
+    length: l_S2A
+  - type: point_offset
+    point: S5
+    from: E
+    vector:
+    - 1
+    - 0
+    length: l_S5E
+  aliases:
+    S1: O
+    S3: C
+    S4: D
+bodies:
+  '1':
+    mass: 10.0
+    inertia: 1.0
+    type: rigid
+    points:
+    - O
+    - A
+    - S1
+    frame:
+      origin: O
+      x_axis:
+        through: A
+    com: O
+  '2':
+    mass: 0.0
+    inertia: 0.0
+    type: slider
+    points:
+    - A
+    - S2
+    frame:
+      origin: A
+    com: A
+  '3':
+    mass: 20.0
+    inertia: 2.0
+    type: rigid
+    points:
+    - C
+    - D
+    - S3
+    frame:
+      origin: C
+      angle_deg: 146.99947395512663
+    com: C
+  '4':
+    mass: 8.0
+    inertia: 0.8
+    type: rigid
+    points:
+    - D
+    - E
+    - S4
+    frame:
+      origin: D
+      x_axis:
+        through: E
+    com: D
+  '5':
+    mass: 6.0
+    inertia: 0.5
+    type: slider
+    points:
+    - E
+    - S5
+    frame:
+      origin: E
+    com: E
+joints:
+- id: O
+  type: revolute
+  endpoints:
+  - body: ground
+    point: O
+  - body: '1'
+    point: O
+- id: A
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: A
+  - body: '2'
+    point: A
+- id: H
+  type: prismatic
+  guide:
+    body: '3'
+    axis:
+      origin:
+      - 0.9152157735120339
+      - 1.1102230246251565e-16
+      angle_deg: 0.0
+  slider:
+    body: '2'
+    point: A
+- id: C
+  type: revolute
+  endpoints:
+  - body: ground
+    point: C
+  - body: '3'
+    point: C
+- id: D
+  type: revolute
+  endpoints:
+  - body: '3'
+    point: D
+  - body: '4'
+    point: D
+- id: E
+  type: revolute
+  endpoints:
+  - body: '4'
+    point: E
+  - body: '5'
+    point: E
+- id: F
+  type: prismatic
+  guide:
+    body: ground
+    axis:
+      origin:
+      - 1.4510628519756077
+      - 0.2
+      angle_deg: 0.0
+  slider:
+    body: '5'
+    point: E
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: 1
+  omega: omega_1
+  alpha: epsilon_1
+loads: []
+schema: linkage/v2

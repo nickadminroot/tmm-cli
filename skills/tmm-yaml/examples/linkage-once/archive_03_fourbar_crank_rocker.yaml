@@ -1,0 +1,116 @@
+units: SI
+parameters:
+  l_AB: 0.5
+  l_BC: 1.5
+  l_CD: 1.2
+  l_AD: 2.0
+  phi_1: 40.0
+  omega_1: 10.0
+  epsilon_1: 50.0
+geometry:
+  points:
+    A:
+    - 0.0
+    - 0.0
+  construct:
+  - type: point_on_ray
+    point: D
+    from: A
+    length: l_AD
+    angle_deg: 0.0
+  - type: point_on_ray
+    point: B
+    from: A
+    length: l_AB
+    angle_deg: phi_1
+  - type: circle_circle
+    point: C
+    center1: B
+    radius1: l_BC
+    center2: D
+    radius2: l_CD
+    branch: upper
+  aliases:
+    S1: A
+    S2: B
+    S3: C
+bodies:
+  '1':
+    mass: 10.0
+    inertia: 1.0
+    type: rigid
+    points:
+    - A
+    - B
+    - S1
+    frame:
+      origin: A
+      x_axis:
+        through: B
+    com: A
+  '2':
+    mass: 15.0
+    inertia: 2.0
+    type: rigid
+    points:
+    - B
+    - C
+    - S2
+    frame:
+      origin: B
+      x_axis:
+        through: C
+    com: B
+  '3':
+    mass: 20.0
+    inertia: 2.0
+    type: rigid
+    points:
+    - D
+    - C
+    - S3
+    frame:
+      origin: D
+      x_axis:
+        through: C
+    com: D
+joints:
+- id: A
+  type: revolute
+  endpoints:
+  - body: ground
+    point: A
+  - body: '1'
+    point: A
+- id: B
+  type: revolute
+  endpoints:
+  - body: '1'
+    point: B
+  - body: '2'
+    point: B
+- id: C
+  type: revolute
+  endpoints:
+  - body: '2'
+    point: C
+  - body: '3'
+    point: C
+- id: D
+  type: revolute
+  endpoints:
+  - body: ground
+    point: D
+  - body: '3'
+    point: D
+gravity:
+- 0.0
+- -9.81
+- 0.0
+drive:
+  body: '1'
+  q_ratio: 1
+  omega: omega_1
+  alpha: epsilon_1
+loads: []
+schema: linkage/v2

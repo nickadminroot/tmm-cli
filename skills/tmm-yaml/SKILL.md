@@ -63,6 +63,11 @@ container for sampled output or renderer settings.
 - Multi-position synthesis constraints select one pose for this YAML. Do not
   duplicate one physical body for every numerical position.
 
-Examples in [examples/](examples/) are complete educational models, not output
-archives. They use explicit values so their structure can be inspected before a
-real user model is authored.
+Examples in [examples/](examples/) are complete models, not output archives.
+The root files are small metric-synthesis handoff examples; the
+[tmm-web corpus](examples/tmm-web/) and
+[linkage-once corpus](examples/linkage-once/) are source snapshots of the
+working mechanism inventories. They use explicit values so their structure can
+be inspected before a real user model is authored. Treat every copied model as
+a starting point: if you change it, verify the changed file with the public
+CLI and preserve the selected pose and branch.
