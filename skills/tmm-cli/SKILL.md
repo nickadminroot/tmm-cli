@@ -1,7 +1,7 @@
 ---
 name: tmm-cli
 description: Install and operate the public TMM CLI for linkage, rendering, exports, mechanisms, resume, cancel, and version while keeping credentials out of all user-visible data.
-compatibility: Requires a released tmm binary and an account token in the TMM_API_TOKEN environment variable; paid exports require explicit admission flags.
+compatibility: Requires a released tmm binary and an account token in the TMM_API_TOKEN environment variable; paid CDW exports require explicit admission flags.
 ---
 
 # TMM CLI
@@ -55,20 +55,23 @@ files, and logs. Never paste a token into a diagnostic or an example.
 ## Workflow
 
 1. Prepare or receive one physical YAML with [tmm-yaml](../tmm-yaml/SKILL.md).
-2. Use `tmm linkage INPUT --output DIR` for the free generic analysis.
-3. Inspect the returned status and artifacts. Keep the output path outside the
+2. Use `tmm linkage INPUT --output DIR` for the free generic analysis; its
+   result tree includes the native XMCD and text preview artifacts.
+3. Use `tmm xmcd INPUT --output FILE.xmcd` when only the native Mathcad file is
+   needed. This is a free direct request and has no admission flag.
+4. Inspect the returned status and artifacts. Keep the output path outside the
    installed skill directory.
-4. Use `tmm resume UUID --output PATH` only where the returned operation says
-   it is resumable. Use the same run; never resubmit a paid operation.
-5. Use `tmm cancel UUID` only for a submitted run that the current contract
+5. Use `tmm resume UUID --output PATH` only where the returned operation says
+   it is resumable (including accepted native-XMCD legacy runs). Use the same run;
+   never resubmit a paid operation.
+6. Use `tmm cancel UUID` only for a submitted run that the current contract
    allows to cancel.
 
 ## Admission
 
-`--allow-new-mechanism` applies to paid XMCD. `--accept-new-mechanism`
-applies to paid KOMPAS scene/page export. Obtain explicit user consent before
-passing either flag. A generic `tmm linkage` operation is free and is not a
-paid export.
+`--accept-new-mechanism` applies to paid KOMPAS scene/page export. Obtain
+explicit user consent before passing that flag. XMCD and generic `tmm linkage`
+are free operations and do not use an admission flag.
 
 KOMPAS requires the separately installed local Renderer. Mathcad/XMCD and
 ordinary linkage/YAML preparation do not require KOMPAS. Do not put renderer

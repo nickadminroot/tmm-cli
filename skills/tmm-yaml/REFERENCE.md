@@ -1,6 +1,6 @@
 # Physical YAML reference
 
-Compatibility checked against the public skills release tag `v0.1.0` and the
+Compatibility checked against the public skills release tag `v0.1.2` and the
 `tmm-linkage-once` 0.1.0 YAML contract. Physical inputs use the strict
 `linkage/v2` schema; the CLI rejects missing schemas and does not convert the
 legacy slot/body/frame syntax.

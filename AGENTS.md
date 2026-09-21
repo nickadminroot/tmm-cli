@@ -4,8 +4,8 @@ Public thin client for the TMM remote execution service. It sends authored
 inputs to the private server over HTTPS and publishes returned artifacts
 locally. KOMPAS CDW creation obtains a server-signed plan and sends it to the
 installed localhost KOMPAS Renderer only after the server has accepted the paid
-run. Mathcad 15 XMCD creation uses a dedicated server compiler and never needs
-the local renderer.
+run. Mathcad 15 XMCD creation uses the free direct server endpoint and never
+needs the local renderer.
 
 Read [`README.md`](README.md) before changing the client; it is the consumer
 contract for commands, environment variables, output, and exit classes.
@@ -33,9 +33,10 @@ fallback execution out of the client.
 preserve the exit classes in the README.
 - Send the model YAML and Markdown bytes supplied by the user without local
   scene discovery or calculation. Generic `tmm linkage` publishes the free
-  worksheet JSON and never compiles XMCD.
-- `tmm xmcd` sends only YAML plus exact version/allowance options, validates the
-  server's two-member result ZIP, and publishes only `worksheet.xmcd` bytes.
+  declared result tree, including `mathcad/worksheet.xmcd` and
+  `mathcad/preview.txt`.
+- `tmm xmcd` sends the authored YAML to `POST /v1/linkage/xmcd`, validates the
+  `application/x-mathcad+xml` response, and publishes only the XMCD bytes.
 - Treat uploaded inputs and returned artifacts as transport data, not as
   client-side solver state.
 
@@ -47,18 +48,16 @@ submitted. Scene requests name a generated catalog scene; page requests name one
 document page and sheet format. Their options include the renderer challenge and
 admission decision.
 
-XMCD quotes the exact model bytes without a renderer challenge. Stock and known
-mechanisms are free; a new mechanism requires `--allow-new-mechanism`. Its
-options contain only version and admission decision. Require exact
-`worksheet.xmcd`/manifest member set, size, and SHA-256 before publishing.
+XMCD is a free direct request and has no renderer challenge, mechanism quote,
+allowance flag, or balance reservation. Require the native XML content type and
+bounded non-empty bytes before publishing.
 
 Require protocol-v2 renderer capabilities, validate the paid KOMPAS result
 manifest and member checksum, validate the signed plan envelope and its
 run/challenge binding, and verify the renderer CDW response checksum before
 publishing bytes. Unavailable, incompatible, busy, and integrity renderer
-failures use exit code `6` and do not emit resume guidance; an accepted XMCD
-result-fetch failure prints same-run resume guidance. Paid KOMPAS runs are not
-resumable through `tmm resume`.
+failures use exit code `6` and do not emit resume guidance. Paid KOMPAS runs are
+not resumable through `tmm resume`.
 
 Never log the `Authorization` header, including in debug builds.
 

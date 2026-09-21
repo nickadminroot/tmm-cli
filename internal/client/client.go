@@ -621,6 +621,41 @@ func (c *Client) QuoteContext(ctx context.Context, yaml []byte) (*MechanismQuote
 	return &quote, nil
 }
 
+// GetXMCD requests the free native Mathcad worksheet output for one authored
+// linkage YAML document. The server performs the linkage solve and returns the
+// XMCD bytes directly; no run admission, quote, or balance mutation is used.
+func (c *Client) GetXMCD(yaml []byte) ([]byte, error) {
+	return c.GetXMCDContext(context.Background(), yaml)
+}
+
+func (c *Client) GetXMCDContext(ctx context.Context, yaml []byte) ([]byte, error) {
+	req, err := c.newRequestWithContext(ctx, http.MethodPost, "/v1/linkage/xmcd", bytes.NewReader(yaml))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/yaml")
+	resp, err := c.HTTP.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, decodeError(resp)
+	}
+	contentType := strings.ToLower(strings.TrimSpace(strings.Split(resp.Header.Get("Content-Type"), ";")[0]))
+	if contentType != "application/x-mathcad+xml" {
+		return nil, fmt.Errorf("server returned an unsupported XMCD content type")
+	}
+	data, err := io.ReadAll(io.LimitReader(resp.Body, maxResultBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) == 0 || int64(len(data)) > maxResultBytes {
+		return nil, fmt.Errorf("server returned an invalid XMCD size")
+	}
+	return data, nil
+}
+
 type multipartPart struct {
 	name        string
 	filename    string

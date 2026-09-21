@@ -555,7 +555,7 @@ func runPaidKompas(c *client.Client, mechanism []byte, outputPath, operation str
 	return finish((bundle.Publisher{}).PublishBytes(cdw, outputPath))
 }
 
-func runXMCD(modelPath, outputPath string, allowNewMechanism bool) int {
+func runXMCD(modelPath, outputPath string) int {
 	mechanism, err := readInput(modelPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -568,71 +568,15 @@ func runXMCD(modelPath, outputPath string, allowNewMechanism bool) int {
 	}
 	ctx, stopSignal := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stopSignal()
-	quoteCtx, cancelQuote := context.WithTimeout(ctx, 30*time.Second)
-	allowNew, quoteCode := quoteMechanismContextWithFlag(quoteCtx, c, mechanism, allowNewMechanism, "--allow-new-mechanism")
-	cancelQuote()
+	xmcd, err := c.GetXMCDContext(ctx, mechanism)
 	if ctx.Err() != nil {
 		fmt.Fprintln(os.Stderr, "run was cancelled")
 		return client.ExitInterrupted
 	}
-	if quoteCode != client.ExitOK {
-		return quoteCode
-	}
-	runID, err := bundle.NewUUIDv4()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return client.ExitServer
+		return handleLocalServerFailure(err)
 	}
-	status, err := c.SubmitXMCDContext(ctx, runID, mechanism, allowNew)
-	if ctx.Err() != nil {
-		cancelRun(c, runID)
-		fmt.Fprintln(os.Stderr, "run was cancelled")
-		return client.ExitInterrupted
-	}
-	if err != nil {
-		return handlePaidFailure(err)
-	}
-	if err := validateRunStatus(status, runID, "linkage-xmcd"); err != nil {
-		cancelRun(c, runID)
-		fmt.Fprintln(os.Stderr, err)
-		return client.ExitServer
-	}
-	final, err := c.WaitContext(ctx, runID)
-	if ctx.Err() != nil {
-		cancelRun(c, runID)
-		fmt.Fprintln(os.Stderr, "run was cancelled")
-		return client.ExitInterrupted
-	}
-	if err != nil {
-		return handlePaidFailure(err)
-	}
-	if err := validateRunStatus(final, runID, "linkage-xmcd"); err != nil {
-		cancelRun(c, runID)
-		fmt.Fprintln(os.Stderr, err)
-		return client.ExitServer
-	}
-	if final.State == "cancelled" {
-		fmt.Fprintln(os.Stderr, "run was cancelled")
-		return client.ExitDomain
-	}
-	if final.State == "failed" {
-		return handleTerminalDiagnostic(final.Error)
-	}
-	if final.State != "succeeded" || final.Result == nil {
-		fmt.Fprintln(os.Stderr, "XMCD run succeeded but returned no result")
-		return client.ExitServer
-	}
-	result, err := c.ResultContext(ctx, final)
-	if ctx.Err() != nil {
-		return handleActivatedXMCDResultFailure(ctx.Err(), runID, outputPath)
-	}
-	if err != nil {
-		return handleActivatedXMCDResultFailure(err, runID, outputPath)
-	}
-	if err := publishXMCDResult(result, outputPath); err != nil {
-		return handleActivatedXMCDResultFailure(err, runID, outputPath)
-	}
-	return client.ExitOK
+	return finish((bundle.Publisher{}).PublishBytes(xmcd, outputPath))
 }
 
 func publishXMCDResult(result []byte, outputPath string) error {

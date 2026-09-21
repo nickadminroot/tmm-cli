@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io"
 	"math"
 	"mime/multipart"
@@ -376,48 +375,25 @@ func TestRunMarkdownSendsRawInputsAndPublishesPreview(t *testing.T) {
 	}
 }
 
-func TestRunXMCDSendsWorksheetAndPublishesOnlyXMCD(t *testing.T) {
+func TestRunXMCDSendsYAMLAndPublishesOnlyXMCD(t *testing.T) {
 	model := []byte("bodies: []\n")
 	xmcd := []byte(`<worksheet xmlns="http://schemas.mathsoft.com/worksheet30" version="3.0.3"><regions><region region-id="r1" left="0" top="0" width="100" height="100" align-x="left" align-y="top"/></regions></worksheet>`)
-	result := xmcdResultFixture(t, xmcd)
-	resultSum := sha256.Sum256(result)
 	var submitted bool
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodPost && r.URL.Path == "/v1/mechanisms/quote":
-			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte(`{"version":1,"descriptor_version":2,"source_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","descriptor_hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","classification":"known","matched_mechanism":{"id":"m-1"},"similarity":{"score":1,"threshold":0.9,"structure":1,"length":1,"mass":1,"policy_digest":"p"},"requires_credit":false,"can_export":true,"balance":{"mechanisms_remaining":2,"mechanisms_reserved":0}}`))
-		case r.Method == http.MethodPut && strings.HasPrefix(r.URL.Path, "/v1/linkage/xmcd/"):
-			if err := r.ParseMultipartForm(1 << 20); err != nil {
-				t.Errorf("ParseMultipartForm: %v", err)
-				http.Error(w, "bad multipart", http.StatusBadRequest)
-				return
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/linkage/xmcd":
+			if got := r.Header.Get("Content-Type"); got != "application/yaml" {
+				t.Errorf("Content-Type = %q, want application/yaml", got)
 			}
-			if len(r.MultipartForm.File) != 2 {
-				t.Errorf("multipart fields = %#v", r.MultipartForm.File)
-			}
-			for name, want := range map[string][]byte{
-				"mechanism": model,
-				"options":   []byte(`{"version":1,"allow_new_mechanism":false}`),
-			} {
-				got, err := readMultipartField(r.MultipartForm.File[name][0])
-				if err != nil {
-					t.Errorf("%s: %v", name, err)
-					continue
-				}
-				if !bytes.Equal(got, want) {
-					t.Errorf("%s = %q, want %q", name, got, want)
-				}
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("read request body: %v", err)
+			} else if !bytes.Equal(body, model) {
+				t.Errorf("request body = %q, want %q", body, model)
 			}
 			submitted = true
-			w.WriteHeader(http.StatusAccepted)
-			_, _ = w.Write([]byte(`{"version":1,"run_id":"` + strings.TrimPrefix(r.URL.Path, "/v1/linkage/xmcd/") + `","operation":"linkage-xmcd","state":"queued"}`))
-		case r.Method == http.MethodGet && strings.HasPrefix(r.URL.Path, "/v1/runs/") && !strings.HasSuffix(r.URL.Path, "/result"):
-			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte(`{"version":1,"run_id":"` + pathRunID(r.URL.Path) + `","operation":"linkage-xmcd","state":"succeeded","created_at":"2026-01-01T00:00:00Z","finished_at":"2026-01-01T00:00:01Z","result":{"sha256":"` + hex.EncodeToString(resultSum[:]) + `","size":` + fmt.Sprint(len(result)) + `,"entry_count":1}}`))
-		case r.Method == http.MethodGet && strings.HasSuffix(r.URL.Path, "/result"):
-			w.Header().Set("Content-Type", "application/zip")
-			_, _ = w.Write(result)
+			w.Header().Set("Content-Type", "application/x-mathcad+xml")
+			_, _ = w.Write(xmcd)
 		default:
 			http.NotFound(w, r)
 		}
@@ -430,7 +406,7 @@ func TestRunXMCDSendsWorksheetAndPublishesOnlyXMCD(t *testing.T) {
 		t.Fatal(err)
 	}
 	outputPath := filepath.Join(t.TempDir(), "worksheet.xmcd")
-	if got := runXMCD(modelPath, outputPath, false); got != client.ExitOK {
+	if got := runXMCD(modelPath, outputPath); got != client.ExitOK {
 		t.Fatalf("runXMCD exit code = %d", got)
 	}
 	if !submitted {
@@ -443,46 +419,6 @@ func TestRunXMCDSendsWorksheetAndPublishesOnlyXMCD(t *testing.T) {
 	if !bytes.Equal(got, xmcd) {
 		t.Fatalf("published XMCD = %q, want %q", got, xmcd)
 	}
-}
-
-func pathRunID(path string) string {
-	const prefix = "/v1/runs/"
-	value := strings.TrimPrefix(path, prefix)
-	return strings.TrimSuffix(value, "/result")
-}
-
-func xmcdResultFixture(t *testing.T, xmcd []byte) []byte {
-	t.Helper()
-	sum := sha256.Sum256(xmcd)
-	manifestJSON, err := json.Marshal(map[string]any{
-		"version":     1,
-		"operation":   "linkage-xmcd",
-		"publication": "single",
-		"entries": []map[string]any{{
-			"path": "worksheet.xmcd", "role": "primary", "size": len(xmcd), "sha256": hex.EncodeToString(sum[:]),
-		}},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	var result bytes.Buffer
-	archive := zip.NewWriter(&result)
-	for name, data := range map[string][]byte{
-		"worksheet.xmcd":   xmcd,
-		"_tmm-result.json": manifestJSON,
-	} {
-		writer, err := archive.Create(name)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, err := writer.Write(data); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := archive.Close(); err != nil {
-		t.Fatal(err)
-	}
-	return result.Bytes()
 }
 
 func markdownPreviewFixture(t *testing.T) []byte {

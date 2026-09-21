@@ -127,6 +127,39 @@ func TestMechanismAndPaidRequestsUseExactContracts(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestGetXMCDUsesFreeDirectEndpoint(t *testing.T) {
+	mechanism := []byte("bodies: []\n")
+	xmcd := []byte(`<worksheet xmlns="http://schemas.mathsoft.com/worksheet30" version="3.0.3"><regions/></worksheet>`)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/v1/linkage/xmcd" {
+			t.Fatalf("request = %s %s", r.Method, r.URL.Path)
+		}
+		if got := r.Header.Get("Content-Type"); got != "application/yaml" {
+			t.Fatalf("Content-Type = %q, want application/yaml", got)
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(body, mechanism) {
+			t.Fatalf("body = %q, want %q", body, mechanism)
+		}
+		w.Header().Set("Content-Type", "application/x-mathcad+xml; charset=utf-8")
+		_, _ = w.Write(xmcd)
+	}))
+	defer server.Close()
+
+	c := &Client{BaseURL: server.URL, Token: "test-token", HTTP: server.Client(), RetryMax: time.Second}
+	got, err := c.GetXMCD(mechanism)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(got, xmcd) {
+		t.Fatalf("XMCD = %q, want %q", got, xmcd)
+	}
+}
+
 func TestRenderMarkdownContextForwardsSourcePath(t *testing.T) {
 	mechanism := []byte("bodies: []\n")
 	document := []byte("# Sheet\n")

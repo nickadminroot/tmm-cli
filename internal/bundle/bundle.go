@@ -94,7 +94,7 @@ type Manifest struct {
 func requiresLinkageProducerFence(operation string) bool {
 	switch operation {
 	case "linkage", "linkage-preview", "linkage-force-preview",
-		"linkage-publication-source", "linkage-worksheet-source",
+		"linkage-publication-source", "linkage-xmcd-preview",
 		"linkage-snapshot", "linkage-xmcd",
 		"linkage-cdw-scene-plan", "linkage-cdw-page-plan":
 		return true

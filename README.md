@@ -9,23 +9,22 @@ installed localhost KOMPAS Renderer only after the server has accepted the paid 
 
 | Command | Result |
 | --- | --- |
-| `tmm linkage INPUT --output DIR` | Run linkage analysis and write the generic result tree, including free `mathcad/worksheet.json` but no XMCD. |
-| `tmm xmcd INPUT --output FILE.xmcd [--allow-new-mechanism]` | Quote the exact model, submit a paid `linkage-xmcd` run, and write only the server-generated Mathcad 15 XMCD bytes. |
+| `tmm linkage INPUT --output DIR` | Run linkage analysis and write the generic result tree, including free `mathcad/worksheet.xmcd` and `mathcad/preview.txt`. |
+| `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output and write the returned bytes. |
 | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render a Markdown document against the model and write the preview ZIP. The two input files are sent as-is; `PATH` is an optional logical publication path used to resolve relative scene references. |
 | `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Render one Scene v2 document. |
 | `tmm svg INPUT --output FILE [--format svg\|png] [render/SVG/PNG options]` | Produce an SVG or PNG preview. |
 | `tmm kompas scene MODEL.yaml SCENE_NAME --output FILE [--scale N] [--accept-new-mechanism]` | Generate the named linkage scene, render it through the installed KOMPAS Renderer, and write the CDW. |
 | `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--accept-new-mechanism]` | Generate and render one Markdown page through the installed KOMPAS Renderer, then write the CDW. |
 | `tmm mechanisms` | Print the mechanism balance and registry fields. This command is read-only. |
-| `tmm resume UUID --output PATH` | Resume a free operation or an accepted XMCD run and write its result. |
+| `tmm resume UUID --output PATH` | Resume a resumable free operation or accepted native-XMCD legacy run and write its result. |
 | `tmm cancel UUID` | Cancel a submitted run. |
 | `tmm version` | Print the client version. |
 
 The `linkage` command materializes the free generic result tree under `DIR`.
-The server owns worksheet generation and the client writes declared bytes
-unchanged; no XMCD compiler runs locally or as part of generic linkage.
-`tmm xmcd` sends only the authored YAML and exact options to the dedicated paid
-route. It does not send worksheet/descriptor/XML and does not use KOMPAS.
+The server owns linkage analysis and the native XMCD compiler; the client
+writes declared bytes unchanged. `tmm xmcd` is the dedicated free endpoint for
+the same native XMCD output and does not use KOMPAS.
 
 ## Mechanism admission
 
@@ -36,12 +35,9 @@ mechanisms also proceed without a credit. A new mechanism requires
 `--accept-new-mechanism`; without it the CLI exits before submitting the paid
 run. An insufficient balance or inactive account also stops before submission.
 
-`tmm xmcd` quotes the same exact model bytes but sends no renderer challenge.
-Its paid request contains exactly `mechanism` and
-`options={"version":1,"allow_new_mechanism":...}`. Stock and known mechanisms
-remain free; a new mechanism requires `--allow-new-mechanism`. The server repeats
-classification under the account admission lock, so the quote is advisory and
-the same registry/balance is shared with CDW.
+`tmm xmcd` sends the authored YAML directly to `POST /v1/linkage/xmcd` and
+receives `application/x-mathcad+xml`. It has no mechanism quote, allowance
+flag, balance reservation, or local renderer dependency.
 
 Physical inputs must declare `schema: linkage/v2`; the CLI does not convert
 legacy YAML. `tmm mechanisms` prints each row's `descriptor_version`.
@@ -71,11 +67,10 @@ fails after the server succeeds, stderr states that the mechanism is already
 activated and a retry will not charge it again. Renderer failures use exit code
 `6` and do not emit resume guidance.
 
-XMCD results are downloaded only after the server run succeeds. The client
-verifies the exact two-member result ZIP, manifest, member size, and SHA-256,
-then writes unchanged `worksheet.xmcd` bytes. If result retrieval fails after
-acceptance, stderr includes `Run ID:` and a `Resume:` command for the same run;
-`tmm resume UUID --output FILE.xmcd` does not submit a new paid run.
+The dedicated XMCD command receives one validated XML document and writes the
+bytes unchanged. Generic linkage output carries the same XMCD as a declared
+artifact alongside the text preview, so no worksheet JSON is needed by the
+client.
 
 Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
 the `apiUrl` in `.tmm/dev/credentials.json` and set `TMM_API_TOKEN` explicitly;
@@ -122,13 +117,13 @@ fields of `tmm mechanisms`.
 | `3` | Authentication, account, or mechanism-balance failure. |
 | `4` | Remote domain failure. |
 | `5` | Resumable free-operation transport failure; output includes `Run ID:` and `Resume:` lines. |
-| `6` | Server, worker, KOMPAS Renderer, or accepted XMCD result retrieval failure. |
+| `6` | Server, worker, or KOMPAS Renderer failure. |
 
 `result_expired` and `result_lost` are reported as distinct remote domain
 errors. A pending refund makes the corresponding unused balance zero for new
-mechanism admissions; it does not block the account, free operations, or CDW/
-XMCD exports for already registered mechanisms. Such a new paid admission
-fails with `mechanism_balance_exhausted`.
+mechanism admissions; it does not block free operations or CDW exports for
+already registered mechanisms. Such a new paid admission fails with
+`mechanism_balance_exhausted`.
 
 ## AI-agent skills
 

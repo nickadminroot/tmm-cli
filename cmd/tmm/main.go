@@ -69,10 +69,9 @@ func main() {
 	}
 	addOutput(linkageCmd)
 
-	var xmcdAllowNew bool
 	xmcdCmd := &cobra.Command{
 		Use:   "xmcd INPUT",
-		Short: "Compile a linkage worksheet into one Mathcad XMCD file",
+		Short: "Write the free Mathcad XMCD output for a linkage model",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			out, err := requireOutput(cmd)
@@ -82,12 +81,11 @@ func main() {
 			if filepath.Ext(out) != ".xmcd" {
 				return fmt.Errorf("--output must name a .xmcd file")
 			}
-			os.Exit(runXMCD(args[0], out, xmcdAllowNew))
+			os.Exit(runXMCD(args[0], out))
 			return nil
 		},
 	}
 	addOutput(xmcdCmd)
-	xmcdCmd.Flags().BoolVar(&xmcdAllowNew, "allow-new-mechanism", false, "authorize one new mechanism credit")
 
 	var mdFormat string
 	var mdSourcePath string
