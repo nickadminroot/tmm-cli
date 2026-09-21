@@ -75,7 +75,7 @@ editing and static-validation API. Load an existing worksheet with
 `Worksheet.read(...)`, edit typed regions and expressions, and write it with
 `Worksheet.write(...)`. Treat this library as the single XMCD editing path:
 keep XML edits out of the workflow and do not substitute a local or private
-legacy generator such as `mathcad_xmcd_generator`.
+ad-hoc generator.
 
 Keep the two acceptance gates separate:
 

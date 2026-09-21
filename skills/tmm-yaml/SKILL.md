@@ -56,7 +56,7 @@ agent needs to edit that file, use the standalone
 [`xmcd` library](https://github.com/nickadminroot/xmcd): load it with
 `Worksheet.read(...)`, make typed edits, and save through `Worksheet.write(...)`.
 This is the supported editing path; do not hand-edit XML or use a local/private
-legacy generator such as `mathcad_xmcd_generator`.
+ad-hoc generator.
 
 Keep evidence separate. `Worksheet.check()`, `Worksheet.validate()`,
 `Worksheet.write(...)`, structural `validate(...)`, and saved-error inspection

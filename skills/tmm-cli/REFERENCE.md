@@ -64,8 +64,7 @@ Use the standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) for
 every agent edit or static check of a classic Mathcad `.xmcd` file. Load an
 existing file with `Worksheet.read(...)`, edit its typed regions and
 expressions, and write it with `Worksheet.write(...)`. Do not hand-edit XMCD
-XML or replace this path with a local/private legacy generator such as
-`mathcad_xmcd_generator`.
+XML or replace this path with a local/private ad-hoc generator.
 
 | Gate | Required operation | What it proves |
 | --- | --- | --- |

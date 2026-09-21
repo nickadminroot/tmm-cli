@@ -185,7 +185,7 @@ For an XMCD artifact returned by `tmm linkage` or `tmm xmcd`, use the standalone
 static validation. `Worksheet.read(...)` loads an existing worksheet;
 `Worksheet.write(...)` performs the library's static checks before writing.
 Keep this typed library as the only editing path instead of hand-editing XML or
-using a local/private legacy generator such as `mathcad_xmcd_generator`.
+using a local/private ad-hoc generator.
 
 Static checks (`Worksheet.check()`, `Worksheet.validate()`, `Worksheet.write()`,
 structural `validate(...)`, and inspection of saved `calculation_errors(...)`)
