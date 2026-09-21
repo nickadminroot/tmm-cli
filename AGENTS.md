@@ -53,12 +53,12 @@ XMCD is a free direct request and has no renderer challenge, mechanism quote,
 allowance flag, or balance reservation. Require the native XML content type and
 bounded non-empty bytes before publishing.
 
-Require protocol-v2 renderer capabilities, validate the paid KOMPAS result
+Require protocol-v2 renderer capabilities, validate the legacy account-scoped KOMPAS result
 manifest and member checksum, validate the signed plan envelope and its
 run/challenge binding, and verify the renderer CDW response checksum before
 publishing bytes. Unavailable, incompatible, busy, and integrity renderer
-failures use exit code `6` and do not emit resume guidance. Paid KOMPAS runs are
-not resumable through `tmm resume`.
+failures use exit code `6` and do not emit resume guidance. Legacy account-scoped
+KOMPAS runs are not resumable through `tmm resume`.
 
 Never log the `Authorization` header, including in debug builds.
 

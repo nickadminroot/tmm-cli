@@ -79,7 +79,7 @@ never send an empty or synthetic bearer header.
    already-resolved `.render.json` file. Both require the local KOMPAS Renderer.
 7. Use `tmm resume UUID --output PATH` only where the returned operation says
    it is resumable (including accepted native-XMCD legacy runs). Use the same run;
-   never resubmit a paid operation.
+   never resubmit a legacy account-scoped operation.
 8. Use `tmm cancel UUID` only for a submitted run that the current contract
    allows to cancel.
 

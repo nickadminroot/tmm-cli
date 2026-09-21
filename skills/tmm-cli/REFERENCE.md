@@ -56,8 +56,9 @@ different class. Result-expired and result-lost are distinct remote errors.
 - Never log or echo `TMM_API_TOKEN`, Authorization headers, cookies, or signed
   URLs.
 - Keep source YAML and output directories outside the installed skill.
-- Obtain explicit user consent before passing the paid KOMPAS
-  `--accept-new-mechanism` flag.
+- For legacy YAML KOMPAS scene/page commands, obtain explicit user consent
+  before passing the compatibility-only `--accept-new-mechanism` flag; it does
+  not reserve or consume credit.
 - A successful server admission does not mean a local Renderer completed; inspect
   the actual result and any same-run resume instruction for KOMPAS operations.
 - The public skill contains no server source, private checkout, or local

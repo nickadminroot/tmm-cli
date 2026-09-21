@@ -408,9 +408,9 @@ func quoteMechanismContextWithFlag(
 		quote.Similarity.Length, quote.Similarity.Mass, quote.Similarity.PolicyDigest)
 	if quote.Classification == "known" {
 		if display, ok := quote.MatchedMechanism["display_number"].(float64); ok && display >= 1 {
-			fmt.Fprintf(os.Stderr, "known: Механизм %.0f уже оплачен; списания не будет.\n", display)
+			fmt.Fprintf(os.Stderr, "known: Механизм %.0f уже допущен; списания не будет.\n", display)
 		} else {
-			fmt.Fprintln(os.Stderr, "known: Механизм уже оплачен; списания не будет.")
+			fmt.Fprintln(os.Stderr, "known: Механизм уже допущен; списания не будет.")
 		}
 	} else if quote.Classification == "stock" {
 		fmt.Fprintln(os.Stderr, "stock: Встроенный механизм; экспорт бесплатен и в библиотеку не добавляется.")
@@ -655,7 +655,7 @@ func runPaidKompas(c *client.Client, mechanism []byte, outputPath, operation str
 		return handleTerminalDiagnostic(final.Error)
 	}
 	if final.State != "succeeded" || final.Result == nil {
-		fmt.Fprintln(os.Stderr, "paid run succeeded but returned no result")
+		fmt.Fprintln(os.Stderr, "legacy KOMPAS run succeeded but returned no result")
 		return client.ExitServer
 	}
 	activated = true
@@ -672,7 +672,7 @@ func runPaidKompas(c *client.Client, mechanism []byte, outputPath, operation str
 		if manifestErr != nil {
 			return handleActivatedPaidFailure(manifestErr)
 		}
-		return handleActivatedPaidFailure(fmt.Errorf("result manifest does not match the paid run"))
+		return handleActivatedPaidFailure(fmt.Errorf("result manifest does not match the legacy KOMPAS run"))
 	}
 	plan, err := bundle.ReadPlan(result, operation, runID, capabilities.Challenge)
 	if err != nil {

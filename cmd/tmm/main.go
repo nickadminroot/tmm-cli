@@ -271,7 +271,7 @@ func main() {
 	}
 	addOutput(sceneCmd)
 	sceneCmd.Flags().Float64Var(&sceneScale, "scale", 0, "explicit positive scene scale")
-	sceneCmd.Flags().BoolVar(&sceneAcceptNew, "accept-new-mechanism", false, "authorize one new mechanism credit")
+	sceneCmd.Flags().BoolVar(&sceneAcceptNew, "accept-new-mechanism", false, "confirm one new mechanism admission (compatibility flag)")
 	kompasCmd.AddCommand(sceneCmd)
 
 	jsonSceneCmd := &cobra.Command{
@@ -347,7 +347,7 @@ func main() {
 	_ = pageCmd.MarkFlagRequired("page")
 	pageCmd.Flags().StringVar(&pageFormat, "format", "", "sheet format A1|A2|A3 (required)")
 	_ = pageCmd.MarkFlagRequired("format")
-	pageCmd.Flags().BoolVar(&pageAcceptNew, "accept-new-mechanism", false, "authorize one new mechanism credit")
+	pageCmd.Flags().BoolVar(&pageAcceptNew, "accept-new-mechanism", false, "confirm one new mechanism admission (compatibility flag)")
 	kompasCmd.AddCommand(pageCmd)
 
 	mechanismsCmd := &cobra.Command{

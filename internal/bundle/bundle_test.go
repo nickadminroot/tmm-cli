@@ -141,6 +141,35 @@ func TestReadPublicPlanVerifiesOperationAndChallenge(t *testing.T) {
 	}
 }
 
+func TestReadPublicPlanRejectsMalformedPayload(t *testing.T) {
+	challenge := base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{'c'}, 32))
+	cases := map[string]func(map[string]any){
+		"missing operations": func(payload map[string]any) {
+			delete(payload, "operations")
+		},
+		"non-v4 job id": func(payload map[string]any) {
+			payload["job_id"] = "11111111-1111-3111-8111-111111111111"
+		},
+		"expired interval": func(payload map[string]any) {
+			payload["expires_at"] = "2024-12-31T23:59:00Z"
+		},
+	}
+	for name, mutate := range cases {
+		t.Run(name, func(t *testing.T) {
+			var planObject map[string]any
+			if err := json.Unmarshal(validPlan(t, "11111111-1111-4111-8111-111111111111", challenge), &planObject); err != nil {
+				t.Fatal(err)
+			}
+			payload := planObject["payload"].(map[string]any)
+			mutate(payload)
+			result := makeResultZip(t, "cdw-scene-plan", mustJSON(t, planObject))
+			if _, err := ReadPublicPlan(result, []string{"cdw-scene-plan"}, challenge); err == nil {
+				t.Fatal("ReadPublicPlan accepted malformed payload")
+			}
+		})
+	}
+}
+
 func TestReadPrimaryNamedRequiresExpectedPath(t *testing.T) {
 	xmcd := []byte("xmcd-bytes")
 	result := makeNamedResultZip(t, "linkage-xmcd", "worksheet.xmcd", xmcd)

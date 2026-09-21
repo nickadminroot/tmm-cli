@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // Bundle builds the ZIP of regular files at slash-separated logical paths.
@@ -338,6 +339,8 @@ func ReadPrimaryNamed(zipData []byte, operation, name string) ([]byte, error) {
 }
 
 var planKeyIDPattern = regexp.MustCompile(`^[A-Za-z0-9_.-]{1,64}$`)
+var planJobIDPattern = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`)
+var planSHA256Pattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 
 // ReadPlan validates the paid KOMPAS result manifest and signed plan envelope.
 // Signature authenticity is verified by the local KOMPAS Renderer, which owns
@@ -471,9 +474,35 @@ func ReadPublicPlan(zipData []byte, operations []string, challenge string) ([]by
 	if err := json.Unmarshal(envelope["payload"], &payload); err != nil {
 		return nil, fmt.Errorf("KOMPAS plan payload is invalid")
 	}
-	var payloadChallenge string
-	if json.Unmarshal(payload["agent_challenge"], &payloadChallenge) != nil || payloadChallenge != challenge {
-		return nil, fmt.Errorf("KOMPAS plan challenge binding is invalid")
+	if !hasExactKeys(payload, "operation", "job_id", "agent_challenge", "issued_at", "expires_at", "scene_sha256", "document", "operations") {
+		return nil, fmt.Errorf("KOMPAS plan payload is invalid")
+	}
+	var payloadOperation, payloadJob, payloadChallenge, issuedAt, expiresAt, sceneSHA string
+	var document map[string]json.RawMessage
+	var planOperations []json.RawMessage
+	if json.Unmarshal(payload["operation"], &payloadOperation) != nil ||
+		json.Unmarshal(payload["job_id"], &payloadJob) != nil ||
+		json.Unmarshal(payload["agent_challenge"], &payloadChallenge) != nil ||
+		json.Unmarshal(payload["issued_at"], &issuedAt) != nil ||
+		json.Unmarshal(payload["expires_at"], &expiresAt) != nil ||
+		json.Unmarshal(payload["scene_sha256"], &sceneSHA) != nil ||
+		json.Unmarshal(payload["document"], &document) != nil ||
+		json.Unmarshal(payload["operations"], &planOperations) != nil ||
+		payloadOperation != "kompas-plan" ||
+		!planJobIDPattern.MatchString(payloadJob) ||
+		payloadChallenge != challenge ||
+		issuedAt == "" || expiresAt == "" ||
+		!planSHA256Pattern.MatchString(sceneSHA) ||
+		document == nil || planOperations == nil {
+		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
+	}
+	issued, err := time.Parse(time.RFC3339, issuedAt)
+	if err != nil {
+		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
+	}
+	expires, err := time.Parse(time.RFC3339, expiresAt)
+	if err != nil || !expires.After(issued) {
+		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
 	}
 	return plan, nil
 }
