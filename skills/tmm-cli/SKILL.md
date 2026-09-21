@@ -67,6 +67,32 @@ files, and logs. Never paste a token into a diagnostic or an example.
 6. Use `tmm cancel UUID` only for a submitted run that the current contract
    allows to cancel.
 
+## XMCD editing and acceptance
+
+For any agent-authored or agent-edited classic Mathcad `.xmcd`, use the
+standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) as the
+editing and static-validation API. Load an existing worksheet with
+`Worksheet.read(...)`, edit typed regions and expressions, and write it with
+`Worksheet.write(...)`. Treat this library as the single XMCD editing path:
+keep XML edits out of the workflow and do not substitute a local or private
+legacy generator such as `mathcad_xmcd_generator`.
+
+Keep the two acceptance gates separate:
+
+- Static validation uses `Worksheet.check()`, `Worksheet.validate()`, and the
+  validation performed by `Worksheet.write(...)`. `validate(...)` and
+  `calculation_errors(...)` can inspect structure and saved diagnostics, but
+  none of these operations executes Mathcad or recalculates formulas.
+- Native acceptance opens, recalculates, and saves the worksheet in installed
+  classic Mathcad, then inspects saved results, calculation errors, and graph
+  output. A clean static report or a newly written file is not evidence of a
+  native recalculation.
+
+After `tmm linkage` or `tmm xmcd` publishes an XMCD artifact, use the library
+for any agent edit and static check. Run native Mathcad separately whenever
+formula, solver, or graph results need runtime acceptance and that environment
+is available.
+
 ## Admission
 
 `--accept-new-mechanism` applies to paid KOMPAS scene/page export. Obtain

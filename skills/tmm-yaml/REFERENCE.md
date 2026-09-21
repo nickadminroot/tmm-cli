@@ -177,3 +177,19 @@ A metric-synthesis result supplies only the fields its model solves:
 
 The result must be combined with an explicit one-pose branch, drive, masses,
 inertia, centers of mass, gravity, and loads before linkage verification.
+
+## XMCD editing boundary
+
+For an XMCD artifact returned by `tmm linkage` or `tmm xmcd`, use the standalone
+[`xmcd` library](https://github.com/nickadminroot/xmcd) for agent editing and
+static validation. `Worksheet.read(...)` loads an existing worksheet;
+`Worksheet.write(...)` performs the library's static checks before writing.
+Keep this typed library as the only editing path instead of hand-editing XML or
+using a local/private legacy generator such as `mathcad_xmcd_generator`.
+
+Static checks (`Worksheet.check()`, `Worksheet.validate()`, `Worksheet.write()`,
+structural `validate(...)`, and inspection of saved `calculation_errors(...)`)
+do not execute Mathcad. Native evidence requires opening, recalculating, and
+saving the worksheet in installed classic Mathcad, then checking saved formula
+results, errors, and graphs. Report these gates separately; neither YAML
+verification nor static XMCD validation proves native recalculation.

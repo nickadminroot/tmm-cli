@@ -57,3 +57,21 @@ different class. Result-expired and result-lost are distinct remote errors.
   the actual result and any same-run resume instruction for KOMPAS operations.
 - The public skill contains no server source, private checkout, or local
   calculation fallback.
+
+## XMCD editing boundary
+
+Use the standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) for
+every agent edit or static check of a classic Mathcad `.xmcd` file. Load an
+existing file with `Worksheet.read(...)`, edit its typed regions and
+expressions, and write it with `Worksheet.write(...)`. Do not hand-edit XMCD
+XML or replace this path with a local/private legacy generator such as
+`mathcad_xmcd_generator`.
+
+| Gate | Required operation | What it proves |
+| --- | --- | --- |
+| Static | `Worksheet.check()`, `Worksheet.validate()`, `Worksheet.write()`, or structural `validate(...)`; use `calculation_errors(...)` only to read saved diagnostics | The document and supported expressions pass the library's static checks; no Mathcad execution occurs. |
+| Native | Open, recalculate, and save in installed classic Mathcad; inspect saved results, errors, and graphs | Formula/solver convergence and graph output for that Mathcad runtime. |
+
+Treat static success and native recalculation as separate evidence. The
+`tmm linkage` and `tmm xmcd` commands publish XMCD bytes; they do not turn a
+static library check into proof that Mathcad recalculated the worksheet.

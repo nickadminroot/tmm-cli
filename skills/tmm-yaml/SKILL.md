@@ -49,6 +49,22 @@ container for sampled output or renderer settings.
    artifacts. Keep synthesis provenance separate from YAML fields that were
    supplied or selected by the user.
 
+## XMCD handoff
+
+The linkage artifact may include a classic Mathcad `.xmcd` worksheet. If an
+agent needs to edit that file, use the standalone
+[`xmcd` library](https://github.com/nickadminroot/xmcd): load it with
+`Worksheet.read(...)`, make typed edits, and save through `Worksheet.write(...)`.
+This is the supported editing path; do not hand-edit XML or use a local/private
+legacy generator such as `mathcad_xmcd_generator`.
+
+Keep evidence separate. `Worksheet.check()`, `Worksheet.validate()`,
+`Worksheet.write(...)`, structural `validate(...)`, and saved-error inspection
+are static checks only. Native acceptance requires opening, recalculating, and
+saving the worksheet in installed classic Mathcad, followed by inspection of
+the saved results, errors, and graphs. A YAML/CLI success or a clean static
+XMCD report does not prove native Mathcad recalculation.
+
 ## Shape and branches
 
 - Use `geometry.points` for fixed coordinates and `geometry.construct` for
