@@ -68,9 +68,9 @@ activated and a retry will not charge it again. Renderer failures use exit code
 `6` and do not emit resume guidance.
 
 The dedicated XMCD command receives one validated XML document and writes the
-bytes unchanged. Generic linkage output carries the same XMCD as a declared
-artifact alongside the text preview, so no worksheet JSON is needed by the
-client.
+bytes unchanged. Generic linkage output carries the same native XMCD as a
+declared artifact alongside the deterministic text preview; no worksheet
+interchange document exists in the CLI contract.
 
 Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
 the `apiUrl` in `.tmm/dev/credentials.json` and set `TMM_API_TOKEN` explicitly;
