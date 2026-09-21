@@ -69,9 +69,10 @@ never send an empty or synthetic bearer header.
 5. If the result contains a `.scene.json` or `.render.json` intermediate,
    agents may edit that JSON as needed to improve or repair presentation
    (labels, visibility, line weights, layout, and other schema-supported
-   drawing details). Preserve valid Scene v2 JSON, keep the edited file outside
-   the installed skill, and render the edited bytes with `tmm kompas render-json`
-   without a token.
+   drawing details). Keep a high-level `.scene.json` valid for its scene-input
+   contract and a `.render.json` valid Scene v2 JSON. Keep the edited file
+   outside the installed skill and render it with `tmm kompas scene-json` or
+   `tmm kompas render-json` without a token.
 6. Use `tmm resolve INPUT.scene.json --output OUTPUT.render.json` to convert a
    high-level scene to Scene v2 without a token. Use `tmm kompas scene-json` for
    direct high-level-scene CDW export, or `tmm kompas render-json` for an

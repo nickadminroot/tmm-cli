@@ -70,7 +70,8 @@ XMCD report does not prove native Mathcad recalculation.
 The linkage result may also contain `.scene.json` intermediates. Agents may
 freely edit those files to improve or repair presentation—such as labels,
 visibility, line weights, or layout—without changing the physical YAML model.
-Keep the edited document valid Scene v2 JSON and render it with the tokenless
+Keep a high-level scene valid for its scene-input contract; keep a resolved
+`.render.json` valid Scene v2 JSON. Render the edited file with the tokenless
 `tmm kompas render-json INPUT.render.json --output OUTPUT.cdw` command. For a
 high-level scene that has not yet been resolved, use `tmm resolve` first or
 `tmm kompas scene-json` directly. These commands do not quote or charge a

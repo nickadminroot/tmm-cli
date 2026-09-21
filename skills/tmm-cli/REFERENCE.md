@@ -77,7 +77,8 @@ quote, balance, registry admission, or bearer token is involved.
 
 Agents may freely edit any received `.scene.json` or `.render.json` intermediate
 file to improve or repair presentation before calling the tokenless commands.
-Keep the edited document valid Scene v2 JSON and preserve the file outside the
+Keep a high-level `.scene.json` valid for its scene-input contract and a
+`.render.json` valid Scene v2 JSON; preserve the edited file outside the
 installed skill directory.
 
 ## XMCD editing boundary
