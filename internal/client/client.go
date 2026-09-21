@@ -851,11 +851,39 @@ func makeMultipart(parts ...multipartPart) ([]byte, string, error) {
 	return body.Bytes(), writer.FormDataContentType(), nil
 }
 
-func (c *Client) RenderMarkdown(mechanism, document []byte, format string) ([]byte, error) {
-	return c.RenderMarkdownContext(context.Background(), mechanism, document, format)
+// validateScenesPayload keeps the optional scenes part a JSON object whose
+// values are JSON objects. The server still owns Scene v2/high-level schema
+// validation; this check protects the multipart contract and avoids silently
+// uploading arrays, scalars, or null values under scene keys.
+func validateScenesPayload(data []byte) error {
+	var scenes map[string]json.RawMessage
+	if err := json.Unmarshal(data, &scenes); err != nil {
+		return fmt.Errorf("scenes payload must be a JSON object: %w", err)
+	}
+	if scenes == nil {
+		return fmt.Errorf("scenes payload must be a JSON object")
+	}
+	for name, raw := range scenes {
+		if name == "" {
+			return fmt.Errorf("scenes payload contains an empty scene path")
+		}
+		var object map[string]json.RawMessage
+		if err := json.Unmarshal(raw, &object); err != nil || object == nil {
+			return fmt.Errorf("scene %q must be a JSON object", name)
+		}
+	}
+	return nil
 }
 
-func (c *Client) RenderMarkdownContext(ctx context.Context, mechanism, document []byte, format string, sourcePath ...string) ([]byte, error) {
+func (c *Client) RenderMarkdown(mechanism, document []byte, format string) ([]byte, error) {
+	return c.RenderMarkdownContext(context.Background(), mechanism, document, format, nil)
+}
+
+// RenderMarkdownContext posts the authored mechanism, Markdown document, and
+// optional local scene object. When scenes is nil the server keeps its normal
+// generated-catalog fallback. sourcePath contains at most one logical Markdown
+// path used to resolve relative scene keys.
+func (c *Client) RenderMarkdownContext(ctx context.Context, mechanism, document []byte, format string, scenes []byte, sourcePath ...string) ([]byte, error) {
 	options := map[string]string{"format": format}
 	if len(sourcePath) > 1 {
 		return nil, fmt.Errorf("markdown source path specified more than once")
@@ -867,11 +895,18 @@ func (c *Client) RenderMarkdownContext(ctx context.Context, mechanism, document 
 	if err != nil {
 		return nil, err
 	}
-	body, contentType, err := makeMultipart(
-		multipartPart{name: "mechanism", filename: "mechanism.yaml", contentType: "application/yaml", data: mechanism},
-		multipartPart{name: "document", filename: "document.md", contentType: "text/markdown", data: document},
-		multipartPart{name: "options", filename: "options.json", contentType: "application/json", data: optionsJSON},
-	)
+	parts := []multipartPart{
+		{name: "mechanism", filename: "mechanism.yaml", contentType: "application/yaml", data: mechanism},
+		{name: "document", filename: "document.md", contentType: "text/markdown", data: document},
+	}
+	if scenes != nil {
+		if err := validateScenesPayload(scenes); err != nil {
+			return nil, err
+		}
+		parts = append(parts, multipartPart{name: "scenes", filename: "scenes.json", contentType: "application/json", data: scenes})
+	}
+	parts = append(parts, multipartPart{name: "options", filename: "options.json", contentType: "application/json", data: optionsJSON})
+	body, contentType, err := makeMultipart(parts...)
 	if err != nil {
 		return nil, err
 	}
@@ -912,14 +947,17 @@ func (c *Client) SubmitCDWSceneContext(ctx context.Context, runID string, mechan
 	if scale != nil {
 		options["scale"] = *scale
 	}
-	return c.submitCDWContext(ctx, "/v1/linkage/cdw/scenes/"+runID, runID, mechanism, nil, options)
+	return c.submitCDWContext(ctx, "/v1/linkage/cdw/scenes/"+runID, runID, mechanism, nil, options, nil)
 }
 
 func (c *Client) SubmitCDWPage(runID string, mechanism, document []byte, format, challenge string, acceptNew bool, page int) (*Status, error) {
-	return c.SubmitCDWPageContext(context.Background(), runID, mechanism, document, format, challenge, acceptNew, page)
+	return c.SubmitCDWPageContext(context.Background(), runID, mechanism, document, format, challenge, acceptNew, page, "", nil)
 }
 
-func (c *Client) SubmitCDWPageContext(ctx context.Context, runID string, mechanism, document []byte, format, challenge string, acceptNew bool, page int) (*Status, error) {
+// SubmitCDWPageContext submits one Markdown page and optional local scenes.
+// sourcePath is the logical Markdown path used by the server for scene
+// resolution; an empty path keeps the server's input/document.md default.
+func (c *Client) SubmitCDWPageContext(ctx context.Context, runID string, mechanism, document []byte, format, challenge string, acceptNew bool, page int, sourcePath string, scenes []byte) (*Status, error) {
 	options := map[string]any{
 		"version":             1,
 		"agent_challenge":     challenge,
@@ -927,7 +965,10 @@ func (c *Client) SubmitCDWPageContext(ctx context.Context, runID string, mechani
 		"format":              format,
 		"page":                page,
 	}
-	return c.submitCDWContext(ctx, "/v1/linkage/cdw/pages/"+runID, runID, mechanism, document, options)
+	if sourcePath != "" {
+		options["source_path"] = sourcePath
+	}
+	return c.submitCDWContext(ctx, "/v1/linkage/cdw/pages/"+runID, runID, mechanism, document, options, scenes)
 }
 
 type xmcdOptions struct {
@@ -967,7 +1008,7 @@ func (c *Client) SubmitXMCDContext(ctx context.Context, runID string, mechanism 
 	return status, nil
 }
 
-func (c *Client) submitCDWContext(ctx context.Context, path, runID string, mechanism, document []byte, options map[string]any) (*Status, error) {
+func (c *Client) submitCDWContext(ctx context.Context, path, runID string, mechanism, document []byte, options map[string]any, scenes []byte) (*Status, error) {
 	optionsJSON, err := json.Marshal(options)
 	if err != nil {
 		return nil, err
@@ -977,6 +1018,12 @@ func (c *Client) submitCDWContext(ctx context.Context, path, runID string, mecha
 	}
 	if document != nil {
 		parts = append(parts, multipartPart{name: "document", filename: "document.md", contentType: "text/markdown", data: document})
+	}
+	if scenes != nil {
+		if err := validateScenesPayload(scenes); err != nil {
+			return nil, err
+		}
+		parts = append(parts, multipartPart{name: "scenes", filename: "scenes.json", contentType: "application/json", data: scenes})
 	}
 	parts = append(parts, multipartPart{name: "options", filename: "options.json", contentType: "application/json", data: optionsJSON})
 	body, contentType, err := makeMultipart(parts...)

@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "position-graph",
+  "kind": "engineering-graph",
+  "sourcePath": "dynamics/position-graph.scene.json",
+  "bounds": {"low": [0, -38], "high": [180, 105], "width": 180, "height": 143},
+  "metadata": {"renderScale": {"mmPerSceneUnit": 1}},
+  "entities": [
+    {"type": "line", "id": "frame-bottom", "from": [0, 0], "to": [180, 0], "layer": "fixed", "style": "solid", "strokeWidth": 0.35},
+    {"type": "line", "id": "frame-top", "from": [0, 90], "to": [180, 90], "layer": "fixed", "style": "solid", "strokeWidth": 0.35},
+    {"type": "line", "id": "frame-left", "from": [0, 0], "to": [0, 90], "layer": "fixed", "style": "solid", "strokeWidth": 0.35},
+    {"type": "line", "id": "frame-right", "from": [180, 0], "to": [180, 90], "layer": "fixed", "style": "solid", "strokeWidth": 0.35},
+    {"type": "line", "id": "axis-x", "from": [0, 0], "to": [180, 0], "layer": "thin", "style": "solid", "strokeWidth": 0.2},
+    {"type": "line", "id": "axis-y", "from": [0, 0], "to": [0, 90], "layer": "thin", "style": "solid", "strokeWidth": 0.2},
+    {"type": "smoothCurve", "id": "s-phi", "points": [[0, 0], [22.5, 21.6], [45, 52.2], [67.5, 77.4], [90, 90], [112.5, 77.4], [135, 52.2], [157.5, 21.6], [180, 0]], "layer": "fixed", "style": "solid", "strokeWidth": 0.7},
+    {"type": "text", "id": "title", "text": "s = f(φ)", "position": [90, 101], "fontSize": 5},
+    {"type": "text", "id": "x-label", "text": "φ, °", "position": [173, -8], "fontSize": 3.5},
+    {"type": "text", "id": "y-label", "text": "s, mm", "position": [-12, 84], "fontSize": 3.5},
+    {"type": "table", "id": "source-table", "position": [15, -38], "columnWidths": [38, 42], "rowHeights": [9, 9, 9], "fontSize": 3.5, "cells": [
+      {"row": 0, "column": 0, "text": "φ, °"},
+      {"row": 0, "column": 1, "text": "s, мм"},
+      {"row": 1, "column": 0, "text": "0"},
+      {"row": 1, "column": 1, "text": "0"},
+      {"row": 2, "column": 0, "text": "180"},
+      {"row": 2, "column": 1, "text": "100"}
+    ]}
+  ]
+}

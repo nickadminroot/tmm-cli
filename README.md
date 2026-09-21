@@ -13,12 +13,12 @@ the installed localhost KOMPAS Renderer.
 | --- | --- |
 | `tmm linkage INPUT --output DIR` | Run linkage analysis and write the generic result tree, including free `mathcad/worksheet.xmcd` and `mathcad/preview.txt`. |
 | `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output and write the returned bytes. |
-| `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render a Markdown document against the model and write the preview ZIP. The two input files are sent as-is; `PATH` is an optional logical publication path used to resolve relative scene references. |
+| `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render a Markdown document against the model and write the preview ZIP. Explicit visible scene bindings upload adjacent local `.scene.json`/`.render.json` objects; missing files keep the generated-scene fallback. |
 | `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Run the account-scoped high-level scene render operation. |
 | `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve arbitrary high-level scene JSON to a Scene v2 `.render.json` document; public and tokenless. |
 | `tmm svg INPUT --output FILE [--format svg\|png] [render/SVG/PNG options]` | Produce an SVG or PNG preview. |
 | `tmm kompas scene MODEL.yaml SCENE_NAME --output FILE [--scale N] [--accept-new-mechanism]` | Generate the named linkage scene, render it through the installed KOMPAS Renderer, and write the CDW. |
-| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--accept-new-mechanism]` | Generate and render one Markdown page through the installed KOMPAS Renderer, then write the CDW. |
+| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH] [--accept-new-mechanism]` | Generate and render one Markdown page through the installed KOMPAS Renderer, uploading explicit adjacent local scene objects when present. |
 | `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW through the public plan endpoint and local Renderer; tokenless. |
 | `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary resolved Scene v2 JSON to CDW through the public plan endpoint and local Renderer; tokenless. |
 | `tmm mechanisms` | Print the mechanism balance and registry fields. This command is read-only. |
@@ -60,8 +60,15 @@ An earlier activation can therefore require a new explicit admission; existing
 balances, payments, history, and downloadable artifacts remain unchanged.
 
 The server accepts only the named `SCENE_NAME` from the generated linkage
-catalog for the legacy YAML command. Markdown page requests send exactly
-`mechanism`, `document`, and `options` multipart fields. Scene requests send
+catalog for the legacy YAML command. Markdown requests always send
+`mechanism`, `document`, and `options`; when the document visibly references a
+local scene file, they also send an optional `scenes` JSON object mapping the
+directive's canonical path (for example `velocity-plan.scene.json`) to the
+authored JSON object. The file itself is read relative to the Markdown file.
+Fenced and inline-code examples are
+ignored. A missing local file is left for the generated catalog fallback, while
+an unreadable or non-object file is a local input error. Uploaded scenes take
+priority over generated scenes at the same logical key. Scene requests send
 exactly `mechanism` and `options`; the server generates and verifies the
 selected scene. Public JSON requests are independent: `/v1/scenes/resolve`
 accepts one high-level JSON object, while `/v1/cdw/scene` accepts
@@ -69,7 +76,13 @@ accepts one high-level JSON object, while `/v1/cdw/scene` accepts
 ...}}` and `/v1/cdw/render` accepts the same envelope with `"render": OBJECT`.
 The CDW endpoints return a signed plan ZIP (`application/zip`), not a drawing;
 the installed local Renderer creates the `.cdw`.
-For `tmm md`, `--source-path` is sent as `options.source_path` and is not read as a local file. Use the document's logical path inside the publication tree (for example, `kinematics/velocity-analysis.md`) when its scene directives use bare scene names. If omitted, the server uses `input/document.md`.
+For `tmm md` and `tmm kompas page`, `--source-path` is sent as
+`options.source_path` and is not read as a local file. Use the document's
+logical path inside the publication tree (for example,
+`kinematics/velocity-analysis.md`) when generated scenes are referenced by
+bare names. Local scene files are still read beside the supplied Markdown
+file; their upload keys remain the exact directive names. If omitted, the
+server uses `input/document.md`.
 
 ## Environment
 
@@ -147,16 +160,27 @@ that admission path.
 
 ## AI-agent skills
 
-The portable installation, security, command, and synthesis-to-YAML workflow
+The portable installation, security, command, and coursework workflow
 is documented in this public [CLI and skills repository](https://github.com/nickadminroot/tmm-cli/tree/main/skills).
 Install a complete skill directory with its references, examples, and (for
-`metric-synthesis`) the standalone `scripts/` runtime.
+`metric-synthesis` and `mathcad-mechanisms`) the bundled runtime and assets.
 
 - [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, authentication, commands and diagnostics.
 - [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.
-- [`metric-synthesis`](skills/metric-synthesis/SKILL.md): numerical dimension synthesis with its standalone Python runtime.
+- [`metric-synthesis`](skills/metric-synthesis/SKILL.md): dimension synthesis documented in editable XMCD, with a standalone Python solver.
+- [`mathcad-mechanisms`](skills/mathcad-mechanisms/SKILL.md): editable classic Mathcad mechanism calculations, examples and the bundled XMCD library.
+- [`tmm-graphics`](skills/tmm-graphics/SKILL.md): scene formats, custom plots, Markdown and KOMPAS CDW rendering.
 
-`tmm --help` and `tmm help` show both the public repository and skills links,
+Read the [recommended coursework workflow](WORKFLOW.md). For a course project,
+select and order the needed sections: synthesis, iterative YAML, kinematics,
+independently authored dynamics, analytical kinetostatics, and gear/cam studies;
+the site/CLI dynamics output is alpha material. For first-semester homework,
+the usual set is iterative YAML, kinematics, and the single-position kinematics
+and graphical kinetostatics sheets. When a worksheet is final, render every
+Mathcad graph and requested Markdown/scene in KOMPAS and keep edited Mathcad
+and scenes consistent.
+
+`tmm --help` and `tmm help` show project/homework sections and public documentation links,
 without requiring an API token or a network request.
 
 ## Boundary

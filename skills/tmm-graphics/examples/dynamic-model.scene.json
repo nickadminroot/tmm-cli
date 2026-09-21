@@ -1,0 +1,11 @@
+{
+  "kind": "dynamic-model",
+  "id": "dynamic-model-rotational",
+  "type": "rotational",
+  "labels": {
+    "angle": "φ",
+    "angular_velocity": "ω",
+    "moment_inertia": "J_Σ^пр(φ)",
+    "moments": ["M_дв^пр", "M_c^пр(φ)"]
+  }
+}

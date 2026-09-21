@@ -1,10 +1,11 @@
 ---
 name: tmm-cli
 description: Install and operate the public TMM CLI for linkage, rendering, exports, mechanisms, resume, cancel, and version while keeping credentials out of all user-visible data.
-compatibility: Requires a released tmm binary; account-scoped operations use TMM_API_TOKEN, while arbitrary JSON resolution/CDW export is public and tokenless. Native CDW export still requires the local KOMPAS Renderer.
 ---
 
 # TMM CLI
+
+Requires a released tmm binary; account-scoped operations use TMM_API_TOKEN, while arbitrary JSON resolution/CDW export is public and tokenless. Native CDW export still requires the local KOMPAS Renderer.
 
 Use the public `tmm` binary as a thin remote client. It sends the user's
 authored YAML, document, or intermediate scene JSON to the TMM service and
@@ -38,9 +39,9 @@ Mathcad/KOMPAS on its own.
    tmm --help
    ```
 
-The public skill release tag recorded in [REFERENCE.md](REFERENCE.md) versions
-this instruction. The CLI binary is versioned by its `tmm-cli/v*` release; do
-not proceed until a matching public asset is available and `tmm version` passes.
+The command contract is in [REFERENCE.md](REFERENCE.md). The CLI binary is
+versioned by its `tmm-cli/v*` release; confirm that `tmm version` and the help
+for the required command work before using it.
 
 ## Authentication and secrets
 
@@ -83,15 +84,33 @@ never send an empty or synthetic bearer header.
 8. Use `tmm cancel UUID` only for a submitted run that the current contract
    allows to cancel.
 
+## Coursework workflow
+
+Use [the coursework sections guide](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md)
+to distinguish the two assignments. A **course project** may include synthesis,
+YAML modeling, kinematics, dynamics, analytical kinetostatics and gear/cam
+studies. These are sections, not a mandatory sequence: select and order them
+according to the task. Dynamics output from the site/CLI is alpha material
+and needs independent work.
+
+**Coursework homework** uses YAML modeling, kinematics, and the requested
+single-position kinematic and graphical kinetostatic sheets. Do not add the
+other project sections automatically or confuse graphical with analytical
+kinetostatics. Use [tmm-graphics](../tmm-graphics/SKILL.md) for drawing formats,
+custom plots and Markdown-to-KOMPAS commands. Every graph in the final
+Mathcad document needs its matching KOMPAS rendering.
+
 ## XMCD editing and acceptance
+
+Use [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md) for mechanism methods,
+notation and worksheet layout; it includes the `xmcd` authoring library.
 
 For any agent-authored or agent-edited classic Mathcad `.xmcd`, use the
 standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) as the
 editing and static-validation API. Load an existing worksheet with
 `Worksheet.read(...)`, edit typed regions and expressions, and write it with
-`Worksheet.write(...)`. Treat this library as the single XMCD editing path:
-keep XML edits out of the workflow and do not substitute a local or private
-ad-hoc generator.
+`Worksheet.write(...)`. The bundled `mathcad-mechanisms` adapter uses this
+typed library too. Preserve editable formulas instead of rewriting raw XML.
 
 Keep the two acceptance gates separate:
 

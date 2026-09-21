@@ -33,9 +33,13 @@ fallback execution out of the client.
 `tmm mechanisms`.
 - Send diagnostics, including mechanism quote information, to stderr and
 preserve the exit classes in the README.
-- Send the model YAML and Markdown bytes supplied by the user without local
-  scene discovery or calculation. Generic `tmm linkage` publishes the free
-  declared result tree, including `mathcad/worksheet.xmcd` and
+- Send the model YAML and Markdown bytes supplied by the user unchanged.
+  For `md` and `kompas page`, collect only visible explicit scene bindings
+  (`tmm-scene`, `tmm-scale`, `tmm-segment`, `tmm-lever`) from adjacent local
+  `.scene.json`/`.render.json` files; skip fenced and inline code. Missing
+  files remain eligible for the server's generated-catalog fallback, while
+  unreadable or non-object files fail locally. Generic `tmm linkage` publishes
+  the free declared result tree, including `mathcad/worksheet.xmcd` and
   `mathcad/preview.txt`.
 - `tmm xmcd` sends the authored YAML to `POST /v1/linkage/xmcd`, validates the
   `application/x-mathcad+xml` response, and publishes only the XMCD bytes.
@@ -83,8 +87,9 @@ commands. `tmm resolve`, `tmm kompas scene-json`, and
 
 ## Checks
 
-`skills/` contains the portable CLI/YAML guides and standalone metric-synthesis
-runtime. Preserve complete skill directories, including references and examples.
+`skills/` contains the portable workflow and drawing guides, standalone
+metric-synthesis runtime, and bundled Mathcad examples/library. Preserve complete
+skill directories, including references, examples, assets, and vendor licenses.
 After changing synthesis code, run `uv sync --extra dev --locked`,
 `uv run --locked pytest -q ../tests` and `uv run --locked ruff check .` from
 `skills/metric-synthesis/scripts`.

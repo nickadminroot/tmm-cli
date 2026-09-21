@@ -273,10 +273,57 @@ func TestRenderMarkdownContextForwardsSourcePath(t *testing.T) {
 		mechanism,
 		document,
 		"A1",
+		nil,
 		"kinematics/velocity-analysis.md",
 	)
 	if err != nil || string(got) != "markdown-zip" {
 		t.Fatalf("RenderMarkdownContext = %q, %v", got, err)
+	}
+}
+
+func TestMarkdownAndPageContextsUploadSceneObjects(t *testing.T) {
+	mechanism := []byte("bodies: []\n")
+	document := []byte("# Sheet\n")
+	scenes := []byte(`{"velocity-plan.scene.json":{"kind":"velocity-plan"}}`)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/v1/linkage/markdown/render":
+			assertMultipartParts(t, r, map[string][]byte{
+				"mechanism": mechanism,
+				"document":  document,
+				"scenes":    scenes,
+				"options":   []byte(`{"format":"A2","source_path":"kinematics/page.md"}`),
+			})
+			_, _ = w.Write([]byte("markdown-zip"))
+		case "/v1/linkage/cdw/pages/run-page":
+			assertMultipartParts(t, r, map[string][]byte{
+				"mechanism": mechanism,
+				"document":  document,
+				"scenes":    scenes,
+				"options":   []byte(`{"agent_challenge":"challenge","allow_new_mechanism":false,"format":"A2","page":1,"source_path":"kinematics/page.md","version":1}`),
+			})
+			w.WriteHeader(http.StatusAccepted)
+			_, _ = w.Write([]byte(`{"version":1,"run_id":"run-page","operation":"linkage-cdw-page-plan","state":"queued"}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "test-token", HTTP: server.Client(), RetryMax: time.Second}
+	if got, err := c.RenderMarkdownContext(context.Background(), mechanism, document, "A2", scenes, "kinematics/page.md"); err != nil || string(got) != "markdown-zip" {
+		t.Fatalf("RenderMarkdownContext = %q, %v", got, err)
+	}
+	if _, err := c.SubmitCDWPageContext(context.Background(), "run-page", mechanism, document, "A2", "challenge", false, 1, "kinematics/page.md", scenes); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestScenePayloadValidationRejectsNonObjects(t *testing.T) {
+	c := &Client{BaseURL: "http://127.0.0.1:1", Token: "test-token", HTTP: http.DefaultClient}
+	for _, payload := range []string{`[]`, `null`, `{"scene.json":null}`, `{"scene.json":[]}`} {
+		if _, err := c.RenderMarkdownContext(context.Background(), []byte("model"), []byte("doc"), "A1", []byte(payload)); err == nil {
+			t.Fatalf("payload %s accepted", payload)
+		}
 	}
 }
 

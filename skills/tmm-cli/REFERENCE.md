@@ -1,21 +1,22 @@
 # TMM CLI reference
 
-This reference is part of the public skills release tag `v0.1.2`. It requires
-a separately published `tmm` CLI release asset; verify the archive checksum and
-`tmm version` before use. No private TMM source revision is a dependency.
+This reference is maintained with the public CLI source and skills. Use a
+released or source-built `tmm` matching the commands below; verify release
+archive checksums and inspect `tmm version` and `tmm --help` before use.
+No private TMM source revision is a dependency.
 
 ## Commands
 
 | Command | Contract |
 | --- | --- |
 | `tmm linkage INPUT --output DIR` | Run free generic linkage analysis and publish the returned artifact tree, including native XMCD and its text preview. |
-| `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE` | Render a Markdown document and publish the preview. |
+| `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render Markdown with its referenced local scenes and publish the preview. |
 | `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Render one Scene v2 input. |
 | `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve high-level scene JSON to Scene v2 JSON without a token. |
 | `tmm svg INPUT --output FILE [--format svg\|png]` | Publish an SVG or PNG preview. |
 | `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output. |
 | `tmm kompas scene MODEL.yaml SCENE --output FILE [--accept-new-mechanism]` | Render one named scene through the local KOMPAS Renderer. |
-| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--accept-new-mechanism]` | Render one Markdown page through the local renderer. |
+| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH] [--accept-new-mechanism]` | Render one Markdown page through the local renderer. |
 | `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW without a token. |
 | `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary Scene v2 JSON to CDW without a token. |
 | `tmm mechanisms` | Read the account mechanism balance and registry. |
@@ -82,13 +83,23 @@ Keep a high-level `.scene.json` valid for its scene-input contract and a
 `.render.json` valid Scene v2 JSON; preserve the edited file outside the
 installed skill directory.
 
+## Markdown attachments
+
+`md` and `kompas page` include the local `.scene.json` and `.render.json`
+files referenced by `tmm-scene` and graphic bindings. Paths are relative to the
+Markdown file's directory; uploads override generated scenes with the same
+logical key, and absent local files retain the generated-catalog fallback.
+`--source-path` sets the logical document path for both commands. For the full
+syntax and examples, use [tmm-graphics](../tmm-graphics/SKILL.md).
+
 ## XMCD editing boundary
 
 Use the standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) for
 every agent edit or static check of a classic Mathcad `.xmcd` file. Load an
 existing file with `Worksheet.read(...)`, edit its typed regions and
 expressions, and write it with `Worksheet.write(...)`. Do not hand-edit XMCD
-XML or replace this path with a local/private ad-hoc generator.
+XML. The [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md) skill includes
+this library and a typed adapter for authored mechanism calculations.
 
 | Gate | Required operation | What it proves |
 | --- | --- | --- |

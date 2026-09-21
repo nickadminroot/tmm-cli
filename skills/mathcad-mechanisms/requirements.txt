@@ -1,0 +1,3 @@
+# Generators import the unchanged vendored src directly (no Mathcad installation).
+# This standalone workflow was tested with lxml 6.1.1.
+lxml>=6.1.1

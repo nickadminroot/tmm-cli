@@ -1,0 +1,43 @@
+{
+  "kind": "engineering-graph",
+  "id": "position-graph",
+  "title": "s = f(φ)",
+  "plotArea": {"width": 180, "height": 90},
+  "horizontalAxis": {
+    "label": "φ, °",
+    "divisions": [
+      {"value": 0, "label": "0°"},
+      {"value": 90, "label": "90°"},
+      {"value": 180, "label": "180°"},
+      {"value": 270, "label": "270°"},
+      {"value": 360, "label": "360°"}
+    ]
+  },
+  "verticalAxis": {
+    "label": "s, mm",
+    "divisions": [
+      {"value": 0, "label": "0"},
+      {"value": 50, "label": "50"},
+      {"value": 100, "label": "100"}
+    ]
+  },
+  "curves": [
+    {
+      "id": "s-phi",
+      "label": "s(φ)",
+      "lineType": "main",
+      "strokeWidth": 0.7,
+      "points": [
+        [0, 0],
+        [45, 24],
+        [90, 58],
+        [135, 86],
+        [180, 100],
+        [225, 86],
+        [270, 58],
+        [315, 24],
+        [360, 0]
+      ]
+    }
+  ]
+}

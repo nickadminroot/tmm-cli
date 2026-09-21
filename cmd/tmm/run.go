@@ -157,8 +157,9 @@ func runDomain(op string, inputPath string, outputFlag string, options map[strin
 	}
 }
 
-// runMarkdown sends exactly the model YAML and authored Markdown bytes to the
-// free preview endpoint. Scene discovery and workspace bundling are server-side.
+// runMarkdown sends the model YAML and authored Markdown bytes to the free
+// preview endpoint. Explicit local scene files are bundled when present;
+// missing files remain eligible for the server's generated-catalog fallback.
 func runMarkdown(modelPath, documentPath, paperFormat, outputPath string, sourcePath ...string) int {
 	mechanism, err := readInput(modelPath)
 	if err != nil {
@@ -170,6 +171,11 @@ func runMarkdown(modelPath, documentPath, paperFormat, outputPath string, source
 		fmt.Fprintln(os.Stderr, err)
 		return client.ExitUsage
 	}
+	scenes, err := collectMarkdownScenes(documentPath, document)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
 	c, err := client.New()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -177,7 +183,7 @@ func runMarkdown(modelPath, documentPath, paperFormat, outputPath string, source
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	result, err := c.RenderMarkdownContext(ctx, mechanism, document, paperFormat, sourcePath...)
+	result, err := c.RenderMarkdownContext(ctx, mechanism, document, paperFormat, scenes, sourcePath...)
 	if ctx.Err() != nil {
 		fmt.Fprintln(os.Stderr, "run was cancelled")
 		return client.ExitInterrupted
@@ -459,13 +465,18 @@ func runKompasScene(modelPath, sceneName string, scale float64, acceptNew bool, 
 		})
 }
 
-func runKompasPage(modelPath, documentPath string, page int, paperFormat string, acceptNew bool, outputPath string) int {
+func runKompasPage(modelPath, documentPath string, page int, paperFormat string, acceptNew bool, outputPath string, sourcePath ...string) int {
 	mechanism, err := readInput(modelPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return client.ExitUsage
 	}
 	document, err := readInput(documentPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	scenes, err := collectMarkdownScenes(documentPath, document)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return client.ExitUsage
@@ -477,7 +488,11 @@ func runKompasPage(modelPath, documentPath string, page int, paperFormat string,
 	}
 	return runPaidKompas(c, mechanism, outputPath, kompasPageOperation, acceptNew,
 		func(ctx context.Context, runID, challenge string, allowNew bool) (*client.Status, error) {
-			return c.SubmitCDWPageContext(ctx, runID, mechanism, document, paperFormat, challenge, allowNew, page)
+			optionalSourcePath := ""
+			if len(sourcePath) == 1 {
+				optionalSourcePath = sourcePath[0]
+			}
+			return c.SubmitCDWPageContext(ctx, runID, mechanism, document, paperFormat, challenge, allowNew, page, optionalSourcePath, scenes)
 		})
 }
 

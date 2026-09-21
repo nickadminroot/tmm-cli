@@ -1,0 +1,536 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmm.dev/schema/tmm-scene-v2.schema.json",
+  "title": "tmm-scene v2",
+  "description": "A single-scene JSON document for the TMM rendering pipeline.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "format": {
+      "const": "tmm-scene",
+      "description": "Format identifier. Must be \"tmm-scene\"."
+    },
+    "version": {
+      "const": 2,
+      "description": "Format version. This schema describes v2."
+    },
+    "units": {
+      "type": "string",
+      "enum": [
+        "mm",
+        "cm",
+        "m"
+      ],
+      "description": "Scene coordinate units."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique scene identifier."
+    },
+    "kind": {
+      "type": "string",
+      "description": "Free-form category tag for the scene."
+    },
+    "sourcePath": {
+      "type": "string",
+      "description": "Path to the source file that produced this scene."
+    },
+    "bounds": {
+      "$ref": "#/$defs/bounds",
+      "description": "Axis-aligned bounding box."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Arbitrary key-value metadata."
+    },
+    "sheet": {
+      "$ref": "#/$defs/sheet",
+      "description": "Optional physical sheet metadata for sheet-aware renderers."
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entity"
+      },
+      "description": "Geometry entities in this scene."
+    }
+  },
+  "required": [
+    "format",
+    "version",
+    "units",
+    "id",
+    "entities"
+  ],
+  "$defs": {
+    "point": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "A 2D point [x, y]."
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "low": {
+          "$ref": "#/$defs/point"
+        },
+        "high": {
+          "$ref": "#/$defs/point"
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "layer": {
+      "type": "string",
+      "enum": [
+        "fixed",
+        "thin",
+        "hatch",
+        "label",
+        "dimension"
+      ],
+      "description": "Rendering layer / pen assignment."
+    },
+    "style": {
+      "type": "string",
+      "enum": [
+        "solid",
+        "dashed",
+        "dotted"
+      ],
+      "description": "Line style."
+    },
+    "entity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/lineEntity"
+        },
+        {
+          "$ref": "#/$defs/circleEntity"
+        },
+        {
+          "$ref": "#/$defs/arcEntity"
+        },
+        {
+          "$ref": "#/$defs/polygonEntity"
+        },
+        {
+          "$ref": "#/$defs/textEntity"
+        },
+        {
+          "$ref": "#/$defs/smoothCurveEntity"
+        },
+        {
+          "$ref": "#/$defs/textBlockEntity"
+        },
+        {
+          "$ref": "#/$defs/tableEntity"
+        }
+      ]
+    },
+    "baseEntityProps": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layer": {
+          "$ref": "#/$defs/layer"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "lineEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "line"
+            },
+            "from": {
+              "$ref": "#/$defs/point"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            }
+          },
+          "required": [
+            "type",
+            "from",
+            "to"
+          ]
+        }
+      ]
+    },
+    "circleEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "circle"
+            },
+            "center": {
+              "$ref": "#/$defs/point"
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "type",
+            "center",
+            "radius"
+          ]
+        }
+      ]
+    },
+    "arcEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "arc"
+            },
+            "center": {
+              "$ref": "#/$defs/point"
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0
+            },
+            "startAngle": {
+              "type": "number"
+            },
+            "endAngle": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "center",
+            "radius",
+            "startAngle",
+            "endAngle"
+          ]
+        }
+      ]
+    },
+    "polygonEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "polygon"
+            },
+            "points": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/point"
+              },
+              "minItems": 3
+            },
+            "filled": {
+              "type": "boolean"
+            },
+            "role": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "points"
+          ]
+        }
+      ]
+    },
+    "textEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            },
+            "position": {
+              "$ref": "#/$defs/point"
+            },
+            "fontSize": {
+              "type": "number",
+              "minimum": 0
+            },
+            "italic": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "text",
+            "position"
+          ]
+        }
+      ]
+    },
+    "smoothCurveEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "smoothCurve"
+            },
+            "points": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/point"
+              },
+              "minItems": 2
+            },
+            "strokeWidth": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "type",
+            "points"
+          ]
+        }
+      ]
+    },
+    "textBlockEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "textBlock"
+            },
+            "text": {
+              "type": "string"
+            },
+            "position": {
+              "$ref": "#/$defs/point"
+            },
+            "fontSize": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "italic": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "text",
+            "position",
+            "fontSize",
+            "width"
+          ]
+        }
+      ]
+    },
+    "tableEntity": {
+      "type": "object",
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEntityProps"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "table"
+            },
+            "position": {
+              "$ref": "#/$defs/point"
+            },
+            "columnWidths": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "rowHeights": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "cells": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/tableCell"
+              }
+            },
+            "fontSize": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "italic": {
+              "type": "boolean"
+            },
+            "gridLayer": {
+              "$ref": "#/$defs/layer"
+            },
+            "gridStyle": {
+              "$ref": "#/$defs/style"
+            }
+          },
+          "required": [
+            "type",
+            "position",
+            "columnWidths",
+            "rowHeights",
+            "cells"
+          ]
+        }
+      ]
+    },
+    "tableCell": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "row": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rowSpan": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "colSpan": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "text": {
+          "type": "string",
+          "description": "The only cell content field: plain text with optional inline $...$ math. Block Markdown is not supported."
+        },
+        "fontSize": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "italic": {
+          "type": "boolean"
+        },
+        "layer": {
+          "$ref": "#/$defs/layer"
+        }
+      },
+      "required": [
+        "row",
+        "column",
+        "text"
+      ],
+      "not": {
+        "required": [
+          "latex"
+        ]
+      }
+    },
+    "sheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "enum": ["A1", "A2", "A3"]
+        },
+        "orientation": {
+          "const": "landscape"
+        },
+        "titleBlock": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": ["text"]
+        }
+      },
+      "required": ["format", "orientation", "titleBlock"]
+    }
+  },
+  "not": {
+    "anyOf": [
+      {
+        "required": [
+          "scenes"
+        ]
+      },
+      {
+        "required": [
+          "canvas"
+        ]
+      }
+    ]
+  }
+}

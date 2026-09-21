@@ -20,7 +20,13 @@ func main() {
 		Long: "Thin client for the TMM remote execution service. All computation\n" +
 			"happens server-side; this command sends authored inputs and publishes results.\n" +
 			"Repository: https://github.com/nickadminroot/tmm-cli\n" +
-			"Agent skills: https://github.com/nickadminroot/tmm-cli/tree/main/skills",
+			"Agent skills: https://github.com/nickadminroot/tmm-cli/tree/main/skills\n" +
+			"Recommended coursework choices (select and order to match the brief):\n" +
+			"Course project sections: synthesis in Mathcad/Python with metric-synthesis and mathcad-mechanisms (keep the result in XMCD); iterative physical YAML; kinematics XMCD editing; independently authored dynamics (site/CLI dynamics is alpha); analytical kinetostatics; independent gear/cam studies. Select and order what the brief requires.\n" +
+			"First-semester homework: iterative YAML, kinematics, and single-position kinematics plus graphical kinetostatics sheets. Select the sections required by the assignment.\n" +
+			"For a final worksheet, render every Mathcad graph and its requested Markdown/scenes in KOMPAS; keep edited Mathcad and scenes consistent.\n" +
+			"Skills: https://github.com/nickadminroot/tmm-cli/tree/main/skills/tmm-cli; https://github.com/nickadminroot/tmm-cli/tree/main/skills/tmm-yaml; https://github.com/nickadminroot/tmm-cli/tree/main/skills/metric-synthesis; https://github.com/nickadminroot/tmm-cli/tree/main/skills/mathcad-mechanisms; https://github.com/nickadminroot/tmm-cli/tree/main/skills/tmm-graphics\n" +
+			"Workflow: https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
@@ -245,6 +251,7 @@ func main() {
 		jsonSceneScale  float64
 		jsonSceneTarget float64
 		pageFormat      string
+		pageSourcePath  string
 		pageNumber      int
 		pageAcceptNew   bool
 	)
@@ -338,7 +345,7 @@ func main() {
 			if pageFormat != "A1" && pageFormat != "A2" && pageFormat != "A3" {
 				return fmt.Errorf("--format must be one of A1|A2|A3")
 			}
-			os.Exit(runKompasPage(args[0], args[1], pageNumber, pageFormat, pageAcceptNew, out))
+			os.Exit(runKompasPage(args[0], args[1], pageNumber, pageFormat, pageAcceptNew, out, pageSourcePath))
 			return nil
 		},
 	}
@@ -347,6 +354,7 @@ func main() {
 	_ = pageCmd.MarkFlagRequired("page")
 	pageCmd.Flags().StringVar(&pageFormat, "format", "", "sheet format A1|A2|A3 (required)")
 	_ = pageCmd.MarkFlagRequired("format")
+	pageCmd.Flags().StringVar(&pageSourcePath, "source-path", "", "logical Markdown source path")
 	pageCmd.Flags().BoolVar(&pageAcceptNew, "accept-new-mechanism", false, "confirm one new mechanism admission (compatibility flag)")
 	kompasCmd.AddCommand(pageCmd)
 
