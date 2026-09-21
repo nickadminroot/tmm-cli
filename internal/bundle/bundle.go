@@ -96,7 +96,8 @@ func requiresLinkageProducerFence(operation string) bool {
 	case "linkage", "linkage-preview", "linkage-force-preview",
 		"linkage-publication-source", "linkage-xmcd-preview",
 		"linkage-snapshot", "linkage-xmcd",
-		"linkage-cdw-scene-plan", "linkage-cdw-page-plan":
+		"linkage-cdw-scene-plan", "linkage-cdw-page-plan",
+		"cdw-scene-plan", "cdw-render-plan":
 		return true
 	default:
 		return false
@@ -409,6 +410,70 @@ func ReadPlan(zipData []byte, operation, runID, challenge string) ([]byte, error
 	}
 	if _, err := hex.DecodeString(sceneSHA); err != nil {
 		return nil, fmt.Errorf("KOMPAS plan binding is invalid")
+	}
+	return plan, nil
+}
+
+// ReadPublicPlan validates a tokenless arbitrary-scene KOMPAS plan ZIP and
+// returns its signed plan member. Unlike the account-scoped linkage plan, this
+// contract has no durable run ID; the fresh local-renderer challenge is the
+// binding that prevents replay against another renderer session.
+func ReadPublicPlan(zipData []byte, operations []string, challenge string) ([]byte, error) {
+	if len(operations) == 0 || strings.TrimSpace(challenge) == "" {
+		return nil, fmt.Errorf("public KOMPAS plan binding is invalid")
+	}
+	manifest, err := ReadManifest(zipData)
+	if err != nil {
+		return nil, err
+	}
+	accepted := false
+	for _, operation := range operations {
+		if manifest.Operation == operation {
+			accepted = true
+			break
+		}
+	}
+	if manifest.Version != 1 || !accepted || manifest.Publication != "single" ||
+		len(manifest.Entries) != 1 || manifest.Entries[0].Role != "primary" ||
+		manifest.Entries[0].Path != "plan.json" {
+		return nil, fmt.Errorf("unexpected public KOMPAS result manifest")
+	}
+	plan, err := readResultMember(zipData, manifest.Entries[0], 8<<20)
+	if err != nil {
+		return nil, err
+	}
+	var envelope map[string]json.RawMessage
+	if err := json.Unmarshal(plan, &envelope); err != nil {
+		return nil, fmt.Errorf("KOMPAS plan is not valid JSON: %w", err)
+	}
+	if !hasExactKeys(envelope, "format", "version", "algorithm", "key_id", "payload", "signature") {
+		return nil, fmt.Errorf("KOMPAS plan envelope is invalid")
+	}
+	var format, algorithm, keyID, signature string
+	var version int
+	if json.Unmarshal(envelope["format"], &format) != nil ||
+		json.Unmarshal(envelope["version"], &version) != nil ||
+		json.Unmarshal(envelope["algorithm"], &algorithm) != nil ||
+		json.Unmarshal(envelope["key_id"], &keyID) != nil ||
+		json.Unmarshal(envelope["signature"], &signature) != nil ||
+		format != "tmm-kompas-plan" || version != 1 || algorithm != "ed25519" ||
+		!planKeyIDPattern.MatchString(keyID) {
+		return nil, fmt.Errorf("KOMPAS plan envelope is invalid")
+	}
+	if len(signature) != 86 {
+		return nil, fmt.Errorf("KOMPAS plan signature is invalid")
+	}
+	decodedSignature, err := base64.RawURLEncoding.Strict().DecodeString(signature)
+	if err != nil || len(decodedSignature) != 64 {
+		return nil, fmt.Errorf("KOMPAS plan signature is invalid")
+	}
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(envelope["payload"], &payload); err != nil {
+		return nil, fmt.Errorf("KOMPAS plan payload is invalid")
+	}
+	var payloadChallenge string
+	if json.Unmarshal(payload["agent_challenge"], &payloadChallenge) != nil || payloadChallenge != challenge {
+		return nil, fmt.Errorf("KOMPAS plan challenge binding is invalid")
 	}
 	return plan, nil
 }

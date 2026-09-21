@@ -121,6 +121,18 @@ type Client struct {
 }
 
 func New() (*Client, error) {
+	return newClient(true)
+}
+
+// NewAnonymous creates a client for the public JSON scene/CDW endpoints.
+// These endpoints deliberately do not accept or require a bearer token. The
+// regular New constructor remains token-required for every account-scoped
+// operation, so callers must opt into this transport explicitly.
+func NewAnonymous() (*Client, error) {
+	return newClient(false)
+}
+
+func newClient(requireToken bool) (*Client, error) {
 	base := strings.TrimSpace(os.Getenv("TMM_API_URL"))
 	if base == "" {
 		base = strings.TrimSpace(DefaultBaseURL)
@@ -138,8 +150,11 @@ func New() (*Client, error) {
 			return nil, usageErrorf("plain HTTP is allowed only for loopback hosts; got %s", host)
 		}
 	}
-	token := strings.TrimSpace(os.Getenv("TMM_API_TOKEN"))
-	if token == "" {
+	token := ""
+	if requireToken {
+		token = strings.TrimSpace(os.Getenv("TMM_API_TOKEN"))
+	}
+	if requireToken && token == "" {
 		return nil, usageErrorf("TMM_API_TOKEN is required for every API request")
 	}
 	return &Client{
@@ -215,6 +230,18 @@ func (c *Client) newRequestWithContext(ctx context.Context, method, path string,
 		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("User-Agent", c.UserAgent)
+	return req, nil
+}
+
+// newPublicRequestWithContext builds a request for an explicitly public API
+// operation. It never adds Authorization, even when a caller happens to have
+// a token in the environment or on a Client value.
+func (c *Client) newPublicRequestWithContext(ctx context.Context, method, path string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, method, c.BaseURL+path, body)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("User-Agent", c.UserAgent)
 	return req, nil
 }
@@ -652,6 +679,145 @@ func (c *Client) GetXMCDContext(ctx context.Context, yaml []byte) ([]byte, error
 	}
 	if len(data) == 0 || int64(len(data)) > maxResultBytes {
 		return nil, fmt.Errorf("server returned an invalid XMCD size")
+	}
+	return data, nil
+}
+
+// ResolveScene resolves a high-level scene JSON document into the canonical
+// Scene v2 (.render.json) document. The endpoint is intentionally public and
+// does not require an account token.
+func (c *Client) ResolveScene(scene []byte) ([]byte, error) {
+	return c.ResolveSceneContext(context.Background(), scene)
+}
+
+func (c *Client) ResolveSceneContext(ctx context.Context, scene []byte) ([]byte, error) {
+	return c.postPublicJSONContext(ctx, "/v1/scenes/resolve", scene, maxResultBytes)
+}
+
+// RenderCDWScene requests a signed native-renderer plan from a high-level
+// scene JSON document. The caller sends the returned bytes to the local
+// KOMPAS Renderer; no account token is used for this public endpoint.
+func (c *Client) RenderCDWScene(scene []byte) ([]byte, error) {
+	return c.RenderCDWSceneContext(context.Background(), scene, "", nil)
+}
+
+func (c *Client) RenderCDWSceneContext(ctx context.Context, scene []byte, challenge string, options map[string]any) ([]byte, error) {
+	return c.postPublicPlanContext(ctx, "/v1/cdw/scene", "scene", scene, challenge, options)
+}
+
+// RenderCDWRender requests a signed native-renderer plan from a resolved
+// Scene v2 (.render.json) document. The endpoint is public and tokenless.
+func (c *Client) RenderCDWRender(renderJSON []byte) ([]byte, error) {
+	return c.RenderCDWRenderContext(context.Background(), renderJSON, "")
+}
+
+func (c *Client) RenderCDWRenderContext(ctx context.Context, renderJSON []byte, challenge string) ([]byte, error) {
+	return c.postPublicPlanContext(ctx, "/v1/cdw/render", "render", renderJSON, challenge, nil)
+}
+
+func (c *Client) postPublicJSONContext(ctx context.Context, path string, input []byte, maxBytes int64) ([]byte, error) {
+	if len(input) == 0 || int64(len(input)) > maxResultBytes {
+		return nil, usageErrorf("JSON input size is invalid")
+	}
+	var document any
+	if err := json.Unmarshal(input, &document); err != nil {
+		return nil, usageErrorf("JSON input is invalid: %v", err)
+	}
+	if object, ok := document.(map[string]any); !ok || object == nil {
+		return nil, usageErrorf("JSON input root must be an object")
+	}
+	req, err := c.newPublicRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(input))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.HTTP.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, decodeError(resp)
+	}
+	contentType := strings.ToLower(strings.TrimSpace(strings.Split(resp.Header.Get("Content-Type"), ";")[0]))
+	if contentType != "application/json" && !strings.HasSuffix(contentType, "+json") {
+		return nil, fmt.Errorf("server returned an unsupported JSON content type")
+	}
+	if maxBytes <= 0 || maxBytes > maxResultBytes {
+		maxBytes = maxResultBytes
+	}
+	data, err := io.ReadAll(io.LimitReader(resp.Body, maxBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) == 0 || int64(len(data)) > maxBytes {
+		return nil, fmt.Errorf("server returned an invalid JSON size")
+	}
+	var response any
+	if err := json.Unmarshal(data, &response); err != nil {
+		return nil, fmt.Errorf("server returned invalid JSON: %w", err)
+	}
+	if object, ok := response.(map[string]any); !ok || object == nil {
+		return nil, fmt.Errorf("server returned a non-object JSON document")
+	}
+	return data, nil
+}
+
+func (c *Client) postPublicPlanContext(
+	ctx context.Context,
+	path, inputField string,
+	input []byte,
+	challenge string,
+	options map[string]any,
+) ([]byte, error) {
+	if len(input) == 0 || int64(len(input)) > maxResultBytes {
+		return nil, usageErrorf("JSON input size is invalid")
+	}
+	var document any
+	if err := json.Unmarshal(input, &document); err != nil {
+		return nil, usageErrorf("JSON input is invalid: %v", err)
+	}
+	if object, ok := document.(map[string]any); !ok || object == nil {
+		return nil, usageErrorf("JSON input root must be an object")
+	}
+	if strings.TrimSpace(challenge) == "" {
+		return nil, usageErrorf("renderer challenge is required")
+	}
+	requestOptions := map[string]any{"version": 1, "agent_challenge": challenge}
+	for key, value := range options {
+		requestOptions[key] = value
+	}
+	envelope := map[string]any{
+		inputField: json.RawMessage(input),
+		"options":  requestOptions,
+	}
+	body, err := json.Marshal(envelope)
+	if err != nil {
+		return nil, err
+	}
+	req, err := c.newPublicRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.HTTP.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, decodeError(resp)
+	}
+	contentType := strings.ToLower(strings.TrimSpace(strings.Split(resp.Header.Get("Content-Type"), ";")[0]))
+	if contentType != "application/zip" && contentType != "application/octet-stream" {
+		return nil, fmt.Errorf("server returned an unsupported KOMPAS plan content type")
+	}
+	data, err := io.ReadAll(io.LimitReader(resp.Body, maxResultBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) == 0 || int64(len(data)) > maxResultBytes {
+		return nil, fmt.Errorf("server returned an invalid KOMPAS plan size")
 	}
 	return data, nil
 }

@@ -14,6 +14,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -264,6 +265,139 @@ func TestRunKompasSceneGetsChallengeBeforeQuoteAndPublishesDrawing(t *testing.T)
 	}
 }
 
+func TestRunKompasSceneJSONIsTokenlessAndPublishesDrawing(t *testing.T) {
+	challenge := base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{'z'}, 32))
+	scene := []byte(`{"kind":"part","entities":[]}`)
+	planPayload := map[string]any{
+		"format":    "tmm-kompas-plan",
+		"version":   1,
+		"algorithm": "ed25519",
+		"key_id":    "default",
+		"payload": map[string]any{
+			"operation":       "kompas-plan",
+			"job_id":          "11111111-1111-4111-8111-111111111111",
+			"agent_challenge": challenge,
+			"issued_at":       "2025-01-01T00:00:00Z",
+			"expires_at":      "2025-01-01T00:05:00Z",
+			"scene_sha256":    strings.Repeat("0", 64),
+			"document":        map[string]any{"kind": "part"},
+			"operations":      []any{},
+		},
+		"signature": base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{'s'}, 64)),
+	}
+	plan, err := json.Marshal(planPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planSum := sha256.Sum256(plan)
+	manifest, err := json.Marshal(map[string]any{
+		"version": 1, "operation": "cdw-scene-plan", "publication": "single",
+		"descriptor_version": 2, "producer_version": 2,
+		"entries": []map[string]any{{"path": "plan.json", "role": "primary", "size": len(plan), "sha256": hex.EncodeToString(planSum[:])}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var planZIP bytes.Buffer
+	archive := zip.NewWriter(&planZIP)
+	for name, data := range map[string][]byte{"plan.json": plan, "_tmm-result.json": manifest} {
+		writer, createErr := archive.Create(name)
+		if createErr != nil {
+			t.Fatal(createErr)
+		}
+		if _, writeErr := writer.Write(data); writeErr != nil {
+			t.Fatal(writeErr)
+		}
+	}
+	if err := archive.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	var sawAuthorization bool
+	var sawSceneEnvelope bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "" {
+			sawAuthorization = true
+		}
+		switch r.URL.Path {
+		case "/v1/capabilities":
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"version": 2, "agent_id": "11111111-1111-4111-8111-111111111111", "agent_version": "0.2.0",
+				"challenge": challenge, "capabilities": []string{"scene-v2", "api7", "api5-text", "visible-document", "cdw-return"},
+			})
+		case "/v1/cdw/scene":
+			body, readErr := io.ReadAll(r.Body)
+			if readErr != nil {
+				t.Fatal(readErr)
+			}
+			var envelope map[string]any
+			if jsonErr := json.Unmarshal(body, &envelope); jsonErr != nil {
+				t.Fatal(jsonErr)
+			}
+			options, ok := envelope["options"].(map[string]any)
+			if !ok || options["agent_challenge"] != challenge || options["version"] != float64(1) {
+				t.Fatalf("scene options = %#v", envelope["options"])
+			}
+			var gotScene, wantScene map[string]any
+			if jsonErr := json.Unmarshal(mustJSONValue(envelope["scene"]), &gotScene); jsonErr != nil {
+				t.Fatal(jsonErr)
+			}
+			if jsonErr := json.Unmarshal(scene, &wantScene); jsonErr != nil {
+				t.Fatal(jsonErr)
+			}
+			if !reflect.DeepEqual(gotScene, wantScene) {
+				t.Fatalf("scene envelope = %#v", envelope["scene"])
+			}
+			sawSceneEnvelope = true
+			w.Header().Set("Content-Type", "application/zip")
+			_, _ = w.Write(planZIP.Bytes())
+		case "/v1/render":
+			drawing := []byte("anonymous-cdw")
+			drawingSum := sha256.Sum256(drawing)
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.Header().Set("Content-Disposition", `attachment; filename="result.cdw"`)
+			w.Header().Set("X-TMM-Result-Sha256", hex.EncodeToString(drawingSum[:]))
+			_, _ = w.Write(drawing)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+	t.Setenv("TMM_API_URL", server.URL)
+	t.Setenv("TMM_API_TOKEN", "")
+	t.Setenv("TMM_KOMPAS_RENDERER_URL", server.URL)
+	inputPath := filepath.Join(t.TempDir(), "arbitrary.scene.json")
+	if err := os.WriteFile(inputPath, scene, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	outputPath := filepath.Join(t.TempDir(), "drawing.cdw")
+	if got := runKompasSceneJSON(inputPath, 0, 0, outputPath); got != client.ExitOK {
+		t.Fatalf("runKompasSceneJSON exit code = %d", got)
+	}
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != "anonymous-cdw" {
+		t.Fatalf("published drawing = %q", data)
+	}
+	if sawAuthorization {
+		t.Fatal("tokenless arbitrary scene flow sent Authorization")
+	}
+	if !sawSceneEnvelope {
+		t.Fatal("arbitrary scene endpoint was not called")
+	}
+}
+
+func mustJSONValue(value any) []byte {
+	data, err := json.Marshal(value)
+	if err != nil {
+		panic(err)
+	}
+	return data
+}
+
 func readMultipartField(header *multipart.FileHeader) ([]byte, error) {
 	file, err := header.Open()
 	if err != nil {
@@ -299,6 +433,18 @@ func TestQuoteMechanismAllowsStockWithoutAcceptance(t *testing.T) {
 	c := &client.Client{BaseURL: server.URL, Token: "test-token", HTTP: server.Client()}
 	if requiresNew, code := quoteMechanism(c, []byte("model"), false); requiresNew || code != client.ExitOK {
 		t.Fatalf("quote result = (%t, %d), want (false, %d)", requiresNew, code, client.ExitOK)
+	}
+}
+
+func TestQuoteMechanismAllowsFreeNewModelWithLegacyAcceptance(t *testing.T) {
+	server := quoteFixtureServer(`{"version":1,"descriptor_version":2,"source_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","descriptor_hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","classification":"new","matched_mechanism":null,"similarity":{"score":0.1,"threshold":0.9,"structure":0.1,"length":0.1,"mass":0.1,"policy_digest":"p"},"requires_credit":false,"can_export":true,"balance":{"mechanisms_remaining":0,"mechanisms_reserved":0}}`)
+	defer server.Close()
+	c := &client.Client{BaseURL: server.URL, Token: "test-token", HTTP: server.Client()}
+	if accepted, code := quoteMechanism(c, []byte("model"), false); accepted || code != client.ExitUsage {
+		t.Fatalf("quote result = (%t, %d), want legacy acceptance gate", accepted, code)
+	}
+	if accepted, code := quoteMechanism(c, []byte("model"), true); !accepted || code != client.ExitOK {
+		t.Fatalf("accepted quote result = (%t, %d), want free new admission", accepted, code)
 	}
 }
 

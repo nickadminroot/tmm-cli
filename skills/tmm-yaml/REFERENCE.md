@@ -193,3 +193,13 @@ do not execute Mathcad. Native evidence requires opening, recalculating, and
 saving the worksheet in installed classic Mathcad, then checking saved formula
 results, errors, and graphs. Report these gates separately; neither YAML
 verification nor static XMCD validation proves native recalculation.
+
+## Scene intermediate editing
+
+Generated `.scene.json` and `.render.json` files are presentation
+intermediates, not physical YAML. An agent may edit them arbitrarily to improve
+or repair drawing presentation while preserving valid Scene v2 JSON. Resolve a
+high-level file with `tmm resolve`, then render the edited `.render.json` with
+`tmm kompas render-json`; both arbitrary JSON CDW paths are tokenless and do
+not affect mechanism balance or registry admission. Native CDW output still
+requires the local KOMPAS Renderer.

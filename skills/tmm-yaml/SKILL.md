@@ -65,6 +65,17 @@ saving the worksheet in installed classic Mathcad, followed by inspection of
 the saved results, errors, and graphs. A YAML/CLI success or a clean static
 XMCD report does not prove native Mathcad recalculation.
 
+## Intermediate drawing files
+
+The linkage result may also contain `.scene.json` intermediates. Agents may
+freely edit those files to improve or repair presentation—such as labels,
+visibility, line weights, or layout—without changing the physical YAML model.
+Keep the edited document valid Scene v2 JSON and render it with the tokenless
+`tmm kompas render-json INPUT.render.json --output OUTPUT.cdw` command. For a
+high-level scene that has not yet been resolved, use `tmm resolve` first or
+`tmm kompas scene-json` directly. These commands do not quote or charge a
+mechanism, but native CDW output still requires the local KOMPAS Renderer.
+
 ## Shape and branches
 
 - Use `geometry.points` for fixed coordinates and `geometry.construct` for

@@ -1,14 +1,15 @@
 ---
 name: tmm-cli
 description: Install and operate the public TMM CLI for linkage, rendering, exports, mechanisms, resume, cancel, and version while keeping credentials out of all user-visible data.
-compatibility: Requires a released tmm binary and an account token in the TMM_API_TOKEN environment variable; paid CDW exports require explicit admission flags.
+compatibility: Requires a released tmm binary; account-scoped operations use TMM_API_TOKEN, while arbitrary JSON resolution/CDW export is public and tokenless. Native CDW export still requires the local KOMPAS Renderer.
 ---
 
 # TMM CLI
 
 Use the public `tmm` binary as a thin remote client. It sends the user's
-authored YAML or document to the TMM service and writes declared artifacts
-locally. It does not calculate mechanisms or run Mathcad/KOMPAS on its own.
+authored YAML, document, or intermediate scene JSON to the TMM service and
+writes declared artifacts locally. It does not calculate mechanisms or run
+Mathcad/KOMPAS on its own.
 
 ## Install and verify
 
@@ -52,6 +53,10 @@ export TMM_API_TOKEN='token-from-the-account'
 Keep it out of argv, YAML, URLs, shell history, prompts, chat, repository
 files, and logs. Never paste a token into a diagnostic or an example.
 
+`TMM_API_TOKEN` is not needed for `tmm resolve`, `tmm kompas scene-json`, or
+`tmm kompas render-json`. Those commands still use `TMM_API_URL`; they must
+never send an empty or synthetic bearer header.
+
 ## Workflow
 
 1. Prepare or receive one physical YAML with [tmm-yaml](../tmm-yaml/SKILL.md).
@@ -61,10 +66,20 @@ files, and logs. Never paste a token into a diagnostic or an example.
    needed. This is a free direct request and has no admission flag.
 4. Inspect the returned status and artifacts. Keep the output path outside the
    installed skill directory.
-5. Use `tmm resume UUID --output PATH` only where the returned operation says
+5. If the result contains a `.scene.json` or `.render.json` intermediate,
+   agents may edit that JSON as needed to improve or repair presentation
+   (labels, visibility, line weights, layout, and other schema-supported
+   drawing details). Preserve valid Scene v2 JSON, keep the edited file outside
+   the installed skill, and render the edited bytes with `tmm kompas render-json`
+   without a token.
+6. Use `tmm resolve INPUT.scene.json --output OUTPUT.render.json` to convert a
+   high-level scene to Scene v2 without a token. Use `tmm kompas scene-json` for
+   direct high-level-scene CDW export, or `tmm kompas render-json` for an
+   already-resolved `.render.json` file. Both require the local KOMPAS Renderer.
+7. Use `tmm resume UUID --output PATH` only where the returned operation says
    it is resumable (including accepted native-XMCD legacy runs). Use the same run;
    never resubmit a paid operation.
-6. Use `tmm cancel UUID` only for a submitted run that the current contract
+8. Use `tmm cancel UUID` only for a submitted run that the current contract
    allows to cancel.
 
 ## XMCD editing and acceptance
@@ -95,8 +110,9 @@ is available.
 
 ## Admission
 
-`--accept-new-mechanism` applies to paid KOMPAS scene/page export. Obtain
-explicit user consent before passing that flag. XMCD and generic `tmm linkage`
+`--accept-new-mechanism` applies only to the legacy YAML KOMPAS scene/page
+export. Obtain explicit user consent before passing that flag. Arbitrary JSON
+CDW commands never quote or admit a mechanism. XMCD and generic `tmm linkage`
 are free operations and do not use an admission flag.
 
 KOMPAS requires the separately installed local Renderer. Mathcad/XMCD and
@@ -111,5 +127,6 @@ exit code. A transport or accepted-run failure may include a Run ID and a
 same-run Resume command; follow it only when the command reference says it is
 allowed.
 
-The skill covers the existing CLI surface only. Do not invent a `tmm skills`
-subcommand, local calculation fallback, upload installer, or new flag.
+The commands and public endpoints above are the complete supported surface. Do
+not invent a `tmm skills` subcommand, local calculation fallback, upload
+installer, or a new authentication mechanism.

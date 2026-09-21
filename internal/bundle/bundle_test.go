@@ -121,6 +121,26 @@ func TestReadPlanVerifiesPaidManifestAndBinding(t *testing.T) {
 		t.Fatalf("plan = %q", data)
 	}
 }
+
+func TestReadPublicPlanVerifiesOperationAndChallenge(t *testing.T) {
+	challenge := base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{'c'}, 32))
+	plan := validPlan(t, "11111111-1111-4111-8111-111111111111", challenge)
+	result := makeResultZip(t, "cdw-scene-plan", plan)
+	data, err := ReadPublicPlan(result, []string{"cdw-scene-plan", "cdw-render-plan"}, challenge)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(data, plan) {
+		t.Fatalf("plan = %q", data)
+	}
+	if _, err := ReadPublicPlan(result, []string{"cdw-render-plan"}, challenge); err == nil {
+		t.Fatal("ReadPublicPlan accepted an unexpected operation")
+	}
+	if _, err := ReadPublicPlan(result, []string{"cdw-scene-plan"}, strings.Repeat("x", 43)); err == nil {
+		t.Fatal("ReadPublicPlan accepted a mismatched challenge")
+	}
+}
+
 func TestReadPrimaryNamedRequiresExpectedPath(t *testing.T) {
 	xmcd := []byte("xmcd-bytes")
 	result := makeNamedResultZip(t, "linkage-xmcd", "worksheet.xmcd", xmcd)

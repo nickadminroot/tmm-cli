@@ -11,10 +11,13 @@ a separately published `tmm` CLI release asset; verify the archive checksum and
 | `tmm linkage INPUT --output DIR` | Run free generic linkage analysis and publish the returned artifact tree, including native XMCD and its text preview. |
 | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE` | Render a Markdown document and publish the preview. |
 | `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Render one Scene v2 input. |
+| `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve high-level scene JSON to Scene v2 JSON without a token. |
 | `tmm svg INPUT --output FILE [--format svg\|png]` | Publish an SVG or PNG preview. |
 | `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output. |
 | `tmm kompas scene MODEL.yaml SCENE --output FILE [--accept-new-mechanism]` | Render one named scene through the local KOMPAS Renderer. |
 | `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--accept-new-mechanism]` | Render one Markdown page through the local renderer. |
+| `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW without a token. |
+| `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary Scene v2 JSON to CDW without a token. |
 | `tmm mechanisms` | Read the account mechanism balance and registry. |
 | `tmm resume UUID --output PATH` | Resume a permitted free operation or accepted native-XMCD legacy result. |
 | `tmm cancel UUID` | Cancel a submitted run when the operation permits it. |
@@ -25,7 +28,9 @@ flags. This table is not permission to call an undocumented command.
 
 ## Environment
 
-- `TMM_API_TOKEN` is required for API requests and must be process-local.
+- `TMM_API_TOKEN` is required for account-scoped API requests and must be
+  process-local. Public scene resolution and arbitrary JSON CDW plan requests
+  intentionally omit `Authorization`.
 - `TMM_API_URL` is an endpoint override for source/development builds; do not
   put credentials in it. Release builds use their embedded HTTPS endpoint.
 - `TMM_KOMPAS_RENDERER_URL` is optional and must point to a local HTTP
@@ -57,6 +62,23 @@ different class. Result-expired and result-lost are distinct remote errors.
   the actual result and any same-run resume instruction for KOMPAS operations.
 - The public skill contains no server source, private checkout, or local
   calculation fallback.
+
+## Public JSON endpoint contract
+
+`tmm resolve` posts the high-level `.scene.json` bytes directly to
+`POST /v1/scenes/resolve` and writes the returned Scene v2 `.render.json`.
+`tmm kompas scene-json` obtains a fresh local-renderer challenge and posts
+`{"scene": OBJECT, "options": {"version": 1, "agent_challenge": STRING,
+...}}` to `POST /v1/cdw/scene`. `tmm kompas render-json` uses the same envelope
+with `"render": OBJECT` at `POST /v1/cdw/render`. Both CDW endpoints return a
+signed `application/zip` plan; the CLI validates its manifest and challenge,
+then sends `plan.json` to the loopback KOMPAS Renderer. No YAML mechanism,
+quote, balance, registry admission, or bearer token is involved.
+
+Agents may freely edit any received `.scene.json` or `.render.json` intermediate
+file to improve or repair presentation before calling the tokenless commands.
+Keep the edited document valid Scene v2 JSON and preserve the file outside the
+installed skill directory.
 
 ## XMCD editing boundary
 

@@ -2,10 +2,11 @@
 
 Public thin client for the TMM remote execution service. It sends authored
 inputs to the private server over HTTPS and publishes returned artifacts
-locally. KOMPAS CDW creation obtains a server-signed plan and sends it to the
-installed localhost KOMPAS Renderer only after the server has accepted the paid
-run. Mathcad 15 XMCD creation uses the free direct server endpoint and never
-needs the local renderer.
+locally. Account-scoped operations use the bearer token; public arbitrary-scene
+resolution and CDW plan endpoints are explicitly tokenless. KOMPAS CDW
+creation obtains a server-signed plan and sends it to the installed localhost
+KOMPAS Renderer. Mathcad 15 XMCD creation uses the free direct server endpoint
+and never needs the local renderer.
 
 Read [`README.md`](README.md) before changing the client; it is the consumer
 contract for commands, environment variables, output, and exit classes.
@@ -25,8 +26,9 @@ fallback execution out of the client.
 ## Transport and output invariants
 
 - Require `--output` for every artifact-producing command.
-- Require `TMM_API_TOKEN` for every API request, including loopback HTTP
-  development URLs. Keep tokens out of argv and URLs.
+- Require `TMM_API_TOKEN` for every account-scoped API request, including
+  loopback HTTP development URLs. Public arbitrary-scene endpoints are the
+  only tokenless API exception. Keep tokens out of argv and URLs.
 - Keep stdout limited to final written paths or the fixed fields of
 `tmm mechanisms`.
 - Send diagnostics, including mechanism quote information, to stderr and
@@ -40,13 +42,12 @@ preserve the exit classes in the README.
 - Treat uploaded inputs and returned artifacts as transport data, not as
   client-side solver state.
 
-KOMPAS commands first obtain a fresh renderer challenge, then quote the exact
-model bytes. Exact built-in stock YAML and known mechanisms are free; stock YAML
-is not registered in the user's mechanism library. A new mechanism requires the
-explicit `--accept-new-mechanism` flag before the paid scene or page request is
-submitted. Scene requests name a generated catalog scene; page requests name one
-document page and sheet format. Their options include the renderer challenge and
-admission decision.
+Legacy YAML KOMPAS commands first obtain a fresh renderer challenge, then quote
+the exact model bytes. They remain account-scoped for compatibility. Arbitrary
+`.scene.json` and `.render.json` commands obtain the same challenge, call the
+public plan endpoint with the challenge, validate the returned plan ZIP, and
+send only the signed plan to the local renderer; they never quote YAML or
+reserve a mechanism.
 
 XMCD is a free direct request and has no renderer challenge, mechanism quote,
 allowance flag, or balance reservation. Require the native XML content type and
@@ -76,7 +77,9 @@ behavior; do not substitute a local calculation fallback.
 
 Repo-local regeneration discovers `.tmm/dev/credentials.json` only after
 `pnpm db:init -- dev`, `pnpm dev`, and `pnpm dev -- credentials`; installed CLI
-invocations always require an explicit `TMM_API_TOKEN`.
+invocations require an explicit `TMM_API_TOKEN` only for account-scoped
+commands. `tmm resolve`, `tmm kompas scene-json`, and
+`tmm kompas render-json` use the public endpoints without a token.
 
 ## Checks
 

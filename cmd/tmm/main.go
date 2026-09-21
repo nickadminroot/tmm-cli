@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 
 	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/bundle"
 	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/client"
@@ -109,6 +110,25 @@ func main() {
 	mdCmd.Flags().StringVar(&mdFormat, "format", "", "sheet format A1|A2|A3 (required)")
 	_ = mdCmd.MarkFlagRequired("format")
 	mdCmd.Flags().StringVar(&mdSourcePath, "source-path", "", "logical Markdown source path")
+
+	resolveCmd := &cobra.Command{
+		Use:     "resolve INPUT",
+		Aliases: []string{"render-json"},
+		Short:   "Resolve a high-level scene JSON into Scene v2 JSON (tokenless)",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out, oerr := requireOutput(cmd)
+			if oerr != nil {
+				return oerr
+			}
+			if !strings.HasSuffix(strings.ToLower(out), ".render.json") {
+				return fmt.Errorf("--output must name a .render.json file")
+			}
+			os.Exit(runResolve(args[0], out))
+			return nil
+		},
+	}
+	addOutput(resolveCmd)
 
 	renderCmd := &cobra.Command{
 		Use:   "render INPUT",
@@ -220,11 +240,13 @@ func main() {
 	svgCmd.Flags().IntVar(&pngHeight, "png-height", 1200, "PNG height in pixels")
 
 	var (
-		sceneScale     float64
-		sceneAcceptNew bool
-		pageFormat     string
-		pageNumber     int
-		pageAcceptNew  bool
+		sceneScale      float64
+		sceneAcceptNew  bool
+		jsonSceneScale  float64
+		jsonSceneTarget float64
+		pageFormat      string
+		pageNumber      int
+		pageAcceptNew   bool
 	)
 	kompasCmd := &cobra.Command{
 		Use:   "kompas",
@@ -251,6 +273,55 @@ func main() {
 	sceneCmd.Flags().Float64Var(&sceneScale, "scale", 0, "explicit positive scene scale")
 	sceneCmd.Flags().BoolVar(&sceneAcceptNew, "accept-new-mechanism", false, "authorize one new mechanism credit")
 	kompasCmd.AddCommand(sceneCmd)
+
+	jsonSceneCmd := &cobra.Command{
+		Use:   "scene-json INPUT.scene.json",
+		Short: "Create a native KOMPAS CDW from arbitrary scene JSON (tokenless)",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out, oerr := requireOutput(cmd)
+			if oerr != nil {
+				return oerr
+			}
+			if !strings.HasSuffix(strings.ToLower(out), ".cdw") {
+				return fmt.Errorf("--output must name a .cdw file")
+			}
+			if cmd.Flags().Changed("scale") && !positiveFinite(jsonSceneScale) {
+				return fmt.Errorf("--scale must be a positive finite number")
+			}
+			if cmd.Flags().Changed("target-max-side") && !positiveFinite(jsonSceneTarget) {
+				return fmt.Errorf("--target-max-side must be a positive finite number")
+			}
+			if cmd.Flags().Changed("scale") && cmd.Flags().Changed("target-max-side") {
+				return fmt.Errorf("scale and target-max-side are mutually exclusive")
+			}
+			os.Exit(runKompasSceneJSON(args[0], jsonSceneScale, jsonSceneTarget, out))
+			return nil
+		},
+	}
+	addOutput(jsonSceneCmd)
+	jsonSceneCmd.Flags().Float64Var(&jsonSceneScale, "scale", 0, "explicit positive scene scale")
+	jsonSceneCmd.Flags().Float64Var(&jsonSceneTarget, "target-max-side", 0, "target max side in mm")
+	kompasCmd.AddCommand(jsonSceneCmd)
+
+	jsonRenderCmd := &cobra.Command{
+		Use:   "render-json INPUT.render.json",
+		Short: "Create a native KOMPAS CDW from arbitrary Scene v2 JSON (tokenless)",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out, oerr := requireOutput(cmd)
+			if oerr != nil {
+				return oerr
+			}
+			if !strings.HasSuffix(strings.ToLower(out), ".cdw") {
+				return fmt.Errorf("--output must name a .cdw file")
+			}
+			os.Exit(runKompasRenderJSON(args[0], out))
+			return nil
+		},
+	}
+	addOutput(jsonRenderCmd)
+	kompasCmd.AddCommand(jsonRenderCmd)
 
 	pageCmd := &cobra.Command{
 		Use:   "page MODEL.yaml DOCUMENT.md",
@@ -418,7 +489,7 @@ func main() {
 		},
 	}
 
-	root.AddCommand(linkageCmd, xmcdCmd, mdCmd, renderCmd, svgCmd, kompasCmd,
+	root.AddCommand(linkageCmd, xmcdCmd, mdCmd, resolveCmd, renderCmd, svgCmd, kompasCmd,
 		mechanismsCmd, resumeCmd, cancelCmd, versionCmd)
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

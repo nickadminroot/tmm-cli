@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -30,6 +31,91 @@ func TestNewRequiresTokenForEveryAPIURL(t *testing.T) {
 				t.Fatalf("New() error = %v, want missing-token diagnostic", err)
 			}
 		})
+	}
+}
+
+func TestNewAnonymousDoesNotRequireOrSendToken(t *testing.T) {
+	t.Setenv("TMM_API_TOKEN", "")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Authorization"); got != "" {
+			t.Fatalf("anonymous request sent Authorization %q", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"format":"tmm-scene","version":2,"units":"mm","entities":[]}`))
+	}))
+	defer server.Close()
+	t.Setenv("TMM_API_URL", server.URL)
+	c, err := NewAnonymous()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.ResolveScene([]byte(`{"kind":"part"}`)); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestPublicJSONSceneAndCDWContracts(t *testing.T) {
+	scene := []byte(`{"kind":"part","entities":[]}`)
+	render := []byte(`{"format":"tmm-scene","version":2,"units":"mm","entities":[]}`)
+	challenge := "renderer-challenge"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Authorization"); got != "" {
+			t.Fatalf("public request sent Authorization %q", got)
+		}
+		if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/json" {
+			t.Fatalf("request = %s %s %q", r.Method, r.URL.Path, r.Header.Get("Content-Type"))
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var envelope map[string]any
+		if err := json.Unmarshal(body, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		switch r.URL.Path {
+		case "/v1/scenes/resolve":
+			if !bytes.Equal(body, scene) {
+				t.Fatalf("resolve body = %s, want %s", body, scene)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write(render)
+		case "/v1/cdw/scene":
+			if _, ok := envelope["scene"]; !ok {
+				t.Fatal("scene envelope omitted scene")
+			}
+			assertPublicPlanOptions(t, envelope, challenge)
+			w.Header().Set("Content-Type", "application/zip")
+			_, _ = w.Write([]byte("scene-plan-zip"))
+		case "/v1/cdw/render":
+			if _, ok := envelope["render"]; !ok {
+				t.Fatal("render envelope omitted render")
+			}
+			assertPublicPlanOptions(t, envelope, challenge)
+			w.Header().Set("Content-Type", "application/zip")
+			_, _ = w.Write([]byte("render-plan-zip"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, HTTP: server.Client()}
+	if got, err := c.ResolveScene(scene); err != nil || !bytes.Equal(got, render) {
+		t.Fatalf("ResolveScene = %q, %v", got, err)
+	}
+	if got, err := c.RenderCDWSceneContext(context.Background(), scene, challenge, map[string]any{"scale": 2.5}); err != nil || string(got) != "scene-plan-zip" {
+		t.Fatalf("RenderCDWSceneContext = %q, %v", got, err)
+	}
+	if got, err := c.RenderCDWRenderContext(context.Background(), render, challenge); err != nil || string(got) != "render-plan-zip" {
+		t.Fatalf("RenderCDWRenderContext = %q, %v", got, err)
+	}
+}
+
+func assertPublicPlanOptions(t *testing.T, envelope map[string]any, challenge string) {
+	t.Helper()
+	options, ok := envelope["options"].(map[string]any)
+	if !ok || options["version"] != float64(1) || options["agent_challenge"] != challenge {
+		t.Fatalf("public options = %#v", envelope["options"])
 	}
 }
 

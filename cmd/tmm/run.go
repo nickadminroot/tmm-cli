@@ -18,6 +18,8 @@ import (
 const (
 	kompasSceneOperation = "linkage-cdw-scene-plan"
 	kompasPageOperation  = "linkage-cdw-page-plan"
+	publicCDWScenePlan   = "cdw-scene-plan"
+	publicCDWRenderPlan  = "cdw-render-plan"
 )
 
 func positiveFinite(value float64) bool {
@@ -188,6 +190,37 @@ func runMarkdown(modelPath, documentPath, paperFormat, outputPath string, source
 		return client.ExitServer
 	}
 	return finish((bundle.Publisher{}).PublishBytes(result, outputPath))
+}
+
+// runResolve publishes the canonical Scene v2 document produced from one
+// high-level scene JSON input. This public endpoint is deliberately tokenless;
+// unlike runDomain("render"), it does not create an account-scoped run.
+func runResolve(inputPath, outputPath string) int {
+	scene, err := readInput(inputPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	c, err := client.NewAnonymous()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	renderJSON, err := c.ResolveSceneContext(ctx, scene)
+	if ctx.Err() != nil {
+		fmt.Fprintln(os.Stderr, "run was cancelled")
+		return client.ExitInterrupted
+	}
+	if err != nil {
+		if usage, ok := err.(*client.UsageError); ok {
+			fmt.Fprintln(os.Stderr, usage)
+			return client.ExitUsage
+		}
+		return handleLocalServerFailure(err)
+	}
+	return finish((bundle.Publisher{}).PublishBytes(renderJSON, outputPath))
 }
 
 func readInput(path string) ([]byte, error) {
@@ -362,7 +395,6 @@ func quoteMechanismContextWithFlag(
 		return false, client.ExitServer
 	}
 	if quote.Balance.MechanismsRemaining < 0 || quote.Balance.MechanismsReserved < 0 ||
-		(quote.Classification == "new" && !quote.RequiresCredit) ||
 		((quote.Classification == "known" || quote.Classification == "stock") && quote.RequiresCredit) {
 		fmt.Fprintln(os.Stderr, "mechanism quote contains an invalid balance or admission decision")
 		return false, client.ExitServer
@@ -382,11 +414,14 @@ func quoteMechanismContextWithFlag(
 		}
 	} else if quote.Classification == "stock" {
 		fmt.Fprintln(os.Stderr, "stock: Встроенный механизм; экспорт бесплатен и в библиотеку не добавляется.")
-	} else {
+	} else if quote.RequiresCredit {
 		before := quote.Balance.MechanismsRemaining
 		after := before - 1
 		fmt.Fprintf(os.Stderr, "new: score=%.6f threshold=%.6f balance before=%d after=%d\n",
 			quote.Similarity.Score, quote.Similarity.Threshold, before, after)
+	} else {
+		fmt.Fprintf(os.Stderr, "new: score=%.6f threshold=%.6f export is free; balance unchanged\n",
+			quote.Similarity.Score, quote.Similarity.Threshold)
 	}
 	if !quote.CanExport || (quote.RequiresCredit && quote.Balance.MechanismsRemaining < 1) {
 		fmt.Fprintln(os.Stderr, "insufficient: Недостаточно механизмов. Пополните баланс и повторите команду.")
@@ -444,6 +479,108 @@ func runKompasPage(modelPath, documentPath string, page int, paperFormat string,
 		func(ctx context.Context, runID, challenge string, allowNew bool) (*client.Status, error) {
 			return c.SubmitCDWPageContext(ctx, runID, mechanism, document, paperFormat, challenge, allowNew, page)
 		})
+}
+
+func runKompasSceneJSON(inputPath string, scale, targetMaxSide float64, outputPath string) int {
+	scene, err := readInput(inputPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	if scale != 0 && !positiveFinite(scale) {
+		fmt.Fprintln(os.Stderr, "scale must be a positive finite number")
+		return client.ExitUsage
+	}
+	if targetMaxSide != 0 && !positiveFinite(targetMaxSide) {
+		fmt.Fprintln(os.Stderr, "target-max-side must be a positive finite number")
+		return client.ExitUsage
+	}
+	if scale != 0 && targetMaxSide != 0 {
+		fmt.Fprintln(os.Stderr, "scale and target-max-side are mutually exclusive")
+		return client.ExitUsage
+	}
+	c, err := client.NewAnonymous()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	options := map[string]any{}
+	if scale != 0 {
+		options["scale"] = scale
+	}
+	if targetMaxSide != 0 {
+		options["target_max_side"] = targetMaxSide
+	}
+	return runPublicKompas(c, outputPath, []string{publicCDWScenePlan}, func(ctx context.Context, challenge string) ([]byte, error) {
+		return c.RenderCDWSceneContext(ctx, scene, challenge, options)
+	})
+}
+
+func runKompasRenderJSON(inputPath, outputPath string) int {
+	renderJSON, err := readInput(inputPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	c, err := client.NewAnonymous()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitUsage
+	}
+	return runPublicKompas(c, outputPath, []string{publicCDWRenderPlan}, func(ctx context.Context, challenge string) ([]byte, error) {
+		return c.RenderCDWRenderContext(ctx, renderJSON, challenge)
+	})
+}
+
+func runPublicKompas(c *client.Client, outputPath string, operations []string,
+	requestPlan func(context.Context, string) ([]byte, error)) int {
+	ctx, stopSignal := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stopSignal()
+	rendererClient, err := renderer.New()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitServer
+	}
+	capabilityCtx, cancelCapability := context.WithTimeout(ctx, 30*time.Second)
+	capabilities, err := rendererClient.GetCapabilitiesContext(capabilityCtx)
+	cancelCapability()
+	if ctx.Err() != nil {
+		fmt.Fprintln(os.Stderr, "run was cancelled")
+		return client.ExitInterrupted
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitServer
+	}
+	planCtx, cancelPlan := context.WithTimeout(ctx, 15*time.Minute)
+	planZIP, err := requestPlan(planCtx, capabilities.Challenge)
+	cancelPlan()
+	if ctx.Err() != nil {
+		fmt.Fprintln(os.Stderr, "run was cancelled")
+		return client.ExitInterrupted
+	}
+	if err != nil {
+		if usage, ok := err.(*client.UsageError); ok {
+			fmt.Fprintln(os.Stderr, usage)
+			return client.ExitUsage
+		}
+		return handleLocalServerFailure(err)
+	}
+	plan, err := bundle.ReadPublicPlan(planZIP, operations, capabilities.Challenge)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitServer
+	}
+	cdw, err := rendererClient.RenderContext(ctx, plan)
+	if ctx.Err() != nil {
+		fmt.Fprintln(os.Stderr, "run was cancelled")
+		return client.ExitInterrupted
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return client.ExitServer
+	}
+	return finish((bundle.Publisher{}).PublishBytes(cdw, outputPath))
 }
 
 func runPaidKompas(c *client.Client, mechanism []byte, outputPath, operation string, acceptNew bool,
