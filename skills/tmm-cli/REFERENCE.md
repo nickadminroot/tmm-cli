@@ -11,17 +11,14 @@ No private TMM source revision is a dependency.
 | --- | --- |
 | `tmm linkage INPUT --output DIR` | Run free generic linkage analysis and publish the returned artifact tree, including native XMCD and its text preview. |
 | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render Markdown with its referenced local scenes and publish the preview. |
-| `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Render one Scene v2 input. |
-| `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve high-level scene JSON to Scene v2 JSON without a token. |
+| `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Run the synchronous public Scene v2 calculation. |
+| `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve high-level scene JSON to Scene v2 JSON. |
 | `tmm svg INPUT --output FILE [--format svg\|png]` | Publish an SVG or PNG preview. |
 | `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output. |
-| `tmm kompas scene MODEL.yaml SCENE --output FILE [--accept-new-mechanism]` | Render one named scene through the local KOMPAS Renderer. |
-| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH] [--accept-new-mechanism]` | Render one Markdown page through the local renderer. |
-| `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW without a token. |
-| `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary Scene v2 JSON to CDW without a token. |
-| `tmm mechanisms` | Read the account mechanism balance and registry. |
-| `tmm resume UUID --output PATH` | Resume a permitted free operation or accepted native-XMCD legacy result. |
-| `tmm cancel UUID` | Cancel a submitted run when the operation permits it. |
+| `tmm kompas scene MODEL.yaml SCENE --output FILE` | Request a signed YAML scene plan and render it through the local KOMPAS Renderer. |
+| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Request a signed Markdown page plan and render it through the local Renderer. |
+| `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW. |
+| `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary Scene v2 JSON to CDW. |
 | `tmm version` | Print the client version. |
 
 Check `tmm --help` from the released/source-built binary for the current
@@ -29,9 +26,8 @@ flags. This table is not permission to call an undocumented command.
 
 ## Environment
 
-- `TMM_API_TOKEN` is required for account-scoped API requests and must be
-  process-local. Public scene resolution and arbitrary JSON CDW plan requests
-  intentionally omit `Authorization`.
+- No API token or bearer header is used by supported commands. Keep unrelated
+  credentials out of the environment, files, and logs.
 - `TMM_API_URL` is an endpoint override for source/development builds; do not
   put credentials in it. Release builds use their embedded HTTPS endpoint.
 - `TMM_KOMPAS_RENDERER_URL` is optional and must point to a local HTTP
@@ -44,9 +40,9 @@ flags. This table is not permission to call an undocumented command.
 | ---: | --- |
 | `0` | Success. |
 | `2` | Usage or local input error. |
-| `3` | Authentication, account, or mechanism-balance failure. |
+| `3` | Reserved upstream authentication/account failure; supported commands do not initiate account requests. |
 | `4` | Remote domain failure. |
-| `5` | Resumable free-operation transport failure. |
+| `5` | Synchronous request transport failure or interruption before a result. |
 | `6` | Server, worker, or Renderer failure. |
 
 Read the structured stderr diagnostic rather than translating one error into a
@@ -54,18 +50,33 @@ different class. Result-expired and result-lost are distinct remote errors.
 
 ## Safety rules
 
-- Never log or echo `TMM_API_TOKEN`, Authorization headers, cookies, or signed
-  URLs.
+- Never log or echo Authorization headers, cookies, or signed URLs.
 - Keep source YAML and output directories outside the installed skill.
-- For legacy YAML KOMPAS scene/page commands, obtain explicit user consent
-  before passing the compatibility-only `--accept-new-mechanism` flag; it does
-  not reserve or consume credit.
-- A successful server admission does not mean a local Renderer completed; inspect
-  the actual result and any same-run resume instruction for KOMPAS operations.
+- Verify the signed KOMPAS plan and inspect the actual local Renderer result;
+  receiving a plan is not evidence that a `.cdw` was created.
 - The public skill contains no server source, private checkout, or local
   calculation fallback.
 
-## Public JSON endpoint contract
+## Synchronous calculation contract
+
+`tmm linkage`, `tmm render`, and `tmm svg` send a multipart request to
+`POST /v1/compute`. The `request` part is a v1 JSON envelope:
+
+```json
+{"version":1,"operation":"linkage|render|svg","entrypoint":"...","options":{}}
+```
+
+The `bundle` part is the authored input ZIP. The response is an
+`application/zip` result with `_tmm-result.json` and an
+`X-Result-Sha256` header. The CLI verifies the lowercase SHA-256 digest and
+the manifest operation/publication before writing files. Requests are
+synchronous and do not expose run, quote, balance, or resume state.
+
+`tmm xmcd` posts YAML to `POST /v1/linkage/xmcd`; the response is native
+Mathcad XML. `tmm md` posts model/document/options (and an optional `scenes`
+JSON object) to `POST /v1/linkage/markdown/render`.
+
+## Public JSON and YAML KOMPAS endpoint contract
 
 `tmm resolve` posts the high-level `.scene.json` bytes directly to
 `POST /v1/scenes/resolve` and writes the returned Scene v2 `.render.json`.
@@ -76,6 +87,13 @@ with `"render": OBJECT` at `POST /v1/cdw/render`. Both CDW endpoints return a
 signed `application/zip` plan; the CLI validates its manifest and challenge,
 then sends `plan.json` to the loopback KOMPAS Renderer. No YAML mechanism,
 quote, balance, registry admission, or bearer token is involved.
+
+`tmm kompas scene` sends the YAML mechanism and options to
+`POST /v1/linkage/cdw/scene`; `tmm kompas page` sends the YAML mechanism,
+Markdown document, options, and optional `scenes` JSON object to
+`POST /v1/linkage/cdw/page`. Both return the same signed plan shape. The
+options include `version: 1`, the Renderer challenge, and the requested scene
+or page (`format`, `page`, and optional `source_path`).
 
 Agents may freely edit any received `.scene.json` or `.render.json` intermediate
 file to improve or repair presentation before calling the tokenless commands.

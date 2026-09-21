@@ -1,7 +1,6 @@
 package bundle
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -35,26 +34,4 @@ func atomicWrite(target string, data []byte) error {
 		return rerr
 	}
 	return nil
-}
-
-func PrintResumeLines(runID, outputPath string) {
-	abs, aerr := filepath.Abs(outputPath)
-	display := outputPath
-	if aerr == nil {
-		display = abs
-	}
-	escaped := escapeQuotes(display)
-	fmt.Fprintf(os.Stderr, "Run ID: %s\n", runID)
-	fmt.Fprintf(os.Stderr, "Resume: tmm resume %s --output \"%s\"\n", runID, escaped)
-}
-
-func escapeQuotes(path string) string {
-	out := make([]byte, 0, len(path))
-	for i := 0; i < len(path); i++ {
-		if path[i] == '"' {
-			out = append(out, '\\')
-		}
-		out = append(out, path[i])
-	}
-	return string(out)
 }

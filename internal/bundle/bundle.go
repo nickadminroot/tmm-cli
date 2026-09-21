@@ -3,7 +3,6 @@ package bundle
 import (
 	"archive/zip"
 	"bytes"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
@@ -64,16 +63,6 @@ func singleFile(inputPath, logical string) (*Bundle, error) {
 		return nil, err
 	}
 	return &Bundle{Data: buf.Bytes(), Entrypoint: logical}, nil
-}
-
-func newUUIDv4() (string, error) {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
-		return "", err
-	}
-	b[6] = (b[6] & 0x0f) | 0x40
-	b[8] = (b[8] & 0x3f) | 0x80
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16]), nil
 }
 
 // Manifest mirrors _tmm-result.json inside every result ZIP.
@@ -417,10 +406,9 @@ func ReadPlan(zipData []byte, operation, runID, challenge string) ([]byte, error
 	return plan, nil
 }
 
-// ReadPublicPlan validates a tokenless arbitrary-scene KOMPAS plan ZIP and
-// returns its signed plan member. Unlike the account-scoped linkage plan, this
-// contract has no durable run ID; the fresh local-renderer challenge is the
-// binding that prevents replay against another renderer session.
+// ReadPublicPlan validates a tokenless KOMPAS plan ZIP and returns its signed
+// plan member. The fresh local-renderer challenge is the binding that prevents
+// replay against another renderer session.
 func ReadPublicPlan(zipData []byte, operations []string, challenge string) ([]byte, error) {
 	if len(operations) == 0 || strings.TrimSpace(challenge) == "" {
 		return nil, fmt.Errorf("public KOMPAS plan binding is invalid")
@@ -845,9 +833,4 @@ func validScene(data []byte) bool {
 	return json.Unmarshal(scene["format"], &format) == nil && format == "tmm-scene" &&
 		json.Unmarshal(scene["version"], &version) == nil && version == 2 &&
 		json.Unmarshal(scene["units"], &units) == nil && units == "mm"
-}
-
-// NewUUIDv4 returns a random RFC 4122 version 4 UUID string.
-func NewUUIDv4() (string, error) {
-	return newUUIDv4()
 }

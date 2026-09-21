@@ -1,22 +1,28 @@
 ---
 name: tmm-cli
-description: Install and operate the public TMM CLI for linkage, rendering, exports, mechanisms, resume, cancel, and version while keeping credentials out of all user-visible data.
+description: Install and operate the public TMM CLI for linkage, rendering, XMCD, Markdown, KOMPAS export, and version without account credentials.
 ---
 
 # TMM CLI
 
-Requires a released tmm binary; account-scoped operations use TMM_API_TOKEN, while arbitrary JSON resolution/CDW export is public and tokenless. Native CDW export still requires the local KOMPAS Renderer.
+The public `tmm` binary is a synchronous transport and publication client.
+All supported calculation, scene, XMCD, Markdown, and KOMPAS plan requests are
+tokenless. It sends authored YAML, Markdown, or scene JSON to the TMM service,
+then writes the declared artifact locally. It does not calculate mechanisms or
+run Mathcad/KOMPAS on its own. Native CDW export still requires the local
+KOMPAS Renderer and KOMPAS installation.
 
-Use the public `tmm` binary as a thin remote client. It sends the user's
-authored YAML, document, or intermediate scene JSON to the TMM service and
-writes declared artifacts locally. It does not calculate mechanisms or run
-Mathcad/KOMPAS on its own.
+Use this skill together with [tmm-yaml](../tmm-yaml/SKILL.md),
+[metric-synthesis](../metric-synthesis/SKILL.md),
+[mathcad-mechanisms](../mathcad-mechanisms/SKILL.md), and
+[tmm-graphics](../tmm-graphics/SKILL.md). The recommended project and homework
+sections are in the public [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md).
 
 ## Install and verify
 
 1. Download the archive for the current platform from the public
-   [TMM CLI releases](https://github.com/nickadminroot/tmm-cli/releases).
-   Use the release assets and checksum file supplied by the publisher; do not
+   [TMM CLI releases](https://github.com/nickadminroot/tmm-cli/releases). Use
+   the release assets and checksum file supplied by the publisher; do not
    clone a private source checkout.
 2. Verify the downloaded archive before extracting it. The checksum file lists
    every platform asset, so check only the row for the file you downloaded:
@@ -30,8 +36,7 @@ Mathcad/KOMPAS on its own.
    On macOS pipe the matching row to `shasum -a 256 -c -`. On Windows compare
    `Get-FileHash` with the matching filename row. Running `sha256sum -c
    checksums.txt` is valid only after downloading every archive in the
-   release. If a signed checksum bundle is supplied, verify it with the
-   release's published identity before installation.
+   release.
 3. Put the verified executable in a user-owned `PATH` directory and check:
 
    ```bash
@@ -39,114 +44,99 @@ Mathcad/KOMPAS on its own.
    tmm --help
    ```
 
-The command contract is in [REFERENCE.md](REFERENCE.md). The CLI binary is
-versioned by its `tmm-cli/v*` release; confirm that `tmm version` and the help
-for the required command work before using it.
+The exact command contract is in [REFERENCE.md](REFERENCE.md). Confirm that
+the binary version and help describe the release you installed.
 
-## Authentication and secrets
+## Endpoint and environment contract
 
-Set the token only in the process environment:
+The CLI reads `TMM_API_URL` only as an endpoint override for source or
+development builds. Release builds use their embedded HTTPS endpoint. No
+`TMM_API_TOKEN` is read, required, or sent, and no synthetic bearer header is
+created. Keep unrelated credentials out of YAML, URLs, prompts, repositories,
+and logs.
 
-```bash
-export TMM_API_TOKEN='token-from-the-account'
-```
+The public transport is:
 
-Keep it out of argv, YAML, URLs, shell history, prompts, chat, repository
-files, and logs. Never paste a token into a diagnostic or an example.
+- `linkage`, `render`, and `svg`: synchronous `POST /v1/compute` with a v1
+  request envelope and ZIP bundle; the client verifies the
+  `X-Result-Sha256` checksum and `_tmm-result.json` manifest before publishing.
+- `xmcd`: `POST /v1/linkage/xmcd`, returning native Mathcad XML.
+- `resolve`: `POST /v1/scenes/resolve`, returning Scene v2 `.render.json`.
+- `md`: `POST /v1/linkage/markdown/render`, uploading the model, document,
+  explicitly referenced local scenes, and options.
+- YAML `kompas scene` and `kompas page`: synchronous signed plans from
+  `/v1/linkage/cdw/scene` and `/v1/linkage/cdw/page`; challenge/signature
+  verification remains required before sending `plan.json` to the local
+  Renderer.
+- JSON `kompas scene-json` and `kompas render-json`: signed plans from
+  `/v1/cdw/scene` and `/v1/cdw/render`.
 
-`TMM_API_TOKEN` is not needed for `tmm resolve`, `tmm kompas scene-json`, or
-`tmm kompas render-json`. Those commands still use `TMM_API_URL`; they must
-never send an empty or synthetic bearer header.
+The service owns schema validation and calculation. The CLI validates transport
+checksums, result manifests, signed renderer plans, and local output paths.
 
 ## Workflow
 
-1. Prepare or receive one physical YAML with [tmm-yaml](../tmm-yaml/SKILL.md).
-2. Use `tmm linkage INPUT --output DIR` for the free generic analysis; its
-   result tree includes the native XMCD and text preview artifacts.
-3. Use `tmm xmcd INPUT --output FILE.xmcd` when only the native Mathcad file is
-   needed. This is a free direct request and has no admission flag.
-4. Inspect the returned status and artifacts. Keep the output path outside the
-   installed skill directory.
-5. If the result contains a `.scene.json` or `.render.json` intermediate,
-   agents may edit that JSON as needed to improve or repair presentation
-   (labels, visibility, line weights, layout, and other schema-supported
-   drawing details). Keep a high-level `.scene.json` valid for its scene-input
-   contract and a `.render.json` valid Scene v2 JSON. Keep the edited file
-   outside the installed skill and render it with `tmm kompas scene-json` or
-   `tmm kompas render-json` without a token.
-6. Use `tmm resolve INPUT.scene.json --output OUTPUT.render.json` to convert a
-   high-level scene to Scene v2 without a token. Use `tmm kompas scene-json` for
-   direct high-level-scene CDW export, or `tmm kompas render-json` for an
-   already-resolved `.render.json` file. Both require the local KOMPAS Renderer.
-7. Use `tmm resume UUID --output PATH` only where the returned operation says
-   it is resumable (including accepted native-XMCD legacy runs). Use the same run;
-   never resubmit a legacy account-scoped operation.
-8. Use `tmm cancel UUID` only for a submitted run that the current contract
-   allows to cancel.
+1. Prepare one physical YAML with [tmm-yaml](../tmm-yaml/SKILL.md).
+2. Use `tmm linkage MODEL.yaml --output DIR` for the generic linkage artifact
+   tree, including native XMCD and its text preview.
+3. Use `tmm xmcd MODEL.yaml --output FILE.xmcd` when only the native Mathcad
+   worksheet is needed. Edit and statically validate it with
+   [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md), then use native
+   Mathcad for recalculation when available.
+4. Keep any returned `.scene.json` and `.render.json` outside the installed
+   skill. Agents may edit schema-supported labels, visibility, line weights,
+   layout, and other presentation details while preserving the worksheet's
+   values and units. Resolve with `tmm resolve`, or send either form directly
+   to `tmm kompas scene-json`/`tmm kompas render-json`.
+5. Use `tmm md MODEL.yaml DOCUMENT.md --format A1|A2|A3 --output FILE` for a
+   Markdown preview. The CLI uploads only scene files explicitly referenced
+   by directives or graphic bindings; absent files use the server's generated
+   catalog. Use `--source-path` consistently when the document has a logical
+   publication path. Use `tmm kompas page` to render one page to native CDW.
+6. For a high-level scene, use `tmm kompas scene-json INPUT.scene.json` with
+   `--scale` or `--target-max-side`; for a resolved Scene v2 file use
+   `tmm kompas render-json INPUT.render.json`. Both require the local Renderer.
 
-## Coursework workflow
-
-Use [the coursework sections guide](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md)
-to distinguish the two assignments. A **course project** may include synthesis,
-YAML modeling, kinematics, dynamics, analytical kinetostatics and gear/cam
-studies. These are sections, not a mandatory sequence: select and order them
-according to the task. Dynamics output from the site/CLI is alpha material
-and needs independent work.
-
-**Coursework homework** uses YAML modeling, kinematics, and the requested
-single-position kinematic and graphical kinetostatic sheets. Do not add the
-other project sections automatically or confuse graphical with analytical
-kinetostatics. Use [tmm-graphics](../tmm-graphics/SKILL.md) for drawing formats,
-custom plots and Markdown-to-KOMPAS commands. Every graph in the final
-Mathcad document needs its matching KOMPAS rendering.
+The two coursework groups are described in
+[`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md).
+A course project may select synthesis, YAML, kinematics, independently
+authored dynamics, analytical kinetostatics, and gear/cam studies in the order
+required by its brief. First-semester homework usually selects YAML,
+kinematics, and the requested single-position kinematic/graphical
+kinetostatic sheets. Do not add omitted sections automatically. Every graph in
+the final Mathcad worksheet needs a matching scene and native KOMPAS rendering;
+see [tmm-graphics](../tmm-graphics/SKILL.md).
 
 ## XMCD editing and acceptance
 
 Use [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md) for mechanism methods,
-notation and worksheet layout; it includes the `xmcd` authoring library.
+notation, and worksheet layout; it includes the `xmcd` authoring library.
 
-For any agent-authored or agent-edited classic Mathcad `.xmcd`, use the
+For every agent-authored or agent-edited classic Mathcad `.xmcd`, use the
 standalone [`xmcd` library](https://github.com/nickadminroot/xmcd) as the
-editing and static-validation API. Load an existing worksheet with
+editing and static-validation API. Load a worksheet with
 `Worksheet.read(...)`, edit typed regions and expressions, and write it with
-`Worksheet.write(...)`. The bundled `mathcad-mechanisms` adapter uses this
-typed library too. Preserve editable formulas instead of rewriting raw XML.
+`Worksheet.write(...)`. Preserve editable formulas instead of rewriting raw
+XML.
 
 Keep the two acceptance gates separate:
 
 - Static validation uses `Worksheet.check()`, `Worksheet.validate()`, and the
-  validation performed by `Worksheet.write(...)`. `validate(...)` and
-  `calculation_errors(...)` can inspect structure and saved diagnostics, but
-  none of these operations executes Mathcad or recalculates formulas.
+  validation performed by `Worksheet.write(...)`. These operations do not run
+  Mathcad or recalculate formulas.
 - Native acceptance opens, recalculates, and saves the worksheet in installed
   classic Mathcad, then inspects saved results, calculation errors, and graph
-  output. A clean static report or a newly written file is not evidence of a
-  native recalculation.
-
-After `tmm linkage` or `tmm xmcd` publishes an XMCD artifact, use the library
-for any agent edit and static check. Run native Mathcad separately whenever
-formula, solver, or graph results need runtime acceptance and that environment
-is available.
-
-## Admission
-
-`--accept-new-mechanism` applies only to the legacy YAML KOMPAS scene/page
-export. Obtain explicit user consent before passing that flag. Arbitrary JSON
-CDW commands never quote or admit a mechanism. XMCD and generic `tmm linkage`
-are free operations and do not use an admission flag.
-
-KOMPAS requires the separately installed local Renderer. Mathcad/XMCD and
-ordinary linkage/YAML preparation do not require KOMPAS. Do not put renderer
-credentials or URLs in a skill request.
+  output. A clean static report is not evidence of native recalculation.
 
 ## Diagnostics
 
-Keep stdout for the command's declared output. Read stderr for the stable
-diagnostic code, stage, field/line/column, and ordered step status. Preserve the
-exit code. A transport or accepted-run failure may include a Run ID and a
-same-run Resume command; follow it only when the command reference says it is
-allowed.
+Keep stdout for the command's declared output path. Read stderr for the stable
+diagnostic code, stage, field/line/column, and ordered step status. Preserve
+the exit code. Synchronous operations do not create account runs, quote or
+balance reservations, resume commands, or cancellation IDs; Ctrl+C interrupts
+the local request. A `6` from a KOMPAS command can indicate a server, worker,
+Renderer, or native installation failure.
 
 The commands and public endpoints above are the complete supported surface. Do
 not invent a `tmm skills` subcommand, local calculation fallback, upload
-installer, or a new authentication mechanism.
+installer, or authentication mechanism.

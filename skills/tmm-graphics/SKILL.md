@@ -15,7 +15,7 @@ that the drawing documents.
 The project and homework sections are described in the public [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md). Use
 [`mathcad-mechanisms`](../mathcad-mechanisms/SKILL.md) for XMCD authoring and
 editing, [`tmm-yaml`](../tmm-yaml/SKILL.md) for the physical mechanism, and
-[`tmm-cli`](../tmm-cli/SKILL.md) for installation, credentials, and diagnostics.
+[`tmm-cli`](../tmm-cli/SKILL.md) for installation, tokenless commands, and diagnostics.
 The detailed scene contracts and examples are in
 [`REFERENCE.md`](REFERENCE.md).
 
@@ -57,9 +57,9 @@ labels; it is not a replacement for the XMCD calculation.
    ```
 
    This public endpoint is tokenless. Exit status `0` and a non-empty
-   `.render.json` are required before continuing. For an account-scoped render
-   with an explicit scale, `tmm render` is also available, but it requires
-   `TMM_API_TOKEN` and one of `--scale` or `--target-max-side`.
+   `.render.json` are required before continuing. For a synchronous Scene v2
+   calculation with an explicit scale, `tmm render` uses the same tokenless
+   public compute route and accepts one of `--scale` or `--target-max-side`.
 4. Make the native KOMPAS drawing from either form:
 
    ```bash
@@ -166,10 +166,11 @@ tmm kompas page "/absolute/work/model.yaml" "/absolute/work/sheet.md" \
   --output "/absolute/work/sheet.cdw"
 ```
 
-These Markdown commands use the account-scoped mechanism pipeline. A legacy
-new-mechanism run may require the compatibility flag
-`--accept-new-mechanism`; ask the user immediately before using that flag.
-Arbitrary `.scene.json`/`.render.json` CDW commands do not use it.
+These Markdown commands use the synchronous public mechanism pipeline. They
+do not require an account token, quote, balance reservation, or
+`--accept-new-mechanism` flag. The YAML mechanism, Markdown document, options,
+and explicitly referenced local scenes are sent to the public CDW plan route;
+the returned signed plan is still checked before the local Renderer runs it.
 
 ## Completion gate
 

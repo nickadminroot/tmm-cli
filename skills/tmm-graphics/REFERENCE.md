@@ -374,11 +374,11 @@ small so the KOMPAS layout remains deterministic.
 | Goal | Command | Token | Local KOMPAS |
 | --- | --- | --- | --- |
 | Resolve high-level scene to `.render.json` | `tmm resolve INPUT.scene.json --output OUT.render.json` | no | no |
-| Render account-scoped high-level scene | `tmm render INPUT.scene.json --scale N --output OUT.render.json` | yes | no |
+| Compute a high-level Scene v2 result | `tmm render INPUT.scene.json --scale N --output OUT.render.json` | no | no |
 | Direct high-level scene to CDW | `tmm kompas scene-json INPUT.scene.json --output OUT.cdw [--scale N\|--target-max-side N]` | no | yes |
 | Resolved Scene v2 to CDW | `tmm kompas render-json INPUT.render.json --output OUT.cdw` | no | yes |
-| Markdown preview | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output OUT.zip` | yes | no |
-| One Markdown page to CDW | `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output OUT.cdw` | yes | yes |
+| Markdown preview | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output OUT.zip` | no | no |
+| One Markdown page to CDW | `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output OUT.cdw` | no | yes |
 
 Keep stdout for the CLI's output path. Read stderr for the stable diagnostic,
 stage, field, and exit class. A `6` from the KOMPAS path means server/worker/

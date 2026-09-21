@@ -201,6 +201,5 @@ intermediates, not physical YAML. An agent may edit them arbitrarily to improve
 or repair drawing presentation. Keep a high-level `.scene.json` valid for its
 scene-input contract and a resolved `.render.json` valid Scene v2 JSON. Resolve
 a high-level file with `tmm resolve`, then render the edited `.render.json`
-with `tmm kompas render-json`; both arbitrary JSON CDW paths are tokenless and
-do not affect mechanism balance or registry admission. Native CDW output still
-requires the local KOMPAS Renderer.
+with `tmm kompas render-json`; both arbitrary JSON CDW paths are tokenless.
+Native CDW output still requires the local KOMPAS Renderer.

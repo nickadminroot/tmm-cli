@@ -44,8 +44,8 @@ container for sampled output or renderer settings.
    ```
 
    Inspect the command exit status and returned artifact paths. A prepared file
-   is not verified until this command actually runs. If the CLI, token, network,
-   or physical data is unavailable, report the exact blocker and stop.
+   is not verified until this command actually runs. If the CLI, network, or
+   physical data is unavailable, report the exact blocker and stop.
 6. Report the selected pose/branch, input path, verification status, and useful
    artifacts. Keep synthesis provenance separate from YAML fields that were
    supplied or selected by the user.

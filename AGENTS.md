@@ -1,12 +1,11 @@
 # tmm-cli agent guide
 
 Public thin client for the TMM remote execution service. It sends authored
-inputs to the private server over HTTPS and publishes returned artifacts
-locally. Account-scoped operations use the bearer token; public arbitrary-scene
-resolution and CDW plan endpoints are explicitly tokenless. KOMPAS CDW
-creation obtains a server-signed plan and sends it to the installed localhost
-KOMPAS Renderer. Mathcad 15 XMCD creation uses the free direct server endpoint
-and never needs the local renderer.
+inputs to the service over HTTPS and publishes returned artifacts locally.
+Calculation, Mathcad, Markdown, Scene v2, and KOMPAS plan routes are
+synchronous and tokenless. KOMPAS CDW creation obtains a server-signed plan
+and sends it to the installed localhost KOMPAS Renderer. Mathcad 15 XMCD
+creation uses the direct server endpoint and never needs the local renderer.
 
 Read [`README.md`](README.md) before changing the client; it is the consumer
 contract for commands, environment variables, output, and exit classes.
@@ -26,13 +25,8 @@ fallback execution out of the client.
 ## Transport and output invariants
 
 - Require `--output` for every artifact-producing command.
-- Require `TMM_API_TOKEN` for every account-scoped API request, including
-  loopback HTTP development URLs. Public arbitrary-scene endpoints are the
-  only tokenless API exception. Keep tokens out of argv and URLs.
-- Keep stdout limited to final written paths or the fixed fields of
-`tmm mechanisms`.
-- Send diagnostics, including mechanism quote information, to stderr and
-preserve the exit classes in the README.
+- Keep stdout limited to final written paths.
+- Send diagnostics to stderr and preserve the exit classes in the README.
 - Send the model YAML and Markdown bytes supplied by the user unchanged.
   For `md` and `kompas page`, collect only visible explicit scene bindings
   (`tmm-scene`, `tmm-scale`, `tmm-segment`, `tmm-lever`) from adjacent local
@@ -45,24 +39,23 @@ preserve the exit classes in the README.
   `application/x-mathcad+xml` response, and publishes only the XMCD bytes.
 - Treat uploaded inputs and returned artifacts as transport data, not as
   client-side solver state.
+- `tmm linkage`, `tmm render`, and `tmm svg` send the v1 envelope and bundle
+  ZIP to `POST /v1/compute`; require `application/zip`, `_tmm-result.json`,
+  and a matching `X-Result-Sha256` before publication.
 
-Legacy YAML KOMPAS commands first obtain a fresh renderer challenge, then quote
-the exact model bytes. They remain account-scoped for compatibility. Arbitrary
-`.scene.json` and `.render.json` commands obtain the same challenge, call the
-public plan endpoint with the challenge, validate the returned plan ZIP, and
-send only the signed plan to the local renderer; they never quote YAML or
+YAML and arbitrary JSON KOMPAS commands obtain a fresh renderer challenge, call
+their synchronous public plan endpoint, validate the returned plan ZIP, and
+send only the signed plan to the local renderer. They never quote YAML or
 reserve a mechanism.
 
 XMCD is a free direct request and has no renderer challenge, mechanism quote,
 allowance flag, or balance reservation. Require the native XML content type and
 bounded non-empty bytes before publishing.
 
-Require protocol-v2 renderer capabilities, validate the legacy account-scoped KOMPAS result
-manifest and member checksum, validate the signed plan envelope and its
-run/challenge binding, and verify the renderer CDW response checksum before
+Require protocol-v2 renderer capabilities, validate the signed plan envelope and
+its challenge binding, and verify the renderer CDW response checksum before
 publishing bytes. Unavailable, incompatible, busy, and integrity renderer
-failures use exit code `6` and do not emit resume guidance. Legacy account-scoped
-KOMPAS runs are not resumable through `tmm resume`.
+failures use exit code `6`.
 
 Never log the `Authorization` header, including in debug builds.
 
@@ -80,10 +73,8 @@ service. Confirm stdout, stderr, exit code, output path, and transport-failure
 behavior; do not substitute a local calculation fallback.
 
 Repo-local regeneration discovers `.tmm/dev/credentials.json` only after
-`pnpm db:init -- dev`, `pnpm dev`, and `pnpm dev -- credentials`; installed CLI
-invocations require an explicit `TMM_API_TOKEN` only for account-scoped
-commands. `tmm resolve`, `tmm kompas scene-json`, and
-`tmm kompas render-json` use the public endpoints without a token.
+`pnpm db:init -- dev` and `pnpm dev`; installed CLI invocations use public
+endpoints without credentials.
 
 ## Checks
 

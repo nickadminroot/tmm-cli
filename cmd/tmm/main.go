@@ -1,14 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
 
-	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/bundle"
 	"github.com/nickadminroot/tmm/apps/tmm-cli/internal/client"
 	"github.com/spf13/cobra"
 )
@@ -247,13 +244,11 @@ func main() {
 
 	var (
 		sceneScale      float64
-		sceneAcceptNew  bool
 		jsonSceneScale  float64
 		jsonSceneTarget float64
 		pageFormat      string
 		pageSourcePath  string
 		pageNumber      int
-		pageAcceptNew   bool
 	)
 	kompasCmd := &cobra.Command{
 		Use:   "kompas",
@@ -272,13 +267,12 @@ func main() {
 			if cmd.Flags().Changed("scale") && !positiveFinite(sceneScale) {
 				return fmt.Errorf("--scale must be a positive finite number")
 			}
-			os.Exit(runKompasScene(args[0], args[1], sceneScale, sceneAcceptNew, out))
+			os.Exit(runKompasScene(args[0], args[1], sceneScale, out))
 			return nil
 		},
 	}
 	addOutput(sceneCmd)
 	sceneCmd.Flags().Float64Var(&sceneScale, "scale", 0, "explicit positive scene scale")
-	sceneCmd.Flags().BoolVar(&sceneAcceptNew, "accept-new-mechanism", false, "confirm one new mechanism admission (compatibility flag)")
 	kompasCmd.AddCommand(sceneCmd)
 
 	jsonSceneCmd := &cobra.Command{
@@ -345,7 +339,7 @@ func main() {
 			if pageFormat != "A1" && pageFormat != "A2" && pageFormat != "A3" {
 				return fmt.Errorf("--format must be one of A1|A2|A3")
 			}
-			os.Exit(runKompasPage(args[0], args[1], pageNumber, pageFormat, pageAcceptNew, out, pageSourcePath))
+			os.Exit(runKompasPage(args[0], args[1], pageNumber, pageFormat, out, pageSourcePath))
 			return nil
 		},
 	}
@@ -355,138 +349,7 @@ func main() {
 	pageCmd.Flags().StringVar(&pageFormat, "format", "", "sheet format A1|A2|A3 (required)")
 	_ = pageCmd.MarkFlagRequired("format")
 	pageCmd.Flags().StringVar(&pageSourcePath, "source-path", "", "logical Markdown source path")
-	pageCmd.Flags().BoolVar(&pageAcceptNew, "accept-new-mechanism", false, "confirm one new mechanism admission (compatibility flag)")
 	kompasCmd.AddCommand(pageCmd)
-
-	mechanismsCmd := &cobra.Command{
-		Use:   "mechanisms",
-		Short: "Print mechanism balance and registry",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			os.Exit(runMechanisms())
-			return nil
-		},
-	}
-
-	resumeCmd := &cobra.Command{
-		Use:   "resume UUID",
-		Short: "Resume polling and publication for an acknowledged run",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			out, oerr := requireOutput(cmd)
-			if oerr != nil {
-				return oerr
-			}
-			c, cerr := client.New()
-			if cerr != nil {
-				fmt.Fprintln(os.Stderr, cerr)
-				os.Exit(client.ExitUsage)
-			}
-			ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-			defer stop()
-			final, werr := c.WaitContext(ctx, args[0])
-			if ctx.Err() != nil {
-				cancelRun(c, args[0])
-				fmt.Fprintln(os.Stderr, "run was cancelled")
-				os.Exit(client.ExitInterrupted)
-			}
-			if werr != nil {
-				fmt.Fprintln(os.Stderr, werr)
-				if apiErr, ok := werr.(*client.APIError); ok && apiErr.Status != 0 {
-					os.Exit(apiErr.Class())
-				}
-				printResume(args[0], out)
-				os.Exit(client.ExitTransport)
-			}
-			if err := validateRunStatus(final, args[0], final.Operation); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(client.ExitServer)
-			}
-			if final.State == "succeeded" {
-				if resumeErr := resumableOperationError(final.Operation); resumeErr != nil {
-					fmt.Fprintln(os.Stderr, resumeErr)
-					os.Exit(client.ExitDomain)
-				}
-				data, rerr := c.ResultContext(ctx, final)
-				if rerr != nil {
-					fmt.Fprintln(os.Stderr, rerr)
-					os.Exit(client.ExitServer)
-				}
-				if final.Operation == "linkage-xmcd" {
-					if xerr := publishXMCDResult(data, out); xerr != nil {
-						fmt.Fprintln(os.Stderr, xerr)
-						os.Exit(client.ExitServer)
-					}
-					os.Exit(client.ExitOK)
-				}
-				manifest, merr := bundle.ReadManifest(data)
-				if merr != nil {
-					fmt.Fprintln(os.Stderr, merr)
-					os.Exit(client.ExitServer)
-				}
-				if final.Result.EntryCount != len(manifest.Entries) {
-					fmt.Fprintln(os.Stderr, "result entry count does not match the manifest")
-					os.Exit(client.ExitServer)
-				}
-				if manifest.Operation != final.Operation {
-					fmt.Fprintln(os.Stderr, "result manifest operation does not match the run")
-					os.Exit(client.ExitServer)
-				}
-				expectedPublication := map[string]string{"linkage": "tree", "render": "single", "svg": "single"}[final.Operation]
-				if manifest.Publication != expectedPublication {
-					fmt.Fprintln(os.Stderr, "result manifest publication does not match the run")
-					os.Exit(client.ExitServer)
-				}
-				p := bundle.Publisher{}
-				switch manifest.Publication {
-				case "tree":
-					os.Exit(finish(p.PublishTree(data, manifest, out)))
-				case "page-set":
-					os.Exit(finish(p.PublishPageSet(data, manifest, out)))
-				case "single":
-					os.Exit(finish(p.PublishSingle(data, manifest, out)))
-				default:
-					fmt.Fprintln(os.Stderr, "result manifest publication is unsupported")
-					os.Exit(client.ExitServer)
-				}
-			}
-			if final.State == "cancelled" {
-				fmt.Fprintln(os.Stderr, "run was cancelled")
-				os.Exit(client.ExitDomain)
-			}
-			if final.State == "failed" {
-				os.Exit(handleTerminalDiagnostic(final.Error))
-			}
-			fmt.Fprintln(os.Stderr, "server returned an unknown run state")
-			os.Exit(client.ExitServer)
-			return nil
-		},
-	}
-	resumeCmd.Flags().String("output", "", "original output path (required)")
-	_ = resumeCmd.MarkFlagRequired("output")
-
-	cancelCmd := &cobra.Command{
-		Use:   "cancel UUID",
-		Short: "Request cancellation of a queued or running run",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, cerr := client.New()
-			if cerr != nil {
-				fmt.Fprintln(os.Stderr, cerr)
-				os.Exit(client.ExitUsage)
-			}
-			st, serr := c.Cancel(args[0])
-			if serr != nil {
-				fmt.Fprintln(os.Stderr, serr)
-				if apiErr, ok := serr.(*client.APIError); ok {
-					os.Exit(apiErr.Class())
-				}
-				os.Exit(client.ExitServer)
-			}
-			fmt.Fprintf(os.Stderr, "state: %s\n", st.State)
-			return nil
-		},
-	}
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
@@ -497,25 +360,9 @@ func main() {
 		},
 	}
 
-	root.AddCommand(linkageCmd, xmcdCmd, mdCmd, resolveCmd, renderCmd, svgCmd, kompasCmd,
-		mechanismsCmd, resumeCmd, cancelCmd, versionCmd)
+	root.AddCommand(linkageCmd, xmcdCmd, mdCmd, resolveCmd, renderCmd, svgCmd, kompasCmd, versionCmd)
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(client.ExitUsage)
-	}
-}
-
-func printResume(runID, outputPath string) {
-	bundle.PrintResumeLines(runID, outputPath)
-}
-
-func resumableOperationError(operation string) error {
-	switch operation {
-	case "linkage", "render", "svg", "linkage-xmcd":
-		return nil
-	case "linkage-cdw-scene-plan", "linkage-cdw-page-plan":
-		return fmt.Errorf("KOMPAS CDW plans cannot be resumed; rerun the original tmm kompas command")
-	default:
-		return fmt.Errorf("operation %s cannot be resumed", operation)
 	}
 }

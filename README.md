@@ -1,11 +1,11 @@
 # tmm-cli
 
 Public thin client for the TMM remote execution service. It sends authored
-inputs to the private server over HTTPS and publishes returned artifacts
-locally. Account-scoped YAML KOMPAS commands keep their legacy admission
-contract, while arbitrary JSON CDW commands use tokenless public plan
-endpoints. KOMPAS CDW creation obtains a server-signed plan and sends it to
-the installed localhost KOMPAS Renderer.
+inputs to the service over HTTPS and publishes returned artifacts locally.
+Calculation, Mathcad, Markdown, Scene v2, and KOMPAS plan routes are
+synchronous public contracts; no account token, quote, balance, or admission
+step is required. KOMPAS CDW creation obtains a server-signed plan and sends
+it to the installed localhost KOMPAS Renderer.
 
 ## Commands
 
@@ -14,16 +14,13 @@ the installed localhost KOMPAS Renderer.
 | `tmm linkage INPUT --output DIR` | Run linkage analysis and write the generic result tree, including free `mathcad/worksheet.xmcd` and `mathcad/preview.txt`. |
 | `tmm xmcd INPUT --output FILE.xmcd` | Request the free native Mathcad 15 XMCD output and write the returned bytes. |
 | `tmm md MODEL.yaml DOCUMENT.md --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Render a Markdown document against the model and write the preview ZIP. Explicit visible scene bindings upload adjacent local `.scene.json`/`.render.json` objects; missing files keep the generated-scene fallback. |
-| `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Run the account-scoped high-level scene render operation. |
+| `tmm render INPUT --output FILE [--scale N \| --target-max-side N]` | Resolve a high-level scene through the public compute route and write its result. |
 | `tmm resolve INPUT.scene.json --output FILE.render.json` (alias `tmm render-json`) | Resolve arbitrary high-level scene JSON to a Scene v2 `.render.json` document; public and tokenless. |
 | `tmm svg INPUT --output FILE [--format svg\|png] [render/SVG/PNG options]` | Produce an SVG or PNG preview. |
-| `tmm kompas scene MODEL.yaml SCENE_NAME --output FILE [--scale N] [--accept-new-mechanism]` | Generate the named linkage scene, render it through the installed KOMPAS Renderer, and write the CDW. |
-| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH] [--accept-new-mechanism]` | Generate and render one Markdown page through the installed KOMPAS Renderer, uploading explicit adjacent local scene objects when present. |
+| `tmm kompas scene MODEL.yaml SCENE_NAME --output FILE [--scale N]` | Generate the named linkage scene, render it through the installed KOMPAS Renderer, and write the CDW. |
+| `tmm kompas page MODEL.yaml DOCUMENT.md --page N --format A1\|A2\|A3 --output FILE [--source-path PATH]` | Generate and render one Markdown page through the installed KOMPAS Renderer, uploading explicit adjacent local scene objects when present. |
 | `tmm kompas scene-json INPUT.scene.json --output FILE.cdw [--scale N \| --target-max-side N]` | Render arbitrary high-level scene JSON to CDW through the public plan endpoint and local Renderer; tokenless. |
 | `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary resolved Scene v2 JSON to CDW through the public plan endpoint and local Renderer; tokenless. |
-| `tmm mechanisms` | Print the mechanism balance and registry fields. This command is read-only. |
-| `tmm resume UUID --output PATH` | Resume a resumable free operation or accepted native-XMCD legacy run and write its result. |
-| `tmm cancel UUID` | Cancel a submitted run. |
 | `tmm version` | Print the client version. |
 
 The `linkage` command materializes the free generic result tree under `DIR`.
@@ -31,36 +28,25 @@ The server owns linkage analysis and the native XMCD compiler; the client
 writes declared bytes unchanged. `tmm xmcd` is the dedicated free endpoint for
 the same native XMCD output and does not use KOMPAS.
 
-The tokenless JSON commands are intentionally separate from the account-scoped
-`tmm render` operation. `tmm resolve` posts the authored high-level scene to
+All calculation and render commands are tokenless. `tmm linkage`, `tmm render`,
+and `tmm svg` send a v1 envelope plus the authored ZIP to `POST /v1/compute`;
+the response is a validated `application/zip` with `_tmm-result.json` and an
+`X-Result-Sha256` header. `tmm resolve` posts the authored high-level scene to
 `POST /v1/scenes/resolve` and writes the returned Scene v2 document unchanged.
-`tmm kompas scene-json` and `tmm kompas render-json` obtain a fresh local
-Renderer challenge, call `POST /v1/cdw/scene` or `POST /v1/cdw/render`, validate
-the signed plan ZIP and challenge binding, then send only `plan.json` to the
-loopback Renderer. These requests do not carry `TMM_API_TOKEN`, YAML mechanism
-data, a quote, a balance reservation, or a registry admission.
+`tmm xmcd` posts YAML to `POST /v1/linkage/xmcd` and receives native
+`application/x-mathcad+xml`. `tmm md` posts its Markdown multipart to
+`POST /v1/linkage/markdown/render`.
 
-## Mechanism admission
-
-Legacy YAML KOMPAS commands first obtain a fresh protocol-v2 challenge from the
-local KOMPAS Renderer, then quote the exact model bytes. The
-`--accept-new-mechanism` flag remains a compatibility confirmation for a new
-descriptor, but new admissions no longer reserve or consume a mechanism
-credit. Existing charged runs and their settlement/refund history remain
-unchanged; an inactive account can still be rejected.
-
-`tmm xmcd` sends the authored YAML directly to `POST /v1/linkage/xmcd` and
-receives `application/x-mathcad+xml`. It has no mechanism quote, allowance
-flag, balance reservation, or local renderer dependency.
-
-Physical inputs must declare `schema: linkage/v2`; the CLI does not convert
-legacy YAML. `tmm mechanisms` prints each row's `descriptor_version`.
-Version-one rows are retained history, not recognition candidates for v2.
-An earlier activation can therefore require a new explicit admission; existing
-balances, payments, history, and downloadable artifacts remain unchanged.
+YAML KOMPAS commands obtain a fresh local Renderer challenge and call the
+synchronous `POST /v1/linkage/cdw/scene` or `/v1/linkage/cdw/page` route. JSON
+KOMPAS commands call `POST /v1/cdw/scene` or `/v1/cdw/render`. Every plan is a
+signed ZIP; the client checks its manifest, operation, job/challenge binding,
+and then sends only `plan.json` to the loopback Renderer. No quote, balance,
+registry admission, or account state is read. Physical inputs must declare
+`schema: linkage/v2`; the CLI does not convert legacy YAML.
 
 The server accepts only the named `SCENE_NAME` from the generated linkage
-catalog for the legacy YAML command. Markdown requests always send
+catalog for the YAML command. Markdown requests always send
 `mechanism`, `document`, and `options`; when the document visibly references a
 local scene file, they also send an optional `scenes` JSON object mapping the
 directive's canonical path (for example `velocity-plan.scene.json`) to the
@@ -88,17 +74,14 @@ server uses `input/document.md`.
 
 | Variable | Contract |
 | --- | --- |
-| `TMM_API_TOKEN` | Required for account-scoped API URLs, including loopback development URLs. `tmm resolve` and arbitrary JSON CDW commands do not send it. Keep it in the environment, never argv, YAML, logs, or a URL. |
 | `TMM_API_URL` | Required for repository development/source builds; release builds embed the production HTTPS URL. Plain HTTP is accepted only for loopback hosts. |
 | `TMM_KOMPAS_RENDERER_URL` | Optional localhost KOMPAS Renderer URL; defaults to `http://127.0.0.1:17342`. The CLI accepts only plain HTTP `localhost` or `127.0.0.1` URLs with an explicit port. |
 
 KOMPAS plan ZIPs, manifests, checksums, signed envelopes, and challenge
-bindings are verified before a plan reaches the local renderer; the API token
-is never sent to that renderer. The renderer response must be
+bindings are verified before a plan reaches the local renderer. The renderer response must be
 non-empty CDW bytes with the required SHA-256 checksum. If the local renderer
-fails after the server succeeds, stderr states that the mechanism is already
-activated and a retry will not charge it again. Renderer failures use exit code
-`6` and do not emit resume guidance.
+fails after the server succeeds, stderr reports the renderer failure. Renderer
+failures use exit code `6`.
 
 The dedicated XMCD command receives one validated XML document and writes the
 bytes unchanged. Generic linkage output carries the same native XMCD as a
@@ -106,9 +89,8 @@ declared artifact alongside the deterministic text preview; no worksheet
 interchange document exists in the CLI contract.
 
 Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
-the `apiUrl` in `.tmm/dev/credentials.json` and set `TMM_API_TOKEN` explicitly;
-repo-local regeneration helpers discover both values from the mode-0600
-manifest after `pnpm db:init -- dev`, `pnpm dev`, and `pnpm dev -- credentials`.
+the `apiUrl` in `.tmm/dev/credentials.json` after `pnpm db:init -- dev` and
+`pnpm dev`; no account credential is needed by this CLI.
 
 ## Release installation
 
@@ -139,8 +121,7 @@ but do not add an `Authorization` header.
 Failed remote calculations print the server diagnostic to stderr: the stable
 error code and message, pipeline stage, input field and YAML position when
 available, followed by ordered `[пройден]`, `[ошибка]`, or `[пропущен]` steps.
-Successful commands keep stdout reserved for published paths or the fixed
-fields of `tmm mechanisms`.
+Successful commands keep stdout reserved for published paths.
 
 ## Exit codes
 
@@ -148,15 +129,14 @@ fields of `tmm mechanisms`.
 | ---: | --- |
 | `0` | Success. |
 | `2` | Usage or local input error. |
-| `3` | Authentication, account, or mechanism-balance failure. |
+| `3` | Reserved for an upstream authentication/account error; supported CLI routes do not initiate account requests. |
 | `4` | Remote domain failure. |
-| `5` | Resumable free-operation transport failure; output includes `Run ID:` and `Resume:` lines. |
+| `5` | Transport failure; retry the synchronous command. |
 | `6` | Server, worker, or KOMPAS Renderer failure. |
 
 `result_expired` and `result_lost` are reported as distinct remote domain
-errors. Legacy account-scoped mechanism admission diagnostics are retained for
-backward compatibility; arbitrary JSON resolution and CDW exports do not enter
-that admission path.
+errors. Synchronous public calculations do not emit run IDs or resume
+instructions.
 
 ## AI-agent skills
 
@@ -165,7 +145,7 @@ is documented in this public [CLI and skills repository](https://github.com/nick
 Install a complete skill directory with its references, examples, and (for
 `metric-synthesis` and `mathcad-mechanisms`) the bundled runtime and assets.
 
-- [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, authentication, commands and diagnostics.
+- [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, commands and diagnostics.
 - [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.
 - [`metric-synthesis`](skills/metric-synthesis/SKILL.md): dimension synthesis documented in editable XMCD, with a standalone Python solver.
 - [`mathcad-mechanisms`](skills/mathcad-mechanisms/SKILL.md): editable classic Mathcad mechanism calculations, examples and the bundled XMCD library.
@@ -185,6 +165,6 @@ without requiring an API token or a network request.
 
 ## Boundary
 
-The client owns transport, polling, plan/result integrity checks, and local
+The client owns transport, synchronous result/plan integrity checks, and local
 publication. It owns no calculation logic; computation happens in the private
 service or the installed KOMPAS Renderer.
