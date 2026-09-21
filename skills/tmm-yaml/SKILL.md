@@ -67,8 +67,9 @@ XMCD report does not prove native Mathcad recalculation.
 
 ## Intermediate drawing files
 
-The linkage result may also contain `.scene.json` intermediates. Agents may
-freely edit those files to improve or repair presentation—such as labels,
+The linkage result may also contain `.scene.json` and `.render.json`
+intermediates. Agents may freely edit those files to improve or repair
+presentation—such as labels,
 visibility, line weights, or layout—without changing the physical YAML model.
 Keep a high-level scene valid for its scene-input contract; keep a resolved
 `.render.json` valid Scene v2 JSON. Render the edited file with the tokenless

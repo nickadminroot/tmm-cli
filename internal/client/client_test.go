@@ -35,7 +35,7 @@ func TestNewRequiresTokenForEveryAPIURL(t *testing.T) {
 }
 
 func TestNewAnonymousDoesNotRequireOrSendToken(t *testing.T) {
-	t.Setenv("TMM_API_TOKEN", "")
+	t.Setenv("TMM_API_TOKEN", "secret-that-must-not-be-forwarded")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Authorization"); got != "" {
 			t.Fatalf("anonymous request sent Authorization %q", got)
