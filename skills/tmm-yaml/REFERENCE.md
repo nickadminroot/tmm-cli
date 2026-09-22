@@ -23,6 +23,24 @@ manually, then render the composed scene/page to CDW; if one final XMCD is
 needed, merge or arrange the typed calculations manually in Mathcad. The CLI
 does not solve or merge a multi-mechanism physical YAML.
 
+## Scientific notation and identifiers
+
+Use compact scientific notation for authored identifiers and displayed symbols;
+schema keys remain exactly as specified by `linkage/v2`.
+
+| Entity | Convention | Examples |
+| --- | --- | --- |
+| Moving body ID | Quoted decimal integer | `"1"`, `"2"`, `"3"` |
+| Fixed body ID | Reserved schema value | `ground` |
+| Point name | Uppercase Latin letter | `A`, `B`, `C`, `S` |
+| Joint/pair ID | Uppercase Latin letter; short suffix only to disambiguate | `A`, `B`, `H`, `P3` |
+| Formula/label symbol | Standard short symbol with numeric or letter subscript | `l_1`, `φ_2`, `X_A`, `R_21` |
+
+Keep long descriptive names in prose, comments, captions, or filenames. Do not
+use names such as `connecting_rod_length`, `point_slider`, or `joint_output`
+for body/point/joint IDs, mathematical variables, or indices. Keep Latin and
+Cyrillic letters distinct, even when they look alike.
+
 ## Complete input
 
 A full input describes one physical assembly pose:

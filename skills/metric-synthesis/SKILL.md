@@ -13,6 +13,12 @@ equations, chosen assembly, calculation, checks and dimensions. Use
 library to write it. JSON requests and numerical solution dumps are internal
 working data, not the synthesis deliverable.
 
+Use compact scientific notation throughout the synthesis and handoff: moving
+links use numeric IDs, points and kinematic pairs use uppercase Latin letters,
+and formulas use short indexed symbols such as `l_1`, `φ_2`, `X_A`, and `R_21`.
+Keep descriptive explanations in prose or captions rather than inventing long
+variable, index, or mechanism names.
+
 ## Procedure
 
 1. Read the task and its diagram. Record the topology, known dimensions,

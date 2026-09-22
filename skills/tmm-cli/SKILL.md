@@ -138,7 +138,8 @@ physical contract and split workflow.
 ## Workflow
 
 1. Prepare one physical YAML per physical linkage with
-   [tmm-yaml](../tmm-yaml/SKILL.md).
+   [tmm-yaml](../tmm-yaml/SKILL.md), using its compact scientific notation:
+   numeric link IDs, uppercase-Latin point/pair IDs, and short indexed symbols.
 2. Use `tmm linkage MODEL.yaml --output DIR` for the generic linkage artifact
    tree, including native XMCD and its text preview.
 3. Use `tmm xmcd MODEL.yaml --output FILE.xmcd` when only the native Mathcad

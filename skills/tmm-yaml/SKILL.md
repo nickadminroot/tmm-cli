@@ -33,6 +33,16 @@ arrange XMCD calculations manually with
 [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md); a combined presentation is
 not a combined linkage solve.
 
+## Scientific notation and IDs
+
+Keep authored mechanism names compact and consistent with TMM notation. Moving
+link IDs are quoted decimal strings (`"1"`, `"2"`, ...); the fixed body keeps
+the schema-required ID `ground`. Point names and joint IDs use uppercase Latin
+letters (`A`, `B`, `C`, `H`), with only a short disambiguating suffix when
+needed. Use indexed scientific symbols such as `l_1`, `φ_2`, `X_A`, and `R_21`
+in formulas and labels. Put long descriptions in prose or captions, not in
+body/point/joint IDs, variable names, or indices; preserve all schema keys.
+
 ## Procedure
 
 1. Read [REFERENCE.md](REFERENCE.md) and choose the topology supported by the

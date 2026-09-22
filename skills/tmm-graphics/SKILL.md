@@ -12,6 +12,12 @@ not read an XMCD graph and does not invent its samples, labels, units, or
 physical meaning. Take the numbers and names from the same XMCD/YAML snapshot
 that the drawing documents.
 
+Preserve the same compact scientific notation in every scene and caption:
+moving links are numbered, points and kinematic pairs use uppercase Latin
+letters, and vectors/quantities use short indexed symbols (`V_A`, `a_A`,
+`R_21`). Scene filenames and prose may be descriptive, but labels and semantic
+IDs that mirror the mechanism must remain consistent with the XMCD/YAML.
+
 The project and homework sections are described in the public [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md). Use
 [`mathcad-mechanisms`](../mathcad-mechanisms/SKILL.md) for XMCD authoring and
 editing, [`tmm-yaml`](../tmm-yaml/SKILL.md) for the physical mechanism, and
