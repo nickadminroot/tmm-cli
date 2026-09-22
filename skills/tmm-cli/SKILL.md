@@ -1,6 +1,6 @@
 ---
 name: tmm-cli
-description: Install and operate the public TMM CLI for linkage, rendering, XMCD, Markdown, KOMPAS export, and version without account credentials.
+description: Install and operate the public TMM CLI and its installed or portable local KOMPAS Renderer for linkage, rendering, XMCD, Markdown, KOMPAS export, and version without account credentials.
 ---
 
 # TMM CLI
@@ -9,8 +9,8 @@ The public `tmm` binary is a synchronous transport and publication client.
 All supported calculation, scene, XMCD, Markdown, and KOMPAS plan requests are
 tokenless. It sends authored YAML, Markdown, or scene JSON to the TMM service,
 then writes the declared artifact locally. It does not calculate mechanisms or
-run Mathcad/KOMPAS on its own. Native CDW export still requires the local
-KOMPAS Renderer and KOMPAS installation.
+run Mathcad/KOMPAS on its own. Native CDW export still requires a running local
+KOMPAS Renderer and an installed KOMPAS-3D.
 
 Use this skill together with [tmm-yaml](../tmm-yaml/SKILL.md),
 [metric-synthesis](../metric-synthesis/SKILL.md),
@@ -53,12 +53,19 @@ resources throughout the work.
 The exact command contract is in [REFERENCE.md](REFERENCE.md). Confirm that
 the binary version and help describe the release you installed.
 
-## Install the local KOMPAS Renderer
+## Start the local KOMPAS Renderer
 
-Install the renderer only when native `.cdw` output is required. It is a
-separate per-user Windows application, not part of the `tmm` executable or a
-skill directory. It requires 64-bit Windows, installed KOMPAS-3D with API7/API5,
-and the user's interactive desktop session.
+The renderer is required only for native `.cdw` output. It is a separate
+64-bit Windows application, not part of the `tmm` executable or a skill
+directory. It requires installed KOMPAS-3D with API7/API5 and the user's
+interactive desktop session.
+
+First probe `GET http://127.0.0.1:17342/v1/capabilities`. Reuse an existing
+compatible protocol-v2 renderer. If none is reachable, choose one release form:
+
+- Regular workstation: install the per-user setup.
+- One-off agent task: download and run the portable ZIP in the background,
+  then stop only the process started by that agent.
 
 1. Download `tmm-kompas-renderer-setup.exe` from the first-party
    [`/v1/kompas-renderer/installer`](https://api.tmm-agent.ru/v1/kompas-renderer/installer)
@@ -74,9 +81,19 @@ and the user's interactive desktop session.
    non-empty CDW in visible KOMPAS. A capabilities response, signed plan, JSON
    result, or preview alone is not native acceptance.
 
-If the renderer is missing or incompatible, reinstall the current setup and
-retry the probe. Use the supported local interactive renderer rather than a
-Linux process, Windows service, remote renderer, or private source checkout.
+For portable use, download
+`tmm-kompas-renderer-portable-windows-amd64.zip` and its `.sha256` file from the
+latest release. Verify and extract the complete archive; never copy only the
+`.exe`. Start `tmm-kompas-renderer.exe` from the extracted directory with its
+adjacent `renderer-config.json` and frozen runtime files. The config contains
+the current production **public** verification key and non-secret runtime
+settings; no private key, token, installation, service, startup registration,
+or key rotation is involved.
+
+Use the supported local interactive renderer rather than a Linux process,
+Windows service, remote renderer, or private source checkout. Installed and
+portable forms intentionally conflict on the same port and per-user mutex, so
+never start a second copy.
 The public renderer source and packaging contract are in
 [`kompas-renderer/`](https://github.com/nickadminroot/tmm-cli/tree/main/kompas-renderer).
 

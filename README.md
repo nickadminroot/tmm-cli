@@ -92,7 +92,7 @@ Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
 the `apiUrl` in `.tmm/dev/credentials.json` after `pnpm db:init -- dev` and
 `pnpm dev`; no account credential is needed by this CLI.
 
-## KOMPAS Renderer installation
+## KOMPAS Renderer: installed or portable
 
 The local KOMPAS Renderer is required only for native `.cdw` creation through
 `tmm kompas ...`. Linkage, XMCD, Markdown preview, scene resolution, SVG, and
@@ -100,7 +100,7 @@ PNG do not use it. The renderer requires 64-bit Windows, an installed
 KOMPAS-3D with API7/API5, and the same interactive desktop session as the user;
 it is not a Windows service and does not work headlessly.
 
-Download the current setup from the
+For regular workstation use, download the current setup from the
 [first-party TMM API](https://api.tmm-agent.ru/v1/kompas-renderer/installer).
 The identical production setup and its SHA-256 file are also attached to the
 [latest public CLI release](https://github.com/nickadminroot/tmm-cli/releases/latest).
@@ -131,6 +131,31 @@ reachable. Final acceptance still requires running a `tmm kompas ...` command,
 opening the visible KOMPAS document, and checking the non-empty `.cdw` output.
 If the website reports that the renderer is missing or incompatible, reinstall
 the current setup and select **Проверить снова** in the render dialog.
+
+An agent may instead run the same renderer without installation. Download
+`tmm-kompas-renderer-portable-windows-amd64.zip` and its `.sha256` file from
+the [latest public CLI release](https://github.com/nickadminroot/tmm-cli/releases/latest),
+verify the archive, and extract the complete directory. Do not copy out only
+the `.exe`: its adjacent `renderer-config.json`, Python runtime, pywin32, and
+cryptography files are required.
+
+From the logged-in interactive Windows session, start it in the background:
+
+```powershell
+$rendererDir = (Resolve-Path .\tmm-kompas-renderer).Path
+$renderer = Start-Process `
+  -FilePath "$rendererDir\tmm-kompas-renderer.exe" `
+  -WorkingDirectory $rendererDir `
+  -PassThru
+Invoke-RestMethod http://127.0.0.1:17342/v1/capabilities
+```
+
+Use an already reachable protocol-v2 renderer instead of starting a second
+copy. The installed and portable forms share the same fixed port, per-user
+mutex, production plan-verification public key, and data directory. The
+portable archive does not rotate keys, register startup, install a service, or
+write program files outside the extracted directory. After a one-off task,
+stop only the portable process that the agent started.
 
 The complete renderer source, tests, locked dependencies, and Windows packaging
 scripts are published in [`kompas-renderer/`](kompas-renderer/README.md).

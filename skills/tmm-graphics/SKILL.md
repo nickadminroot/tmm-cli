@@ -90,11 +90,11 @@ labels; it is not a replacement for the XMCD calculation.
      --output "/absolute/work/velocity.cdw"
    ```
 
-   Both JSON CDW commands are tokenless, but they require the installed local
+   Both JSON CDW commands are tokenless, but they require a running local
    KOMPAS Renderer and KOMPAS. They obtain a renderer challenge, verify the
    signed plan, and only then send the plan to the loopback renderer. A JSON
    response or preview is not evidence that a `.cdw` was created. If the
-   renderer is unavailable, follow the installation and verification section in
+   renderer is unavailable, follow the installed-or-portable startup and verification section in
    [`tmm-cli`](../tmm-cli/SKILL.md) before retrying the final CDW step.
 6. Open the CDW and inspect geometry, text, arrows, dimensions, line weights,
    page scale, and clipping. If anything is wrong, fix the scene or the

@@ -6,6 +6,7 @@ import importlib.util
 import json
 import sys
 import tempfile
+import zipfile
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
@@ -119,6 +120,40 @@ class InstallerContractTests(TestCase):
             self.assertEqual(pyinstaller[0], "pyinstaller")
             self.assertIn("/DAppVersion=0.2.0", inno)
             self.assertEqual(layout.artifact_path.name, "tmm-kompas-renderer-setup-0.2.0.exe")
+            self.assertEqual(
+                layout.portable_artifact_path.name,
+                "tmm-kompas-renderer-portable-windows-amd64.zip",
+            )
+
+    def test_portable_archive_keeps_complete_onedir_and_adjacent_config(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            renderer_dist = root / "tmm-kompas-renderer"
+            (renderer_dist / "runtime").mkdir(parents=True)
+            (renderer_dist / "tmm-kompas-renderer.exe").write_bytes(b"exe")
+            (renderer_dist / "renderer-config.json").write_bytes(b"{}\n")
+            (renderer_dist / "runtime" / "python.dll").write_bytes(b"runtime")
+            artifact = root / "portable.zip"
+
+            build_windows.build_portable_archive(
+                renderer_dist,
+                artifact,
+                source_date_epoch=0,
+            )
+
+            with zipfile.ZipFile(artifact) as archive:
+                self.assertEqual(
+                    set(archive.namelist()),
+                    {
+                        "tmm-kompas-renderer/tmm-kompas-renderer.exe",
+                        "tmm-kompas-renderer/renderer-config.json",
+                        "tmm-kompas-renderer/runtime/python.dll",
+                        "tmm-kompas-renderer/README-portable.txt",
+                    },
+                )
+                self.assertIn(b"interactive Windows session", archive.read(
+                    "tmm-kompas-renderer/README-portable.txt"
+                ))
 
     def test_pyinstaller_spec_places_release_config_beside_executable(self) -> None:
         source = (PACKAGING_ROOT / "tmm-kompas-renderer.spec").read_text(encoding="utf-8")

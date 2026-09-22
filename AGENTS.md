@@ -4,7 +4,7 @@ Public thin client for the TMM remote execution service. It sends authored
 inputs to the service over HTTPS and publishes returned artifacts locally.
 Calculation, Mathcad, Markdown, Scene v2, and KOMPAS plan routes are
 synchronous and tokenless. KOMPAS CDW creation obtains a server-signed plan
-and sends it to the installed localhost KOMPAS Renderer. Mathcad 15 XMCD
+and sends it to the installed or portable localhost KOMPAS Renderer. Mathcad 15 XMCD
 creation uses the direct server endpoint and never needs the local renderer.
 
 Read [`README.md`](README.md) before changing the client; it is the consumer
@@ -13,7 +13,7 @@ contract for commands, environment variables, output, and exit classes.
 Keep this application a thin transport and publication layer. Markdown
 rendering, mechanism classification, linkage generation, worksheet/XMCD
 compilation, and plan compilation remain server-side. KOMPAS commands transport
-a signed plan to the installed native renderer; they do not solve or render on
+a signed plan to the running native renderer; they do not solve or render on
 the client.
 
 ## Public-repository boundary
@@ -23,9 +23,10 @@ SHAs, checkout URLs, and server deployment files outside it. Keep local
 fallback execution out of the client.
 
 `kompas-renderer/` owns the public native renderer source, COM-free tests,
-locked Python dependencies, and Windows packaging scripts. Release public keys
-and exact allowed origins are build inputs; private signing keys and production
-configuration never enter this repository or its artifacts.
+locked Python dependencies, and Windows installer/portable packaging scripts.
+Release public keys and exact allowed origins are build inputs; private signing
+keys never enter this repository or its artifacts. Installed and portable
+artifacts use the same strict release config, fixed port, mutex, and trust key.
 
 ## Transport and output invariants
 
@@ -101,5 +102,6 @@ uv sync --locked
 uv run --locked python -m unittest
 ```
 
-Run packaging tests on Linux; building and live acceptance of the setup require
-Windows, Inno Setup, KOMPAS-3D, and an interactive desktop session.
+Run packaging tests on Linux. Building the portable ZIP requires 64-bit
+Windows; building the setup additionally requires Inno Setup. Live acceptance
+of either form requires KOMPAS-3D and an interactive desktop session.

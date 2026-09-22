@@ -24,7 +24,7 @@ The extensions are conventions that make handoff obvious:
 | --- | --- | --- |
 | `*.scene.json` | High-level input. `kind` selects a renderer; mechanism-family inputs carry `schema: "mechanism/v2"`. | Source geometry, labels, curves, analysis annotations, and layout fields supported by that kind. |
 | `*.render.json` | One resolved Scene v2 document. It is the output of `tmm resolve` or `tmm render`. | Entity geometry/style and presentation metadata, while preserving Scene v2 and semantic IDs. |
-| `*.cdw` | Native KOMPAS drawing emitted by the installed local Renderer. | Edit in KOMPAS only when the user's drawing workflow requires it; regenerate from JSON after source changes. |
+| `*.cdw` | Native KOMPAS drawing emitted by the installed or portable local Renderer. | Edit in KOMPAS only when the user's drawing workflow requires it; regenerate from JSON after source changes. |
 
 Do not call a high-level input “render JSON”: the renderer has not yet
 materialized its entities. Do not use a `.render.json` as a solver or as a
@@ -382,8 +382,9 @@ small so the KOMPAS layout remains deterministic.
 
 Keep stdout for the CLI's output path. Read stderr for the stable diagnostic,
 stage, field, and exit class. A `6` from the KOMPAS path means server/worker/
-Renderer failure; check the Renderer URL and native installation before
-changing scene data. A successful `tmm resolve` only proves the JSON contract.
+Renderer failure; check the Renderer URL and installed-or-portable process
+before changing scene data. A successful `tmm resolve` only proves the JSON
+contract.
 
 ## Public links
 

@@ -37,6 +37,9 @@ flags. This table is not permission to call an undocumented command.
 ## Local Renderer contract
 
 - Production setup: `https://api.tmm-agent.ru/v1/kompas-renderer/installer`.
+- Portable release assets:
+  `tmm-kompas-renderer-portable-windows-amd64.zip` and its `.sha256` file in
+  the latest public CLI release.
 - Public source and release mirror:
   `https://github.com/nickadminroot/tmm-cli/tree/main/kompas-renderer` and the
   latest release assets.
@@ -49,8 +52,16 @@ flags. This table is not permission to call an undocumented command.
 - Startup diagnostics:
   `%LOCALAPPDATA%\TMM\KompasRenderer\renderer-startup.log`.
 
-The setup is unsigned and may trigger SmartScreen. Verify its separate
-SHA-256 release asset before installation. Reaching the capabilities endpoint
+The portable ZIP is the same frozen daemon and strict release config without
+the installer, HKCU startup entry, or Windows service. Keep the full extracted
+`tmm-kompas-renderer` directory together. The adjacent config contains the
+production public verification key, not signing material; it does not create
+or rotate keys. Probe first and reuse an existing protocol-v2 process because
+the installed and portable forms share port `17342` and the per-user mutex.
+
+The setup and portable executable are unsigned and may trigger SmartScreen.
+Verify the corresponding separate SHA-256 release asset before execution.
+Reaching the capabilities endpoint
 does not prove COM rendering; require a non-empty checksummed CDW and visible
 KOMPAS document for native acceptance.
 

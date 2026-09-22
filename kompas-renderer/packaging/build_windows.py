@@ -19,6 +19,7 @@ import re
 import shutil
 import subprocess
 import sys
+import zipfile
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -81,16 +82,21 @@ class BuildLayout:
     pyinstaller_cache: Path
     renderer_dist: Path
     artifact_path: Path
+    portable_artifact_path: Path
 
 
 @dataclass(frozen=True)
 class BuildResult:
     """Release evidence emitted after Inno Setup succeeds."""
 
-    artifact: Path
-    sha256: str
-    size: int
-    hash_file: Path
+    installer_artifact: Path | None
+    installer_sha256: str | None
+    installer_size: int | None
+    installer_hash_file: Path | None
+    portable_artifact: Path
+    portable_sha256: str
+    portable_size: int
+    portable_hash_file: Path
     evidence_file: Path
 
 
@@ -235,6 +241,7 @@ def _layout(build_dir: Path, output_dir: Path, version: str) -> BuildLayout:
         pyinstaller_cache=build_dir / "pyinstaller-cache",
         renderer_dist=pyinstaller_dist / "tmm-kompas-renderer",
         artifact_path=output_dir / f"tmm-kompas-renderer-setup-{version}.exe",
+        portable_artifact_path=output_dir / "tmm-kompas-renderer-portable-windows-amd64.zip",
     )
 
 
@@ -306,6 +313,59 @@ def _run(command: Sequence[str], *, cwd: Path, env: dict[str, str]) -> None:
         raise BuildError(f"build tool failed with exit code {exc.returncode}: {command[0]}") from exc
 
 
+def _portable_zip_timestamp(source_date_epoch: int) -> tuple[int, int, int, int, int, int]:
+    """Return a ZIP-compatible deterministic UTC timestamp."""
+
+    from datetime import datetime, timezone
+
+    epoch = max(source_date_epoch, 315532800)  # ZIP starts at 1980-01-01.
+    value = datetime.fromtimestamp(epoch, tz=timezone.utc)
+    return (value.year, value.month, value.day, value.hour, value.minute, value.second)
+
+
+def build_portable_archive(
+    renderer_dist: Path,
+    artifact_path: Path,
+    *,
+    source_date_epoch: int,
+) -> None:
+    """Package the complete frozen onedir runtime without installing it."""
+
+    executable = renderer_dist / "tmm-kompas-renderer.exe"
+    config = renderer_dist / "renderer-config.json"
+    if not executable.is_file() or not config.is_file():
+        raise BuildError("portable renderer requires the executable and adjacent renderer-config.json")
+    artifact_path.parent.mkdir(parents=True, exist_ok=True)
+    timestamp = _portable_zip_timestamp(source_date_epoch)
+    prefix = "tmm-kompas-renderer"
+    readme = (
+        "TMM KOMPAS Renderer portable\r\n\r\n"
+        "Keep this complete directory together. Run tmm-kompas-renderer.exe in the "
+        "logged-in interactive Windows session; do not run it as a service. The adjacent "
+        "renderer-config.json contains only the production public verification key and "
+        "non-secret runtime settings. Probe http://127.0.0.1:17342/v1/capabilities after "
+        "startup. Stop the process when the one-off agent task is complete.\r\n"
+    ).encode("utf-8")
+    with zipfile.ZipFile(
+        artifact_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
+    ) as archive:
+        for path in sorted(renderer_dist.rglob("*"), key=lambda item: item.as_posix()):
+            if not path.is_file():
+                continue
+            relative = path.relative_to(renderer_dist).as_posix()
+            info = zipfile.ZipInfo(f"{prefix}/{relative}", timestamp)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, path.read_bytes())
+        info = zipfile.ZipInfo(f"{prefix}/README-portable.txt", timestamp)
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = 0o100644 << 16
+        archive.writestr(info, readme)
+
+
 def build_release(
     config: ReleaseConfig,
     *,
@@ -313,6 +373,7 @@ def build_release(
     pyinstaller: str = "pyinstaller",
     iscc: str = "ISCC.exe",
     source_date_epoch: int = 0,
+    portable_only: bool = False,
     dry_run: bool = False,
 ) -> BuildResult | None:
     """Generate config and optionally run the Windows packaging toolchain."""
@@ -323,6 +384,8 @@ def build_release(
         return None
     if os.name != "nt":
         raise BuildError("Windows PyInstaller/Inno build requires Windows; use --dry-run on another host")
+    if sys.maxsize <= 2**32:
+        raise BuildError("the released KOMPAS Renderer requires 64-bit Windows Python")
 
     _prepare_stage(layout)
     env = os.environ.copy()
@@ -338,29 +401,51 @@ def build_release(
     if packaged_config.read_bytes() != config_bytes(config):
         raise BuildError("PyInstaller embedded a different renderer-config.json")
 
-    _run(commands[1], cwd=PACKAGE_ROOT, env=env)
-    if not layout.artifact_path.is_file():
-        raise BuildError(f"Inno Setup did not produce {layout.artifact_path.name}")
-    digest = sha256_file(layout.artifact_path)
-    hash_path = layout.artifact_path.with_name(layout.artifact_path.name + ".sha256")
-    with hash_path.open("w", encoding="ascii", newline="\n") as stream:
-        stream.write(f"{digest}  {layout.artifact_path.name}\n")
+    build_portable_archive(
+        layout.renderer_dist,
+        layout.portable_artifact_path,
+        source_date_epoch=source_date_epoch,
+    )
+    portable_digest = sha256_file(layout.portable_artifact_path)
+    portable_hash_path = layout.portable_artifact_path.with_name(
+        layout.portable_artifact_path.name + ".sha256"
+    )
+    with portable_hash_path.open("w", encoding="ascii", newline="\n") as stream:
+        stream.write(f"{portable_digest}  {layout.portable_artifact_path.name}\n")
+
+    installer_digest: str | None = None
+    installer_hash_path: Path | None = None
+    if not portable_only:
+        _run(commands[1], cwd=PACKAGE_ROOT, env=env)
+        if not layout.artifact_path.is_file():
+            raise BuildError(f"Inno Setup did not produce {layout.artifact_path.name}")
+        installer_digest = sha256_file(layout.artifact_path)
+        installer_hash_path = layout.artifact_path.with_name(layout.artifact_path.name + ".sha256")
+        with installer_hash_path.open("w", encoding="ascii", newline="\n") as stream:
+            stream.write(f"{installer_digest}  {layout.artifact_path.name}\n")
     evidence_path = layout.artifact_path.with_name("release-evidence.json")
     evidence = {
         "renderer_version": config.renderer_version,
-        "artifact": layout.artifact_path.name,
-        "artifact_sha256": digest,
-        "artifact_size": layout.artifact_path.stat().st_size,
+        "installer_artifact": None if portable_only else layout.artifact_path.name,
+        "installer_sha256": installer_digest,
+        "installer_size": None if portable_only else layout.artifact_path.stat().st_size,
+        "portable_artifact": layout.portable_artifact_path.name,
+        "portable_sha256": portable_digest,
+        "portable_size": layout.portable_artifact_path.stat().st_size,
         "config_sha256": hashlib.sha256(config_bytes(config)).hexdigest(),
         "protocol_version": RENDERER_PROTOCOL_VERSION,
     }
     with evidence_path.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write(json.dumps(evidence, ensure_ascii=True, sort_keys=True, separators=(",", ":")) + "\n")
     return BuildResult(
-        artifact=layout.artifact_path,
-        sha256=digest,
-        size=layout.artifact_path.stat().st_size,
-        hash_file=hash_path,
+        installer_artifact=None if portable_only else layout.artifact_path,
+        installer_sha256=installer_digest,
+        installer_size=None if portable_only else layout.artifact_path.stat().st_size,
+        installer_hash_file=installer_hash_path,
+        portable_artifact=layout.portable_artifact_path,
+        portable_sha256=portable_digest,
+        portable_size=layout.portable_artifact_path.stat().st_size,
+        portable_hash_file=portable_hash_path,
         evidence_file=evidence_path,
     )
 
@@ -415,6 +500,11 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="validate inputs, write renderer-config.json, and print commands without executing Windows tools",
     )
+    parser.add_argument(
+        "--portable-only",
+        action="store_true",
+        help="build the portable ZIP without requiring or invoking Inno Setup",
+    )
     return parser
 
 
@@ -442,24 +532,43 @@ def main(argv: Sequence[str] | None = None) -> int:
             pyinstaller=args.pyinstaller,
             iscc=args.iscc,
             source_date_epoch=args.source_date_epoch,
+            portable_only=args.portable_only,
             dry_run=args.dry_run,
         )
         report = {
             "renderer_config": str(layout.config_path),
-            "artifact": str(layout.artifact_path),
+            "installer_artifact": None if args.portable_only else str(layout.artifact_path),
+            "portable_artifact": str(layout.portable_artifact_path),
             "commands": [list(command) for command in commands],
             "dry_run": args.dry_run,
             "evidence_file": str(layout.artifact_path.with_name("release-evidence.json")),
-            "hash_file": str(layout.artifact_path.with_name(layout.artifact_path.name + ".sha256")),
+            "installer_hash_file": (
+                None
+                if args.portable_only
+                else str(layout.artifact_path.with_name(layout.artifact_path.name + ".sha256"))
+            ),
+            "portable_hash_file": str(
+                layout.portable_artifact_path.with_name(layout.portable_artifact_path.name + ".sha256")
+            ),
             "protocol_version": RENDERER_PROTOCOL_VERSION,
         }
         if result is not None:
             report.update(
                 {
-                    "artifact": str(result.artifact),
-                    "artifact_sha256": result.sha256,
-                    "artifact_size": result.size,
-                    "hash_file": str(result.hash_file),
+                    "installer_artifact": (
+                        None if result.installer_artifact is None else str(result.installer_artifact)
+                    ),
+                    "installer_sha256": result.installer_sha256,
+                    "installer_size": result.installer_size,
+                    "installer_hash_file": (
+                        None
+                        if result.installer_hash_file is None
+                        else str(result.installer_hash_file)
+                    ),
+                    "portable_artifact": str(result.portable_artifact),
+                    "portable_sha256": result.portable_sha256,
+                    "portable_size": result.portable_size,
+                    "portable_hash_file": str(result.portable_hash_file),
                     "evidence_file": str(result.evidence_file),
                 }
             )

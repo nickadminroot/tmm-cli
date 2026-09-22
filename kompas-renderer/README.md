@@ -28,6 +28,34 @@ the renderer immediately, and registers HKCU startup. Native acceptance requires
 an actual CLI or website render that leaves a visible KOMPAS document open and
 returns a non-empty `.cdw`.
 
+## Run the portable Renderer
+
+For one-off agent work, the latest tmm-cli release also contains
+`tmm-kompas-renderer-portable-windows-amd64.zip` and its `.sha256` file. Verify
+and extract the complete archive, then run `tmm-kompas-renderer.exe` from the
+extracted `tmm-kompas-renderer` directory. The ZIP is the same frozen daemon as
+the installed form, with the same production public verification key,
+`key_id`, allowed origin, localhost port, mutex, and data directory. It does
+not rotate a key, register HKCU startup, or install a Windows service.
+
+Keep `renderer-config.json` and every frozen runtime file beside the
+executable. A lone copied `.exe` is intentionally unsupported. Start it in the
+logged-in interactive Windows session and verify protocol v2:
+
+```powershell
+$rendererDir = (Resolve-Path .\tmm-kompas-renderer).Path
+$renderer = Start-Process `
+  -FilePath "$rendererDir\tmm-kompas-renderer.exe" `
+  -WorkingDirectory $rendererDir `
+  -PassThru
+Invoke-RestMethod http://127.0.0.1:17342/v1/capabilities
+```
+
+Do not start it when another renderer already answers on the fixed port. After
+the task, stop only the process represented by `$renderer`; do not terminate an
+installed renderer that the agent did not start. Native acceptance still
+requires a real signed-plan render, non-empty CDW, and visible KOMPAS document.
+
 ## Input and output contract
 
 The adapter consumes one schema-valid `tmm-scene` v2 document and produces one
@@ -78,7 +106,7 @@ stores persistent KOMPAS backing files under
 `%LOCALAPPDATA%\TMM\KompasRenderer\runs`. SmartScreen may warn because the setup
 is unsigned.
 
-## Build the Windows setup
+## Build the Windows setup and portable ZIP
 
 Building the installer requires Windows and a separate Inno Setup installation.
 Synchronize the locked project extras, then run the release script with an
@@ -97,9 +125,10 @@ origin; explicit CLI origins remain authoritative. An installer built with
 another origin returns `403 forbidden` to the portal and must be rebuilt;
 changing the web client cannot repair an already-installed allowlist.
 
-The script invokes `ISCC.exe` from the Inno Setup installation (or accepts an
-explicit `--iscc` path); `--dry-run` validates inputs on non-Windows hosts.
-The resulting setup can be published as a GitHub release asset. The production
+The script first creates the complete portable ZIP and then invokes `ISCC.exe`
+from the Inno Setup installation (or accepts an explicit `--iscc` path). Use
+`--portable-only` to skip Inno Setup. `--dry-run` validates inputs on
+non-Windows hosts. Both artifacts can be published as GitHub release assets. The production
 site serves its admitted copy from `/v1/kompas-renderer/installer`; deployment
 configuration and private signing material remain outside this public source
 repository.
@@ -107,9 +136,11 @@ repository.
 `renderer-config.json` is generated with exactly five release keys:
 `public_key`, `key_id`, `allowed_origins`, `renderer_version`, and
 `data_directory`. It contains no private key, API token, or browser credentials.
-Installed startup reads only this file; environment and CLI configuration is
+Frozen installed and portable startup read only this adjacent file; environment and CLI configuration is
 available solely through the explicit `--dev` development seam and cannot
-override an installed config.
+override a release config. The public key verifies plans signed by the existing
+production key; building the portable form neither requires nor rotates the
+private key.
 
 The renderer binds only to `127.0.0.1:17342`. `GET /v1/capabilities` returns
 protocol version 2, the renderer version, a UUID, a one-use 32-byte challenge,

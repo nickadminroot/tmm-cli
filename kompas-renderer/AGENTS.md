@@ -67,14 +67,17 @@ by the runs marker and skips files that KOMPAS still locks.  Live visible
 document behavior remains a Windows/KOMPAS gate; COM-free tests use a fake
 renderer.
 
-The supported installer is unsigned, per-user, and interactive-session-only:
-PyInstaller stages the package and Inno Setup installs it under
+The supported setup and portable ZIP are unsigned and
+interactive-session-only. PyInstaller stages one shared frozen onedir runtime;
+the portable archive keeps it intact, while Inno Setup installs it under
 `%LOCALAPPDATA%`, registers HKCU Run, and preserves runtime/downloaded CDW
 data on uninstall. On Windows, build with
 `uv sync --extra kompas --extra packaging --locked` and run the release script;
-Inno Setup's `ISCC.exe` remains an external Windows prerequisite. SmartScreen
-may display a warning. Never add arbitrary command, path, script, or COM-member
-execution APIs.
+`--portable-only` skips Inno Setup, otherwise `ISCC.exe` remains an external
+Windows prerequisite. Both forms keep the strict adjacent release config and
+same production public verification key; never add private signing material or
+rotate keys as a packaging side effect. SmartScreen may display a warning.
+Never add arbitrary command, path, script, or COM-member execution APIs.
 ## Synchronization invariant
 
 Public fixture snapshots under `src/tmm_scene_kompas/fixtures/` are executable
