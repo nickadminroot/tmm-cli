@@ -354,6 +354,12 @@ scene inputs and resolved Scene v2 documents may be embedded, so custom
 Mathcad plots can share a page with Markdown explanations without manual
 merging of separate CDW drawings.
 
+For independent mechanisms, use separate `linkage/v2` YAML runs and upload or
+copy the resulting local scenes into the composed page/JSON. This is the
+presentation-layer composition path; it does not turn the source YAML into a
+multi-mechanism physical solve. Keep each mechanism's XMCD and source values
+traceable when composing the final scene or CDW.
+
 An optional
 `scale="1.25"` applies only to a high-level scene; resolved Scene v2 documents are already scaled. Inline bindings available in
 prose/math are:

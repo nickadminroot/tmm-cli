@@ -43,7 +43,10 @@ KOMPAS commands call `POST /v1/cdw/scene` or `/v1/cdw/render`. Every plan is a
 signed ZIP; the client checks its manifest, operation, job/challenge binding,
 and then sends only `plan.json` to the loopback Renderer. No quote, balance,
 registry admission, or account state is read. Physical inputs must declare
-`schema: linkage/v2`; the CLI does not convert legacy YAML.
+`schema: linkage/v2`; the CLI does not convert legacy YAML. Each physical YAML
+contains one ground-connected, closed planar linkage; independent mechanisms
+must be solved from separate YAML files and composed later at the scene/report
+layer. See the [tmm-yaml topology boundary](skills/tmm-yaml/REFERENCE.md#topology-boundary).
 
 The server accepts only the named `SCENE_NAME` from the generated linkage
 catalog for the YAML command. Markdown requests always send

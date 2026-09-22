@@ -5,6 +5,24 @@ This reference follows the public CLI skills and the
 `linkage/v2` schema; the CLI rejects missing schemas and does not convert the
 legacy slot/body/frame syntax.
 
+## Topology boundary
+
+Each `linkage/v2` YAML is one physical, ground-connected, closed planar
+linkage. Coupled multi-loop mechanisms are supported when their loops share
+moving bodies or joints as part of the same mechanism. Independent mechanisms
+must not be bundled into one YAML: separate cycles that only share `ground`,
+coordinates, or a workspace remain separate mechanisms, even when the drawing
+places them together. Open chains, isolated bodies, and disconnected components
+are rejected by the structural admission (`mechanism_open_chain` or
+`mechanism_disconnected`).
+
+For independent mechanisms, create one YAML per mechanism and run the CLI for
+each file. Preserve each mechanism's own pose, drive, physical data, XMCD, and
+result tree. Combine the resulting scene JSON or Markdown presentation
+manually, then render the composed scene/page to CDW; if one final XMCD is
+needed, merge or arrange the typed calculations manually in Mathcad. The CLI
+does not solve or merge a multi-mechanism physical YAML.
+
 ## Complete input
 
 A full input describes one physical assembly pose:

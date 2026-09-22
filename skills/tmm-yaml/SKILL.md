@@ -1,6 +1,6 @@
 ---
 name: tmm-yaml
-description: Author and verify one complete physical planar-linkage YAML model with explicit SI geometry, assembly branches, joints, drive, and physical data.
+description: Author and verify one complete ground-connected closed planar-linkage YAML model with explicit SI geometry, assembly branches, joints, drive, and physical data; split independent mechanisms into separate YAML files.
 ---
 
 # Physical linkage YAML
@@ -14,6 +14,24 @@ Use this skill after numerical synthesis or when the task already supplies a
 physical planar mechanism. A YAML file describes one assembly pose and the
 physical data needed by the complete `tmm linkage` analysis. It is not a
 container for sampled output or renderer settings.
+
+## Topology boundary
+
+The YAML/CLI linkage pipeline accepts one ground-connected, closed planar
+linkage per file. Multi-loop linkages are valid when the loops are mechanically
+coupled into that one mechanism; a YAML is not a container for independent
+mechanisms. Separate cycles that only share `ground`, coordinates, or a
+workspace are still independent. Open chains, isolated bodies, and disconnected
+components fail the structural gate.
+
+For the rare task with independent mechanisms, author and verify one
+`linkage/v2` YAML per mechanism. Keep each pose, physical data, result tree, and
+XMCD calculation separate. Then manually compose the required
+`.scene.json`/`.render.json` or Markdown presentation and render the final page
+or scene to `.cdw` with [tmm-graphics](../tmm-graphics/SKILL.md). Merge or
+arrange XMCD calculations manually with
+[mathcad-mechanisms](../mathcad-mechanisms/SKILL.md); a combined presentation is
+not a combined linkage solve.
 
 ## Procedure
 

@@ -124,9 +124,21 @@ The public transport is:
 The service owns schema validation and calculation. The CLI validates transport
 checksums, result manifests, signed renderer plans, and local output paths.
 
+## Physical linkage scope
+
+YAML-backed `linkage`, `xmcd`, and KOMPAS routes accept one ground-connected,
+closed planar linkage per `linkage/v2` file. Mechanically coupled multi-loop
+linkages are supported, but independent mechanisms are not a supported bundle,
+even when they share `ground` or occupy one assembly drawing. For that rare
+case, use one YAML per mechanism, solve each separately, and manually compose
+the exported scenes/Markdown, XMCD calculations, and final CDW presentation.
+See the [topology boundary](../tmm-yaml/REFERENCE.md#topology-boundary) for the
+physical contract and split workflow.
+
 ## Workflow
 
-1. Prepare one physical YAML with [tmm-yaml](../tmm-yaml/SKILL.md).
+1. Prepare one physical YAML per physical linkage with
+   [tmm-yaml](../tmm-yaml/SKILL.md).
 2. Use `tmm linkage MODEL.yaml --output DIR` for the generic linkage artifact
    tree, including native XMCD and its text preview.
 3. Use `tmm xmcd MODEL.yaml --output FILE.xmcd` when only the native Mathcad

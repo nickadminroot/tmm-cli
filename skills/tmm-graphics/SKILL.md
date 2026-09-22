@@ -25,6 +25,13 @@ and usable draft mechanism scenes. Always obtain those drafts before authoring
 graphics: build or repair `mechanism.yaml`, run `tmm linkage`, inspect its scene
 catalog, and use the closest generated scene as the starting point.
 
+If a task contains independent mechanisms, keep one physical YAML and one CLI
+result per mechanism. Do not put disconnected mechanisms into one linkage YAML.
+Copy the needed scenes from those separate results and compose them manually as
+high-level/resolved JSON or as a Markdown page; render that presentation to the
+final `.cdw`. The composed drawing is a presentation artifact, not a combined
+physical linkage solution.
+
 ## Artifact contract
 
 Keep the calculation, input scenes, resolved scenes, and native drawings as

@@ -126,6 +126,14 @@ Markdown document, options, and optional `scenes` JSON object to
 options include `version: 1`, the Renderer challenge, and the requested scene
 or page (`format`, `page`, and optional `source_path`).
 
+All YAML-backed linkage, XMCD, and KOMPAS calls operate on one
+ground-connected, closed planar linkage per `linkage/v2` file. Coupled
+multi-loop linkages are allowed; independent mechanisms are not a multi-mechanism
+container, even if they share `ground` or are drawn in one place. Solve rare
+independent mechanisms in separate YAML files, then compose their scene JSON,
+Markdown, XMCD, and CDW outputs manually. See
+[`tmm-yaml` topology boundary](../tmm-yaml/REFERENCE.md#topology-boundary).
+
 Agents may freely edit any received `.scene.json` or `.render.json` intermediate
 file to improve or repair presentation before calling the tokenless commands.
 Keep a high-level `.scene.json` valid for its scene-input contract and a
