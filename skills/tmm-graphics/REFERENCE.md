@@ -240,6 +240,24 @@ those values directly and label them, or convert every point deliberately and
 record the conversion in the XMCD prose. Never mix a converted axis with raw
 curve samples.
 
+Author a new graph as the editable high-level `*.scene.json` source, normally
+with `kind: "engineering-graph"`. The high-level contract accepts authored
+axis divisions, labels, curves, samples, and line styles; it is the right place
+to improve layout. Resolve it to Scene v2 only as a derived artifact:
+
+```bash
+tmm resolve "/absolute/work/dynamics.scene.json" \
+  --output "/absolute/work/dynamics.render.json"
+
+# Or resolve and render the high-level scene in one CDW command:
+tmm kompas scene-json "/absolute/work/dynamics.scene.json" \
+  --output "/absolute/work/dynamics.cdw"
+```
+
+Do not hand-author a new `.render.json` as the graph's source. Use an existing
+Scene v2 file only as generated reference or presentation evidence, while the
+editable high-level scene remains synchronized with the XMCD.
+
 The engineering graph input is:
 
 ```json

@@ -74,11 +74,11 @@ labels; it is not a replacement for the XMCD calculation.
 3. Run `tmm linkage MODEL.yaml --output DIR`, inspect all generated
    `.scene.json` and `.render.json` files, and copy the closest scene to the
    user's work directory. Edit that copy for the required pose, values,
-   annotations, and layout. If the catalog has no suitable scene, adapt another
-   CLI mechanism draft before considering a new scene. Author a new high-level
-   scene only as a last resort after recording which generated scenes were
-   inspected and why none can represent the required graphic. Never hand-author
-   an SVG illustration.
+   annotations, and layout. For a mechanism scene, adapt another CLI draft
+   before authoring a new one, and record why the catalog cannot represent the
+   required graphic. New dynamics curves follow the Dynamics rule below and
+   are authored as high-level `engineering-graph.scene.json` files. Never
+   hand-author an SVG illustration.
 4. Validate and resolve a high-level scene:
 
    ```bash
@@ -185,10 +185,13 @@ this list is not a mandatory sequence.
 - **Dynamics:** The site/CLI dynamics worksheet is alpha material. Read it for
   orientation only, then replace the dynamic derivation with an independent
   XMCD calculation. `dynamic-model` is a compact schematic renderer, not a
-  dynamics solver. First reuse the CLI mechanism drafts. When the CLI catalog
-  cannot express an independently evaluated curve, create the missing
-  `engineering-graph` high-level scene as the documented last resort and render
-  every graph in the final XMCD.
+  dynamics solver. First reuse the CLI mechanism drafts. For every independently
+  evaluated dynamic curve that is missing or needs better layout, author a new
+  high-level `engineering-graph` `.scene.json` with the XMCD samples, axes,
+  labels, divisions, and line styles. Keep this high-level file as the editable
+  source; obtain `.render.json` Scene v2 only through `tmm resolve`, or render
+  directly with `tmm kompas scene-json`. Do not make a hand-authored Scene v2
+  file the source of a new graph. Render every graph in the final XMCD.
 - **Analytical kinetostatics:** Keep the edited XMCD and all force schemes,
   vector plans, tables, and graphs on one pose and one set of loads. A scene
   is correct only when its point coordinates, vector directions, labels,

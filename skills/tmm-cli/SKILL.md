@@ -163,12 +163,15 @@ physical contract and split workflow.
    `--scale` or `--target-max-side`; for a resolved Scene v2 file use
    `tmm kompas render-json INPUT.render.json`. Both require the local Renderer.
 
-Create a new scene only as a documented last resort when the linkage catalog
-has no usable draft. Do not hand-author SVG illustrations unless the user
-explicitly requests SVG. Treat Markdown as a working CLI input; deliver prose
-and reports as editable DOCX, converting with Pandoc when available. Create PDF
-only on an explicit user request. See [tmm-graphics](../tmm-graphics/SKILL.md)
-for the full policy and visual reference pages.
+Create a new mechanism scene only as a documented last resort when the linkage
+catalog has no usable draft. New independently calculated graphs are different:
+author them as high-level `engineering-graph.scene.json` inputs and let
+`tmm resolve` or `tmm kompas scene-json` produce the derived Scene v2/CDW.
+Do not hand-author SVG illustrations unless the user explicitly requests SVG.
+Treat Markdown as a working CLI input; deliver prose and reports as editable
+DOCX, converting with Pandoc when available. Create PDF only on an explicit user
+request. See [tmm-graphics](../tmm-graphics/SKILL.md) for the full policy and
+visual reference pages.
 
 The two coursework groups are described in
 [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md).
