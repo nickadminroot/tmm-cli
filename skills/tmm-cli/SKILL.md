@@ -153,7 +153,10 @@ physical contract and split workflow.
    schema-supported labels, visibility, line weights,
    layout, and other presentation details while preserving the worksheet's
    values and units. Resolve with `tmm resolve`, or send either form directly
-   to `tmm kompas scene-json`/`tmm kompas render-json`.
+   to `tmm kompas scene-json`/`tmm kompas render-json`. For every mechanism
+   calculation, retain the high-level `calculation-schematic` scene from this
+   catalog and keep it synchronized with the Mathcad worksheet; see
+   [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md).
 5. Use `tmm md MODEL.yaml DOCUMENT.md --format A1|A2|A3 --output FILE` for a
    Markdown preview. The CLI uploads only scene files explicitly referenced
    by directives or graphic bindings; absent files use the server's generated

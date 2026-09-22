@@ -202,6 +202,30 @@ Mechanism-family inputs use producer-resolved world coordinates and strict
 material point, or non-unit P direction is not a renderer input. Keep that
 resolution in the YAML/analysis producer.
 
+### Calculation schematic for Mathcad
+
+Every Mathcad mechanism calculation has one matching high-level
+`calculation-schematic` scene. Start with the scene returned by `tmm linkage`,
+edit that draft for the final worksheet, or author a replacement in the same
+engineering style when the catalog is insufficient. Keep the worksheet and
+scene on the same pose, coordinates, link/point/joint labels, angles, axes,
+dimensions, units, assembly branch, and semantic notation. When any of those
+calculation facts changes, update both artifacts before rendering.
+
+Keep the high-level scene as the editable source. Produce a derived Scene v2
+file or native drawing with the normal pipeline:
+
+```bash
+tmm resolve "/absolute/work/calculation-schematic.scene.json" \
+  --output "/absolute/work/calculation-schematic.render.json"
+
+tmm kompas scene-json "/absolute/work/calculation-schematic.scene.json" \
+  --output "/absolute/work/calculation-schematic.cdw"
+```
+
+The scene documents the calculation and its presentation; it does not replace
+the editable XMCD formulas, tables, or validation.
+
 ### Scale selection
 
 `--scale` is a positive millimetres-per-input-unit factor. `--target-max-side`
