@@ -238,12 +238,14 @@ tmm kompas page "/absolute/work/model.yaml" "/absolute/work/sheet.md" \
   --output "/absolute/work/sheet.cdw"
 ```
 
-For an A1 coursework sheet, prepare and validate every referenced scene first,
-then compose the sheet in Markdown with `tmm-scene` links. Use `tmm md ...
---format A1` to compile and inspect the A1 page, then use `tmm kompas page ...
---page N --format A1` to render that composed page as one native CDW. Do not
-manually assemble or arrange the A1 sheet inside KOMPAS; fix the source scenes
-or Markdown layout and regenerate it through the CLI.
+For a coursework drawing sheet, prepare and validate every referenced scene
+first, then compose the sheet in Markdown with `tmm-scene` links. Prefer A1
+unless the assignment requires another format. Use `tmm md ... --format A1` to
+compile and inspect the composed page, then use `tmm kompas page ... --page N
+--format A1` to render it as one native CDW; replace the format in both commands
+when required by the assignment. Do not manually assemble or arrange drawing
+sheets inside KOMPAS. Fix the source scenes or Markdown layout and regenerate
+the sheet through the CLI.
 
 These Markdown commands use the synchronous public mechanism pipeline. They
 do not require an account token, quote, balance reservation, or

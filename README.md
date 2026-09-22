@@ -142,8 +142,11 @@ instructions.
 
 The portable installation, security, command, and coursework workflow
 is documented in this public [CLI and skills repository](https://github.com/nickadminroot/tmm-cli/tree/main/skills).
-Install a complete skill directory with its references, examples, and (for
-`metric-synthesis` and `mathcad-mechanisms`) the bundled runtime and assets.
+Before each stage, install every skill relevant to that stage as a complete
+directory inside the current working project. Preserve its `references`,
+`examples`, `assets`, `scripts`, and `vendor` content; copying only `SKILL.md`
+is insufficient. Read each installed `SKILL.md` and consult it and its routed
+resources throughout the work.
 
 - [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, commands and diagnostics.
 - [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.

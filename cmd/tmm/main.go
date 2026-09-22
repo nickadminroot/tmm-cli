@@ -18,6 +18,7 @@ func main() {
 			"happens server-side; this command sends authored inputs and publishes results.\n" +
 			"Repository: https://github.com/nickadminroot/tmm-cli\n" +
 			"Agent skills: https://github.com/nickadminroot/tmm-cli/tree/main/skills\n" +
+			"Before each stage, install every relevant skill as a complete directory inside the current working project, read its SKILL.md, and consult it throughout the work; copying SKILL.md alone is insufficient.\n" +
 			"Recommended coursework choices (select and order to match the brief):\n" +
 			"Course project sections: synthesis in Mathcad/Python with metric-synthesis and mathcad-mechanisms (keep the result in XMCD); iterative physical YAML; kinematics XMCD editing; independently authored dynamics (site/CLI dynamics is alpha); analytical kinetostatics; independent gear/cam studies. Select and order what the brief requires.\n" +
 			"First-semester homework: iterative YAML, kinematics, and single-position kinematics plus graphical kinetostatics sheets. Select the sections required by the assignment.\n" +

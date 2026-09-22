@@ -18,6 +18,12 @@ Use this skill together with [tmm-yaml](../tmm-yaml/SKILL.md),
 [tmm-graphics](../tmm-graphics/SKILL.md). The recommended project and homework
 sections are in the public [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md).
 
+Before each stage, install every skill relevant to that stage as a complete
+directory inside the current working project, including its `references`,
+`examples`, `assets`, `scripts`, and `vendor`. A copied `SKILL.md` alone is not
+an installation. Read each installed `SKILL.md` and consult it and its routed
+resources throughout the work.
+
 ## Install and verify
 
 1. Download the archive for the current platform from the public
