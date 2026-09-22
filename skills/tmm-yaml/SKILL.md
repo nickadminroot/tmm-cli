@@ -88,8 +88,10 @@ XMCD report does not prove native Mathcad recalculation.
 ## Intermediate drawing files
 
 The linkage result may also contain `.scene.json` and `.render.json`
-intermediates. Agents may freely edit those files to improve or repair
-presentation—such as labels,
+intermediates. YAML and the CLI cannot solve every coursework section, but
+they can and must provide draft mechanism scenes. Run `tmm linkage`, inspect
+its full scene catalog, and start from the closest generated scene. Agents may
+freely edit those files to improve or repair presentation—such as labels,
 visibility, line weights, or layout—without changing the physical YAML model.
 Keep a high-level scene valid for its scene-input contract; keep a resolved
 `.render.json` valid Scene v2 JSON. Render the edited file with the tokenless
@@ -97,6 +99,10 @@ Keep a high-level scene valid for its scene-input contract; keep a resolved
 high-level scene that has not yet been resolved, use `tmm resolve` first or
 `tmm kompas scene-json` directly. These commands do not quote or charge a
 mechanism, but native CDW output still requires the local KOMPAS Renderer.
+Create a new high-level scene only when no generated draft can represent the
+required graphic, and record that reason. Do not hand-author SVG illustrations;
+use [tmm-graphics](../tmm-graphics/SKILL.md) for the complete graphics and DOCX
+handoff policy.
 
 ## Shape and branches
 

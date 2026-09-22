@@ -1,6 +1,6 @@
 ---
 name: tmm-graphics
-description: Build, validate, edit, and render TMM mechanism scenes, engineering graphs, Scene v2 sheets, and Markdown pages when a Mathcad calculation needs matching KOMPAS drawings or custom plots.
+description: Reuse CLI-generated drafts, then edit, validate, compose, and render TMM mechanism scenes, engineering graphs, Scene v2 sheets, and Markdown pages when a Mathcad calculation needs matching KOMPAS drawings or plots.
 ---
 
 # TMM graphics
@@ -18,6 +18,12 @@ editing, [`tmm-yaml`](../tmm-yaml/SKILL.md) for the physical mechanism, and
 [`tmm-cli`](../tmm-cli/SKILL.md) for installation, tokenless commands, and diagnostics.
 The detailed scene contracts and examples are in
 [`REFERENCE.md`](REFERENCE.md).
+
+YAML and the CLI do not solve every coursework section and do not replace an
+independent Mathcad calculation. They do, however, provide the physical model
+and usable draft mechanism scenes. Always obtain those drafts before authoring
+graphics: build or repair `mechanism.yaml`, run `tmm linkage`, inspect its scene
+catalog, and use the closest generated scene as the starting point.
 
 ## Artifact contract
 
@@ -40,16 +46,27 @@ labels; it is not a replacement for the XMCD calculation.
 
 ## Working loop
 
-1. Pick the authoritative XMCD/YAML snapshot and write down its pose, units,
+1. Before producing graphics, visually inspect **every** bundled reference page
+   in [`assets/scans/`](assets/scans/) (`page_157.jpg` through
+   `page_169.jpg`) with an image-viewing tool. Pages 157–158 describe the
+   expected coursework sheets; pages 159–169 show complete layouts. Use them
+   to understand the required density, composition, labels, graphs, tables,
+   line hierarchy, and title blocks. Merely listing the files or extracting
+   text does not satisfy this step.
+2. Pick the authoritative XMCD/YAML snapshot and write down its pose, units,
    input values, output values, and graph sample data. For **every Mathcad
    graph in the final worksheet**, obtain a finite table of evaluated points
    from native Mathcad or from the same verified Python calculation. Preserve
    the axis ranges and labels, including zero and sign conventions.
-2. Reuse a CLI scene when it already expresses the required geometry. Copy it
-   to the user's work directory before editing. For a graph or an alpha-stage
-   dynamic result, author a new high-level scene from the source data; do not
-   embed a screenshot as a substitute for geometry.
-3. Validate and resolve a high-level scene:
+3. Run `tmm linkage MODEL.yaml --output DIR`, inspect all generated
+   `.scene.json` and `.render.json` files, and copy the closest scene to the
+   user's work directory. Edit that copy for the required pose, values,
+   annotations, and layout. If the catalog has no suitable scene, adapt another
+   CLI mechanism draft before considering a new scene. Author a new high-level
+   scene only as a last resort after recording which generated scenes were
+   inspected and why none can represent the required graphic. Never hand-author
+   an SVG illustration.
+4. Validate and resolve a high-level scene:
 
    ```bash
    tmm resolve "/absolute/work/velocity.scene.json" \
@@ -60,7 +77,7 @@ labels; it is not a replacement for the XMCD calculation.
    `.render.json` are required before continuing. For a synchronous Scene v2
    calculation with an explicit scale, `tmm render` uses the same tokenless
    public compute route and accepts one of `--scale` or `--target-max-side`.
-4. Make the native KOMPAS drawing from either form:
+5. Make the native KOMPAS drawing from either form:
 
    ```bash
    # high-level input; the service resolves it and the local Renderer writes CDW
@@ -77,16 +94,63 @@ labels; it is not a replacement for the XMCD calculation.
    KOMPAS Renderer and KOMPAS. They obtain a renderer challenge, verify the
    signed plan, and only then send the plan to the loopback renderer. A JSON
    response or preview is not evidence that a `.cdw` was created.
-5. Open the CDW and inspect geometry, text, arrows, dimensions, line weights,
+6. Open the CDW and inspect geometry, text, arrows, dimensions, line weights,
    page scale, and clipping. If anything is wrong, fix the scene or the
    source data, rerun the command, and keep the resulting XMCD/scene/CDW paths
    together. Do not silently round a scene until it no longer agrees with the
    worksheet.
 
-For a quick non-CAD preview, use the CLI's `svg` command on the input accepted
-by the installed release and write the preview outside the skill directory.
-Use it to inspect layout; the final deliverable for this workflow remains the
-native `.cdw` from `kompas scene-json` or `kompas render-json`.
+When a quick non-CAD preview is necessary, let the CLI generate it from the
+scene and keep it as temporary inspection evidence outside the skill directory.
+Do not draw or deliver an agent-authored SVG unless the user explicitly asks
+for SVG. The graphics deliverable for this workflow is the native `.cdw` from
+`kompas scene-json` or `kompas render-json`.
+
+## Required contents of coursework sheets
+
+Page 157 of the bundled reference defines the graphic part as a system of
+project sheets rather than a loose collection of pictures. Preserve the order
+of schemes and diagrams imposed by the solution algorithm, use consistent
+scales and explanatory text, and prepare the sheets under the applicable ESKD
+rules, including the cited kinematic-scheme and diagram conventions. Treat the
+reference as a composition target; verify the standards against the current
+assignment when formal compliance matters.
+
+For the **first sheet**, which explains determination of the law of motion,
+include the applicable items below.
+
+- In steady motion: the mechanism kinematic scheme at an arbitrary pose and
+  position plans at the initial and final output-link poses; indicator diagrams
+  for piston machines or diagrams of external forces and moments; analogues of
+  point velocities and link angular velocities; reduced force moments for each
+  load and their sum; reduced inertia moments for each component and their sum;
+  work of the resistance force, driving force, and total work; second-group
+  kinetic energy, commonly combined with the reduced inertia-moment diagram;
+  total work and the first-group kinetic-energy change on one diagram; and the
+  generalized angular velocity and acceleration.
+- In unsteady motion: the corresponding mechanism and position plans,
+  indicator/external-load diagrams, velocity analogues, reduced force and
+  inertia moments, and total-work diagram; then generalized velocity versus
+  generalized coordinate, time versus generalized coordinate, generalized
+  velocity versus time, and generalized acceleration versus coordinate and
+  time.
+
+For the **second sheet**, which explains the kinetostatic force calculation,
+include the mechanism scheme at the calculated pose with the accepted scale
+when the method is graphical, or at an arbitrary pose for a numerical method;
+velocity and acceleration plans with their scales; the calculation algorithm
+and formula, including Assur-group schemes with external and inertia loads and
+the necessary equilibrium equations; vector force diagrams with scale when the
+vector equations are solved graphically; and a results table with force and
+moment magnitudes plus force-vector angles from the horizontal x-axis. For a
+numerical calculation, add force diagrams and hodographs over the machine cycle
+when the assignment requires them.
+
+The same page begins the **third sheet** as the place for kinematic schemes of
+gear trains and meshings plus the diagrams and graphs used in the synthesis of
+involute gearing, a gear train, a mechanism drawn with an instrument, or a
+planetary mechanism. Continue its exact contents from the assignment and the
+following reference page rather than inventing missing requirements.
 
 ## Coursework project sections
 
@@ -95,8 +159,8 @@ this list is not a mandatory sequence.
 
 - **Synthesis:** Record the derivation, constraints, chosen assembly, and
   checks in XMCD with `mathcad-mechanisms`. Python/JSON may be working data,
-  but the final handoff is a readable `.xmcd`. Create scenes only after the
-  dimensions and pose are settled.
+  but the final handoff is a readable `.xmcd`. After the dimensions and pose
+  are settled, obtain the CLI scene drafts before editing or extending them.
 - **Kinematics:** Obtain the native XMCD with `tmm xmcd MODEL.yaml --output
   KINEMATICS.xmcd` or the full artifact tree with `tmm linkage`. Edit and
   recalculate it with `mathcad-mechanisms`. **Every graph present in the final
@@ -106,9 +170,10 @@ this list is not a mandatory sequence.
 - **Dynamics:** The site/CLI dynamics worksheet is alpha material. Read it for
   orientation only, then replace the dynamic derivation with an independent
   XMCD calculation. `dynamic-model` is a compact schematic renderer, not a
-  dynamics solver. Build custom `engineering-graph` scenes (or direct Scene v2
-  entities) from the independently evaluated curves and render every graph in
-  the final XMCD.
+  dynamics solver. First reuse the CLI mechanism drafts. When the CLI catalog
+  cannot express an independently evaluated curve, create the missing
+  `engineering-graph` high-level scene as the documented last resort and render
+  every graph in the final XMCD.
 - **Analytical kinetostatics:** Keep the edited XMCD and all force schemes,
   vector plans, tables, and graphs on one pose and one set of loads. A scene
   is correct only when its point coordinates, vector directions, labels,
@@ -116,9 +181,10 @@ this list is not a mandatory sequence.
   supplies explanations; review it after XMCD edits, then render and arrange
   the resulting pages.
 - **Gears and cams:** These are not a site/CLI calculation handoff. Derive
-  them in XMCD with `mathcad-mechanisms` and author their diagrams/curves as
-  custom scenes. The renderer's `gear-meshing` kind is useful only when its
-  input contract matches the requested gear study.
+  them in XMCD with `mathcad-mechanisms`. Still use the YAML mechanism and CLI
+  drafts for the surrounding mechanism views. Create only the missing
+  diagrams/curves as new high-level scenes. The renderer's `gear-meshing` kind
+  is useful only when its input contract matches the requested gear study.
 ## Coursework homework
 
 Homework uses YAML modeling, kinematics and the requested single-position
@@ -131,7 +197,13 @@ sheets usually do not belong in a course project.
 
 ## Markdown sheets
 
-For a text-heavy page with scene placements, write one H1, then top-level H2
+Markdown is a working input for the CLI page renderer, not the preferred final
+document. Deliver prose and report material as editable `.docx`; prefer DOCX
+over both PDF and Markdown. Convert an existing Markdown draft with Pandoc when
+available, for example `pandoc report.md -o report.docx`, and visually inspect
+the DOCX. Create a PDF only when the user explicitly requests one.
+
+For a text-heavy CLI page with scene placements, write one H1, then top-level H2
 sections, and place each scene in a standalone directive:
 
 ```md
@@ -166,6 +238,13 @@ tmm kompas page "/absolute/work/model.yaml" "/absolute/work/sheet.md" \
   --output "/absolute/work/sheet.cdw"
 ```
 
+For an A1 coursework sheet, prepare and validate every referenced scene first,
+then compose the sheet in Markdown with `tmm-scene` links. Use `tmm md ...
+--format A1` to compile and inspect the A1 page, then use `tmm kompas page ...
+--page N --format A1` to render that composed page as one native CDW. Do not
+manually assemble or arrange the A1 sheet inside KOMPAS; fix the source scenes
+or Markdown layout and regenerate it through the CLI.
+
 These Markdown commands use the synchronous public mechanism pipeline. They
 do not require an account token, quote, balance reservation, or
 `--accept-new-mechanism` flag. The YAML mechanism, Markdown document, options,
@@ -177,6 +256,8 @@ the returned signed plan is still checked before the local Renderer runs it.
 Finish only when **every graph present in the final Mathcad XMCD** has a
 corresponding scene and native CDW, each scene resolves or validates with the
 public CLI, and the edited XMCD has been checked separately for static
-structure and (when available) native Mathcad recalculation. Report which gates ran; static XMCD
+structure and (when available) native Mathcad recalculation. Also report the
+generated CLI drafts used, any last-resort scenes and why they were necessary,
+and confirmation that pages 157–169 were visually inspected. Static XMCD
 validation does not execute Mathcad, and successful JSON generation does not
 prove KOMPAS output.

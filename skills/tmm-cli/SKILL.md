@@ -83,8 +83,11 @@ checksums, result manifests, signed renderer plans, and local output paths.
    worksheet is needed. Edit and statically validate it with
    [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md), then use native
    Mathcad for recalculation when available.
-4. Keep any returned `.scene.json` and `.render.json` outside the installed
-   skill. Agents may edit schema-supported labels, visibility, line weights,
+4. Inspect every returned `.scene.json` and `.render.json` and keep working
+   copies outside the installed skill. YAML and the CLI do not solve every
+   coursework section, but they can and must supply draft mechanism scenes.
+   Start graphics work from the closest generated draft. Agents may edit
+   schema-supported labels, visibility, line weights,
    layout, and other presentation details while preserving the worksheet's
    values and units. Resolve with `tmm resolve`, or send either form directly
    to `tmm kompas scene-json`/`tmm kompas render-json`.
@@ -96,6 +99,13 @@ checksums, result manifests, signed renderer plans, and local output paths.
 6. For a high-level scene, use `tmm kompas scene-json INPUT.scene.json` with
    `--scale` or `--target-max-side`; for a resolved Scene v2 file use
    `tmm kompas render-json INPUT.render.json`. Both require the local Renderer.
+
+Create a new scene only as a documented last resort when the linkage catalog
+has no usable draft. Do not hand-author SVG illustrations unless the user
+explicitly requests SVG. Treat Markdown as a working CLI input; deliver prose
+and reports as editable DOCX, converting with Pandoc when available. Create PDF
+only on an explicit user request. See [tmm-graphics](../tmm-graphics/SKILL.md)
+for the full policy and visual reference pages.
 
 The two coursework groups are described in
 [`WORKFLOW.md`](https://github.com/nickadminroot/tmm-cli/blob/main/WORKFLOW.md).
