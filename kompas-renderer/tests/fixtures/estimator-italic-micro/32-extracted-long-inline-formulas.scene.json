@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-32-extracted-long-inline-formulas",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-32-extracted-long-inline-formulas",
+      "text": "\n$F_{43}=1103{,}5$, $F_{52}=481{,}4$, $F_{21}=7992{,}9$, $F_{32}=7130{,}7$, $F_{30}=7047{,}8$, $F_{10}=8247{,}9\\ \\text{Н}$.\n",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 73.718136
+    }
+  ]
+}

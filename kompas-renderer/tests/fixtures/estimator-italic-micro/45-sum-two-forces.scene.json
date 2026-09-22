@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-45-sum-two-forces",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-45-sum-two-forces",
+      "text": "\n$\\sum\\overline F^{(3)}=\\overline F_{30}+\\overline F_{34}=0$\n",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "width": 100,
+      "italic": true
+    }
+  ]
+}

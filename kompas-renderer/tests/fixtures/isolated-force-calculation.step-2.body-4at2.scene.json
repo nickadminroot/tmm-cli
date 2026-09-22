@@ -1,0 +1,394 @@
+{
+  "schema": "mechanism/v2",
+  "units": "SI",
+  "points": {
+    "A": [
+      0.0,
+      0.0
+    ],
+    "K": [
+      1.0,
+      0.8
+    ],
+    "B": [
+      0.3535533905932738,
+      0.35355339059327373
+    ],
+    "C": [
+      1.747676284660612,
+      -0.2
+    ],
+    "E": [
+      1.5495521526722387,
+      0.2590717028132464
+    ],
+    "S2": [
+      1.2829686533048326,
+      -0.015482203135575412
+    ],
+    "S3": [
+      1.847676284660612,
+      -0.2
+    ],
+    "S5": [
+      1.3563382570102862,
+      0.4492535864889405
+    ],
+    "Q": [
+      1.7126765140205724,
+      0.09850717297788092
+    ],
+    "S1": [
+      0.0,
+      0.0
+    ]
+  },
+  "joints": [
+    {
+      "id": "A",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "A"
+        },
+        {
+          "body": "1",
+          "point": "A"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "1",
+          "point": "B"
+        },
+        {
+          "body": "2",
+          "point": "B"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "C"
+        },
+        {
+          "body": "3",
+          "point": "C"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "type": "prismatic",
+      "guide": {
+        "body": "ground",
+        "axis": {
+          "origin": [
+            1.747676284660612,
+            -0.2
+          ],
+          "direction": [
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "slider": {
+        "body": "3",
+        "point": "C"
+      }
+    },
+    {
+      "id": "E",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "E"
+        },
+        {
+          "body": "4",
+          "point": "E"
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "type": "prismatic",
+      "guide": {
+        "body": "5",
+        "axis": {
+          "origin": [
+            1.5495521526722387,
+            0.2590717028132463
+          ],
+          "direction": [
+            0.7126765140205725,
+            -0.7014928270221192
+          ]
+        }
+      },
+      "slider": {
+        "body": "4",
+        "point": "E"
+      }
+    },
+    {
+      "id": "K",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "K"
+        },
+        {
+          "body": "5",
+          "point": "K"
+        }
+      ]
+    }
+  ],
+  "bodies": {
+    "1": {
+      "type": "rigid",
+      "points": [
+        "S1",
+        "A",
+        "B"
+      ],
+      "com": [
+        0.0,
+        0.0
+      ],
+      "mass": 100.0,
+      "inertia": 10.0
+    },
+    "2": {
+      "type": "rigid",
+      "points": [
+        "E",
+        "S2",
+        "B",
+        "C"
+      ],
+      "com": [
+        1.2829686533048326,
+        -0.015482203135575412
+      ],
+      "mass": 80.0,
+      "inertia": 8.0
+    },
+    "3": {
+      "type": "slider",
+      "points": [
+        "S3",
+        "C"
+      ],
+      "com": [
+        1.847676284660612,
+        -0.2
+      ],
+      "mass": 75.0,
+      "inertia": 1.0
+    },
+    "4": {
+      "type": "slider",
+      "points": [
+        "E"
+      ],
+      "com": [
+        1.5495521526722387,
+        0.2590717028132464
+      ],
+      "mass": 0.0,
+      "inertia": 0.0
+    },
+    "5": {
+      "type": "rigid",
+      "points": [
+        "S5",
+        "K",
+        "Q"
+      ],
+      "com": [
+        1.3563382570102862,
+        0.4492535864889405
+      ],
+      "mass": 60.0,
+      "inertia": 6.0
+    }
+  },
+  "outputs": {
+    "points": [
+      "A",
+      "K",
+      "B",
+      "C",
+      "E",
+      "S2",
+      "S3",
+      "S5",
+      "Q",
+      "S1"
+    ]
+  },
+  "drive": {
+    "body": "1",
+    "omega": "omega_1",
+    "alpha": "epsilon_1",
+    ".omega_value": 10.0,
+    ".alpha_value": 50.0,
+    ".M": 5972.164219774098
+  },
+  "parameters": {
+    "l_AB": 0.5,
+    "l_BC": 1.5,
+    "l_CE": 0.5,
+    "l_KQ": 1.0,
+    "l_BS2": 1.0,
+    "l_CS3": 0.1,
+    "l_KS5": 0.5,
+    "alpha_BCE": 45.0,
+    "y_C_ref": -0.2,
+    "phi_1": 45.0,
+    "omega_1": 10.0,
+    "epsilon_1": 50.0
+  },
+  "id": "isolated-step-body-4at2",
+  "kind": "isolated-force-calculation",
+  "mechanism": {
+    "scale": 50
+  },
+  "step": {
+    "id": "body:4@2",
+    "system_bodies": [
+      "4"
+    ],
+    "order": 2,
+    "kind": "member_body",
+    "group_level": 2,
+    "selected_body": "4",
+    "force_equation": {
+      "latex": "\\sum \\vec F_k^{(4)}=0:\\quad \\underline{\\underline{\\vec F_{42}}} + \\underset{\\parallel t_{H}}{\\underline{\\vec F_{45}}}=0",
+      "presentation_latex": "4{,}5) \\quad \\sum \\overline{F}^{(4)}_k=0:\\quad \\underline{\\underline{\\overline{F}_{42}}} + \\underset{\\parallel t_{H}}{\\underline{\\overline{F}_{45}}}=0",
+      "rule": "known=double_underline; direction_known=single_underline_with_hint; unknown=double_question",
+      "terms": [
+        {
+          "id": "E",
+          "kind": "joint_reaction",
+          "body": "4",
+          "application": "E",
+          "application_xy": null,
+          "F_xy": [
+            -473.59349919275587,
+            -481.14385645294055
+          ],
+          "F_mag": 675.1223689673204,
+          "F_angle_deg": null,
+          "latex_symbol": "F_{42}",
+          "vector_latex_symbol": "\\vec F_{42}",
+          "zeroed": false,
+          "status": "known",
+          "unknown_dof": 0,
+          "direction_hint": "",
+          "joint_type": "revolute",
+          "lever_id": "F42"
+        },
+        {
+          "id": "H",
+          "kind": "joint_reaction",
+          "body": "4",
+          "application": "E",
+          "application_xy": null,
+          "F_xy": [
+            473.59349919275587,
+            481.14385645294067
+          ],
+          "F_mag": 675.1223689673204,
+          "F_angle_deg": null,
+          "latex_symbol": "F_{45}",
+          "vector_latex_symbol": "\\vec F_{45}",
+          "zeroed": false,
+          "status": "direction_known",
+          "unknown_dof": 1,
+          "direction_hint": "\\parallel t_{H}",
+          "joint_type": "prismatic",
+          "lever_id": "F45"
+        }
+      ]
+    },
+    "moment_equation": {
+      "latex": "\\sum M_{E}(\\vec F_k^{(4)})=0:\\quad - \\underset{?}{M_{45}}=0",
+      "presentation_latex": "6) \\quad \\sum M_{E}(\\overline{F}^{(4)}_k)=0:\\quad - \\underset{?}{M_{45}}=0",
+      "rule": "known=single_underline; unknown=single_question",
+      "about": {
+        "point": "E",
+        "xy": [
+          1.5495521526722387,
+          0.2590717028132464
+        ]
+      },
+      "unknown_scalar_terms": 1,
+      "terms": [
+        {
+          "id": "E",
+          "kind": "joint_reaction",
+          "body": "4",
+          "application": "E",
+          "application_xy": null,
+          "value": 0.0,
+          "lever_arm": 0.0,
+          "lever_id": "F42",
+          "lever_latex": null,
+          "latex_symbol": "F_{42}",
+          "zeroed": true,
+          "known": true
+        },
+        {
+          "id": "H",
+          "kind": "joint_reaction",
+          "body": "4",
+          "application": "E",
+          "application_xy": null,
+          "value": 0.0,
+          "lever_arm": 0.0,
+          "lever_id": "F45",
+          "lever_latex": null,
+          "latex_symbol": "F_{45}",
+          "zeroed": true,
+          "known": false
+        },
+        {
+          "id": "H",
+          "kind": "joint_couple",
+          "body": "4",
+          "application": null,
+          "application_xy": null,
+          "value": -2.2075925070604273e-13,
+          "lever_arm": 0.0,
+          "lever_id": "",
+          "lever_latex": "",
+          "latex_symbol": "M_{45}",
+          "zeroed": false,
+          "known": false
+        }
+      ]
+    },
+    "scalar_recoveries": [],
+    "two_force_presentation": {
+      "unknown_id": "E",
+      "known_id": "H",
+      "lever_latex": "h_{F42}",
+      "presentation_latex": "4{,}5) \\quad \\sum \\overline{F}^{(4)}_k=0:\\quad \\underset{?}{\\overline{F}_{42}}+\\underset{\\parallel t_{H}}{\\underline{\\overline{F}_{45}}}=0\\Rightarrow \\underset{?}{\\overline{F}_{42}}=-\\underset{\\parallel t_{H}}{\\underline{\\overline{F}_{45}}}\\Rightarrow \\underset{\\parallel t_{H}}{\\underline{h_{F42}}}=h_{F42}"
+    }
+  }
+}

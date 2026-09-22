@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-27-extracted-plan",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-27-extracted-plan",
+      "text": "## План сил группы 2–3\n\n$F_{21}=7992{,}9\\ \\text{Н}$, $\\varphi_{21}=90{,}8^\\circ$;\n$F_{30}=7047{,}8\\ \\text{Н}$, $\\varphi_{30}=294{,}2^\\circ$;\n$F_{32}=7130{,}7\\ \\text{Н}$.\n\n",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 44.875129
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-09-inline-radical",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      120,
+      200
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-09-inline-radical",
+      "text": "$\\sqrt{x}$",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "width": 40,
+      "italic": true
+    }
+  ]
+}

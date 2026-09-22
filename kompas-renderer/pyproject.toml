@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tmm-scene-kompas"
+version = "0.1.0"
+description = "Render tmm-scene JSON to KOMPAS-3D .cdw drawings"
+requires-python = ">=3.9"
+dependencies = [
+    "cryptography>=43,<51",
+    "markdown-it-py>=3,<5",
+    "mdit-py-plugins>=0.4,<1",
+]
+
+[project.scripts]
+tmm-kompas-renderer = "tmm_scene_kompas.renderer:main"
+
+[project.optional-dependencies]
+kompas = ["pywin32"]
+packaging = [
+    "pyinstaller>=6,<7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+tmm_scene_kompas = ["fixtures/*.json"]

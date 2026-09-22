@@ -1,0 +1,511 @@
+{
+  "schema": "mechanism/v2",
+  "units": "SI",
+  "points": {
+    "A": [
+      0.0,
+      0.0
+    ],
+    "K": [
+      1.0,
+      0.8
+    ],
+    "B": [
+      0.3535533905932738,
+      0.35355339059327373
+    ],
+    "C": [
+      1.747676284660612,
+      -0.2
+    ],
+    "E": [
+      1.5495521526722387,
+      0.2590717028132464
+    ],
+    "S2": [
+      1.2829686533048326,
+      -0.015482203135575412
+    ],
+    "S3": [
+      1.847676284660612,
+      -0.2
+    ],
+    "S5": [
+      1.3563382570102862,
+      0.4492535864889405
+    ],
+    "Q": [
+      1.7126765140205724,
+      0.09850717297788092
+    ],
+    "S1": [
+      0.0,
+      0.0
+    ]
+  },
+  "joints": [
+    {
+      "id": "A",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "A"
+        },
+        {
+          "body": "1",
+          "point": "A"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "1",
+          "point": "B"
+        },
+        {
+          "body": "2",
+          "point": "B"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "C"
+        },
+        {
+          "body": "3",
+          "point": "C"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "type": "prismatic",
+      "guide": {
+        "body": "ground",
+        "axis": {
+          "origin": [
+            1.747676284660612,
+            -0.2
+          ],
+          "direction": [
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "slider": {
+        "body": "3",
+        "point": "C"
+      }
+    },
+    {
+      "id": "E",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "E"
+        },
+        {
+          "body": "4",
+          "point": "E"
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "type": "prismatic",
+      "guide": {
+        "body": "5",
+        "axis": {
+          "origin": [
+            1.5495521526722387,
+            0.2590717028132463
+          ],
+          "direction": [
+            0.7126765140205725,
+            -0.7014928270221192
+          ]
+        }
+      },
+      "slider": {
+        "body": "4",
+        "point": "E"
+      }
+    },
+    {
+      "id": "K",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "K"
+        },
+        {
+          "body": "5",
+          "point": "K"
+        }
+      ]
+    }
+  ],
+  "bodies": {
+    "1": {
+      "type": "rigid",
+      "points": [
+        "S1",
+        "A",
+        "B"
+      ],
+      "com": [
+        0.0,
+        0.0
+      ],
+      "mass": 100.0,
+      "inertia": 10.0
+    },
+    "2": {
+      "type": "rigid",
+      "points": [
+        "E",
+        "S2",
+        "B",
+        "C"
+      ],
+      "com": [
+        1.2829686533048326,
+        -0.015482203135575412
+      ],
+      "mass": 80.0,
+      "inertia": 8.0
+    },
+    "3": {
+      "type": "slider",
+      "points": [
+        "S3",
+        "C"
+      ],
+      "com": [
+        1.847676284660612,
+        -0.2
+      ],
+      "mass": 75.0,
+      "inertia": 1.0
+    },
+    "4": {
+      "type": "slider",
+      "points": [
+        "E"
+      ],
+      "com": [
+        1.5495521526722387,
+        0.2590717028132464
+      ],
+      "mass": 0.0,
+      "inertia": 0.0
+    },
+    "5": {
+      "type": "rigid",
+      "points": [
+        "S5",
+        "K",
+        "Q"
+      ],
+      "com": [
+        1.3563382570102862,
+        0.4492535864889405
+      ],
+      "mass": 60.0,
+      "inertia": 6.0
+    }
+  },
+  "outputs": {
+    "points": [
+      "A",
+      "K",
+      "B",
+      "C",
+      "E",
+      "S2",
+      "S3",
+      "S5",
+      "Q",
+      "S1"
+    ]
+  },
+  "drive": {
+    "body": "1",
+    "omega": "omega_1",
+    "alpha": "epsilon_1",
+    ".omega_value": 10.0,
+    ".alpha_value": 50.0,
+    ".M": 5972.164219774098
+  },
+  "parameters": {
+    "l_AB": 0.5,
+    "l_BC": 1.5,
+    "l_CE": 0.5,
+    "l_KQ": 1.0,
+    "l_BS2": 1.0,
+    "l_CS3": 0.1,
+    "l_KS5": 0.5,
+    "alpha_BCE": 45.0,
+    "y_C_ref": -0.2,
+    "phi_1": 45.0,
+    "omega_1": 10.0,
+    "epsilon_1": 50.0
+  },
+  "id": "isolated-step-drive-body-1",
+  "kind": "isolated-force-calculation",
+  "mechanism": {
+    "scale": 50
+  },
+  "step": {
+    "id": "drive-body:1",
+    "system_bodies": [
+      "1"
+    ],
+    "order": 5,
+    "kind": "drive_body",
+    "group_level": 0,
+    "selected_body": "1",
+    "force_equation": {
+      "latex": "\\sum \\vec F_k^{(1)}=0:\\quad \\underset{??}{\\vec F_{10}} + \\underline{\\underline{\\vec F_{12}}} + \\underline{\\underline{\\vec G_{1}}} + \\underline{\\underline{\\vec \\Phi_{1}}}=0",
+      "presentation_latex": "13{,}14) \\quad \\sum \\overline{F}^{(1)}_k=0:\\quad \\underset{??}{\\overline{F}_{10}} + \\underline{\\underline{\\overline{F}_{12}}} + \\underline{\\underline{\\overline{G}_{1}}}=0",
+      "rule": "known=double_underline; direction_known=single_underline_with_hint; unknown=double_question",
+      "terms": [
+        {
+          "id": "A",
+          "kind": "joint_reaction",
+          "body": "1",
+          "application": "A",
+          "application_xy": null,
+          "F_xy": [
+            -11624.996567540025,
+            4833.621142734601
+          ],
+          "F_mag": 12589.854587992997,
+          "F_angle_deg": null,
+          "latex_symbol": "F_{10}",
+          "vector_latex_symbol": "\\vec F_{10}",
+          "zeroed": false,
+          "status": "unknown",
+          "unknown_dof": 2,
+          "direction_hint": "",
+          "joint_type": "revolute",
+          "lever_id": "F10"
+        },
+        {
+          "id": "B",
+          "kind": "joint_reaction",
+          "body": "1",
+          "application": "B",
+          "application_xy": null,
+          "F_xy": [
+            11624.996567540027,
+            -3852.6211427346043
+          ],
+          "F_mag": 12246.764261010461,
+          "F_angle_deg": null,
+          "latex_symbol": "F_{12}",
+          "vector_latex_symbol": "\\vec F_{12}",
+          "zeroed": false,
+          "status": "known",
+          "unknown_dof": 0,
+          "direction_hint": "",
+          "joint_type": "revolute",
+          "lever_id": "F12"
+        },
+        {
+          "id": "G1",
+          "kind": "gravity",
+          "body": "1",
+          "application": "S1",
+          "application_xy": null,
+          "F_xy": [
+            0.0,
+            -981.0
+          ],
+          "F_mag": 981.0,
+          "F_angle_deg": null,
+          "latex_symbol": "G_{1}",
+          "vector_latex_symbol": "\\vec G_{1}",
+          "zeroed": false,
+          "status": "known",
+          "unknown_dof": 0,
+          "direction_hint": "",
+          "joint_type": "",
+          "lever_id": "G1"
+        },
+        {
+          "id": "Phi1",
+          "kind": "inertia_force",
+          "body": "1",
+          "application": "S1",
+          "application_xy": null,
+          "F_xy": [
+            -1.8162813113283784e-12,
+            3.552713678800501e-12
+          ],
+          "F_mag": 3.990069208098642e-12,
+          "F_angle_deg": null,
+          "latex_symbol": "\\Phi_{1}",
+          "vector_latex_symbol": "\\vec \\Phi_{1}",
+          "zeroed": false,
+          "status": "known",
+          "unknown_dof": 0,
+          "direction_hint": "",
+          "joint_type": "",
+          "lever_id": "Phi1"
+        }
+      ]
+    },
+    "moment_equation": {
+      "latex": "\\sum M_{A}(\\vec F_k^{(1)})=0:\\quad - \\underline{F_{12}}\\cdot\\underline{F_{12}} - \\underline{M_{\\Phi1}} + \\underset{?}{M_{1}}=0",
+      "presentation_latex": "15) \\quad \\sum M_{A}(\\overline{F}^{(1)}_k)=0:\\quad - \\underline{F_{12}}\\cdot\\underline{F_{12}} - \\underline{M_{\\Phi1}} + \\underset{?}{M_{1}}=0",
+      "rule": "known=single_underline; unknown=single_question",
+      "about": {
+        "point": "A",
+        "xy": [
+          0.0,
+          0.0
+        ]
+      },
+      "unknown_scalar_terms": 1,
+      "terms": [
+        {
+          "id": "A",
+          "kind": "joint_reaction",
+          "body": "1",
+          "application": "A",
+          "application_xy": null,
+          "value": 0.0,
+          "lever_arm": 0.0,
+          "lever_id": "F10",
+          "lever_latex": null,
+          "latex_symbol": "F_{10}",
+          "zeroed": true,
+          "known": false
+        },
+        {
+          "id": "B",
+          "kind": "joint_reaction",
+          "body": "1",
+          "application": "B",
+          "application_xy": null,
+          "value": -5472.1642197740985,
+          "lever_arm": 0.4468253085588992,
+          "lever_id": "F12",
+          "lever_latex": null,
+          "latex_symbol": "F_{12}",
+          "zeroed": false,
+          "known": true
+        },
+        {
+          "id": "G1",
+          "kind": "gravity",
+          "body": "1",
+          "application": "S1",
+          "application_xy": null,
+          "value": -0.0,
+          "lever_arm": 0.0,
+          "lever_id": "G1",
+          "lever_latex": null,
+          "latex_symbol": "G_{1}",
+          "zeroed": true,
+          "known": true
+        },
+        {
+          "id": "Phi1",
+          "kind": "inertia_force",
+          "body": "1",
+          "application": "S1",
+          "application_xy": null,
+          "value": 0.0,
+          "lever_arm": 0.0,
+          "lever_id": "Phi1",
+          "lever_latex": null,
+          "latex_symbol": "\\Phi_{1}",
+          "zeroed": true,
+          "known": true
+        },
+        {
+          "id": "M_Phi1",
+          "kind": "inertia_moment",
+          "body": "1",
+          "application": null,
+          "application_xy": null,
+          "value": -499.9999999999998,
+          "lever_arm": 0.0,
+          "lever_id": "",
+          "lever_latex": "",
+          "latex_symbol": "M_{\\Phi1}",
+          "zeroed": false,
+          "known": true
+        },
+        {
+          "id": "drive",
+          "kind": "drive_moment",
+          "body": "1",
+          "application": null,
+          "application_xy": null,
+          "value": 5972.164219774098,
+          "lever_arm": 0.0,
+          "lever_id": "",
+          "lever_latex": "",
+          "latex_symbol": "M_{1}",
+          "zeroed": false,
+          "known": false
+        }
+      ]
+    },
+    "scalar_recoveries": [
+      {
+        "id": "drive",
+        "latex_symbol": "M_{1}",
+        "value": 5972.164219774098,
+        "sources": [
+          {
+            "id": "M_Phi1",
+            "kind": "inertia_moment",
+            "status": "",
+            "latex_symbol": "M_{\\Phi1}",
+            "lever_latex": "",
+            "lever_arm": 0.0,
+            "magnitude": 499.9999999999998,
+            "value": -499.9999999999998
+          },
+          {
+            "id": "B",
+            "kind": "joint_reaction",
+            "status": "known",
+            "latex_symbol": "F_{12}",
+            "lever_latex": "h_{F12}",
+            "lever_arm": 0.4468253085588992,
+            "magnitude": 12246.764261010461,
+            "value": -5472.1642197740985
+          },
+          {
+            "id": "G1",
+            "kind": "gravity",
+            "status": "known",
+            "latex_symbol": "G_{1}",
+            "lever_latex": "h_{G1}",
+            "lever_arm": 0.0,
+            "magnitude": 981.0,
+            "value": 0.0
+          }
+        ],
+        "presentation_latex": "M_{1}=M_{\\Phi1}+F_{12}h_{F12}+G_{1}h_{G1}=500+12246.764261\\cdot0.446825308559+981\\cdot0=5972.16421977\\,\\text{Н}\\cdot\\text{м}."
+      }
+    ]
+  }
+}

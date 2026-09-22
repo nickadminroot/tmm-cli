@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-31-extracted-inline-formulas-wide",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-31-extracted-inline-formulas-wide",
+      "text": "\n$F_{54}=694{,}1\\ \\text{Н}$, $\\varphi_{54}=222{,}5^\\circ$.\n",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 100
+    }
+  ]
+}

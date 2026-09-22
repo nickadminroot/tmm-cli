@@ -34,6 +34,26 @@ flags. This table is not permission to call an undocumented command.
   Renderer with an explicit port. It is not used for ordinary synthesis or
   XMCD.
 
+## Local Renderer contract
+
+- Production setup: `https://api.tmm-agent.ru/v1/kompas-renderer/installer`.
+- Public source and release mirror:
+  `https://github.com/nickadminroot/tmm-cli/tree/main/kompas-renderer` and the
+  latest release assets.
+- Supported runtime: 64-bit Windows, installed KOMPAS-3D API7/API5, one
+  interactive user session.
+- Installed program: `%LOCALAPPDATA%\Programs\TMM Kompas Renderer` with HKCU
+  startup; persistent backing data is under
+  `%LOCALAPPDATA%\TMM\KompasRenderer`.
+- Probe: `GET http://127.0.0.1:17342/v1/capabilities`, protocol version 2.
+- Startup diagnostics:
+  `%LOCALAPPDATA%\TMM\KompasRenderer\renderer-startup.log`.
+
+The setup is unsigned and may trigger SmartScreen. Verify its separate
+SHA-256 release asset before installation. Reaching the capabilities endpoint
+does not prove COM rendering; require a non-empty checksummed CDW and visible
+KOMPAS document for native acceptance.
+
 ## Exit classes
 
 | Code | Meaning |

@@ -1,0 +1,35 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "kinematic-pairs-table",
+  "bounds": {"low": [20, 79], "high": [200, 190], "width": 180, "height": 111},
+  "entities": [
+    {
+      "type": "table",
+      "id": "kinematic-pairs",
+      "position": [20, 190],
+      "columnWidths": [26, 30, 44, 40, 40],
+      "rowHeights": [15, 12, 12, 12, 12, 12, 12, 12, 12],
+      "fontSize": 3.5,
+      "italic": true,
+      "layer": "fixed",
+      "gridLayer": "thin",
+      "cells": [
+        {"row": 0, "column": 0, "colSpan": 5, "text": "Анализ $l_1$ кинематических пар", "fontSize": 5},
+        {"row": 1, "column": 0, "text": "Обозн."},
+        {"row": 1, "column": 1, "text": "Звенья"},
+        {"row": 1, "column": 2, "text": "Относ. движ."},
+        {"row": 1, "column": 3, "text": "Отн. подв. на пл."},
+        {"row": 1, "column": 4, "text": "Отн. подв. в пр."},
+        {"row": 2, "column": 0, "text": "O"}, {"row": 2, "column": 1, "text": "0, 1"}, {"row": 2, "column": 2, "text": "вращ."}, {"row": 2, "column": 3, "text": "1"}, {"row": 2, "column": 4, "text": "1"},
+        {"row": 3, "column": 0, "text": "A"}, {"row": 3, "column": 1, "text": "1, 2"}, {"row": 3, "column": 2, "text": "вращ."}, {"row": 3, "column": 3, "text": "1"}, {"row": 3, "column": 4, "text": "1"},
+        {"row": 4, "column": 0, "text": "B"}, {"row": 4, "column": 1, "text": "2, 3"}, {"row": 4, "column": 2, "text": "вращ."}, {"row": 4, "column": 3, "text": "1"}, {"row": 4, "column": 4, "text": "1"},
+        {"row": 5, "column": 0, "text": "C"}, {"row": 5, "column": 1, "text": "0, 3"}, {"row": 5, "column": 2, "text": "вращ."}, {"row": 5, "column": 3, "text": "1"}, {"row": 5, "column": 4, "text": "1"},
+        {"row": 6, "column": 0, "text": "D"}, {"row": 6, "column": 1, "text": "3, 4"}, {"row": 6, "column": 2, "text": "вращ."}, {"row": 6, "column": 3, "text": "1"}, {"row": 6, "column": 4, "text": "1"},
+        {"row": 7, "column": 0, "text": "E"}, {"row": 7, "column": 1, "text": "4, 5"}, {"row": 7, "column": 2, "text": "вращ."}, {"row": 7, "column": 3, "text": "1"}, {"row": 7, "column": 4, "text": "1"},
+        {"row": 8, "column": 0, "text": "H"}, {"row": 8, "column": 1, "text": "2, 5"}, {"row": 8, "column": 2, "text": "пост."}, {"row": 8, "column": 3, "text": "1"}, {"row": 8, "column": 4, "text": "1"}
+      ]
+    }
+  ]
+}

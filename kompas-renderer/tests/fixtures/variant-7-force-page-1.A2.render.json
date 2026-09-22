@@ -1,0 +1,3346 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "Кинетостатический силовой расчёт механизма — лист 1",
+  "kind": "super-scene",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      594,
+      420
+    ],
+    "width": 594,
+    "height": 420
+  },
+  "sheet": {
+    "format": "A2",
+    "orientation": "landscape",
+    "titleBlock": {
+      "text": "Кинетостатический силовой расчёт механизма — лист 1"
+    }
+  },
+  "metadata": {
+    "layout": {
+      "coordinateSystem": "y-up",
+      "placements": [
+        {
+          "id": "group-1-text-1",
+          "x": 25,
+          "y": 311.9706,
+          "width": 60.571874,
+          "height": 87.0294,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-1-scene-2",
+          "x": 87.57187400000001,
+          "y": 214.89534871714562,
+          "width": 244.29451097590737,
+          "height": 184.10465128285438,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-3-text-1",
+          "x": 333.8663849759074,
+          "y": 379.0638,
+          "width": 107.479327,
+          "height": 30.9362,
+          "groupId": "group-3"
+        },
+        {
+          "id": "group-3-scene-2",
+          "x": 333.8663849759074,
+          "y": 187.31224885238618,
+          "width": 187.23009904871674,
+          "height": 189.75155114761384,
+          "groupId": "group-3"
+        },
+        {
+          "id": "group-5-text-1",
+          "x": 25,
+          "y": 214.89534871714562,
+          "width": 57.529681,
+          "height": 40.9944,
+          "groupId": "group-5"
+        },
+        {
+          "id": "group-5-scene-2",
+          "x": 25,
+          "y": 157.60396241298224,
+          "width": 165.59080229036078,
+          "height": 55.29138630416337,
+          "groupId": "group-5"
+        },
+        {
+          "id": "group-5-text-3",
+          "x": 192.59080229036078,
+          "y": 186.80447571714564,
+          "width": 29.339217,
+          "height": 26.090873,
+          "groupId": "group-5"
+        },
+        {
+          "id": "group-2-text-1",
+          "x": 223.93001929036078,
+          "y": 102.45054871714562,
+          "width": 61.515765,
+          "height": 110.4448,
+          "groupId": "group-2"
+        },
+        {
+          "id": "group-4-text-1",
+          "x": 287.4457842903608,
+          "y": 116.46164885238618,
+          "width": 36.522611,
+          "height": 68.8506,
+          "groupId": "group-4"
+        },
+        {
+          "id": "group-4-scene-2",
+          "x": 325.9683952903608,
+          "y": 94.39194018375882,
+          "width": 28.94974746830583,
+          "height": 90.92030866862736,
+          "groupId": "group-4"
+        }
+      ]
+    }
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "object-group-1-text-1",
+      "text": "## Исходные данные и схема нагрузок\n\n$m_1=26$, $m_2=30$, $m_3=25$, $m_4=10\\ \\text{кг}$;\n$J_{S1}=10$, $J_{S2}=2{,}5$, $J_{S3}=2$, $J_{S4}=1\\ \\text{кг}\\cdot\\text{м}^2$; $F_5=500\\ \\text{Н}$.\n\n$\\overline G_i=m_i\\overline g$, $\\overline\\Phi_i=-m_i\\overline a_{Si}$, $M_{\\Phi i}=-J_{Si}\\varepsilon_i$.\n\n",
+      "position": [
+        25,
+        399
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 79.7799
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_O_pair",
+      "center": [
+        202.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_O_groundLine",
+      "from": [
+        197.86638497590735,
+        258.3502485586848
+      ],
+      "to": [
+        197.86638497590735,
+        250.85024855868483
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_O_groundStrut1",
+      "from": [
+        201.5673468702307,
+        255.35024855868483
+      ],
+      "to": [
+        197.86638497590735,
+        257.48699990463297
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_O_groundStrut2",
+      "from": [
+        201.5673468702307,
+        253.85024855868483
+      ],
+      "to": [
+        197.86638497590735,
+        251.71349721273668
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_A_pair",
+      "center": [
+        251.16267629036076,
+        241.6592963035588
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_C_pair",
+      "center": [
+        302.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_C_groundLine",
+      "from": [
+        299.11638497590735,
+        249.60024855868483
+      ],
+      "to": [
+        306.61638497590735,
+        249.60024855868483
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_C_groundStrut1",
+      "from": [
+        302.11638497590735,
+        253.30121045300817
+      ],
+      "to": [
+        299.9796336299592,
+        249.60024855868483
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_C_groundStrut2",
+      "from": [
+        303.61638497590735,
+        253.30121045300817
+      ],
+      "to": [
+        305.7531363218555,
+        249.60024855868483
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_B_pair",
+      "center": [
+        253.6124817919321,
+        341.6292840649088
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_D_pair",
+      "center": [
+        228.9855301999445,
+        385.1438018180208
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_E_pair",
+      "center": [
+        116.06391871110445,
+        244.9699466995877
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge0",
+      "from": [
+        123.6474109857607,
+        248.28516085861708
+      ],
+      "to": [
+        108.6519128215582,
+        248.6526316838528
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge1",
+      "from": [
+        108.6519128215582,
+        248.6526316838528
+      ],
+      "to": [
+        108.4804264364482,
+        241.65473254055829
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge2",
+      "from": [
+        108.4804264364482,
+        241.65473254055829
+      ],
+      "to": [
+        123.4759246006507,
+        241.2872617153226
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge3",
+      "from": [
+        123.4759246006507,
+        241.2872617153226
+      ],
+      "to": [
+        123.6474109857607,
+        248.28516085861708
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_2_side1",
+      "from": [
+        251.22392142790005,
+        244.15854599759254
+      ],
+      "to": [
+        253.57573470940855,
+        340.12973424848855
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_2_side2",
+      "from": [
+        123.5616677932057,
+        244.78621128696983
+      ],
+      "to": [
+        248.66342659632687,
+        241.72054144109808
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__triangle_2_apexArc",
+      "center": [
+        251.16267629036076,
+        241.6592963035588
+      ],
+      "radius": 2.5,
+      "startAngle": 178.59622440368287,
+      "endAngle": 88.59622440368292,
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_3_side1",
+      "from": [
+        302.12757642814773,
+        255.90568409127818
+      ],
+      "to": [
+        254.8438293715315,
+        339.45355817725317
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_3_side2",
+      "from": [
+        252.38113421233274,
+        343.80500995256443
+      ],
+      "to": [
+        229.7243387477041,
+        383.8383662854274
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__triangle_3_apexArc",
+      "center": [
+        253.6124817919321,
+        341.6292840649088
+      ],
+      "radius": 2.5,
+      "startAngle": 299.50760182476915,
+      "endAngle": 119.50760182476927,
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__link_O_A_link",
+      "from": [
+        204.31527371534096,
+        254.21201999103104
+      ],
+      "to": [
+        249.71378755092715,
+        242.04752487121257
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__link_D_E_link",
+      "from": [
+        228.0445167708708,
+        383.9756863587005
+      ],
+      "to": [
+        117.00493214017811,
+        246.13806215890796
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__interest_S2_circle",
+      "center": [
+        252.38757904114644,
+        291.6442901842338
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__interest_S4_circle",
+      "center": [
+        197.61841589748892,
+        346.2066198406783
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_tails_tailRight",
+      "from": [
+        108.5661696290032,
+        245.15368211220553
+      ],
+      "to": [
+        105.5670699961627,
+        245.22717627725268
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_arc",
+      "center": [
+        202.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 18,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_x_axis",
+      "from": [
+        204.36638497590735,
+        254.60024855868483
+      ],
+      "to": [
+        232.86638497590735,
+        254.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_y_axis",
+      "from": [
+        202.86638497590735,
+        256.1002485586848
+      ],
+      "to": [
+        202.86638497590735,
+        284.6002485586848
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_load_F5_shaft",
+      "from": [
+        89.571874,
+        245.6192286297552
+      ],
+      "to": [
+        114.5643690104759,
+        245.00669850695564
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_gravity_1_shaft",
+      "from": [
+        202.86638497590735,
+        253.10024855868483
+      ],
+      "to": [
+        202.86638497590735,
+        229.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_gravity_2_shaft",
+      "from": [
+        252.38757904114644,
+        291.6442901842338
+      ],
+      "to": [
+        252.38757904114644,
+        266.6442901842338
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_gravity_3_shaft",
+      "from": [
+        302.86638497590735,
+        253.10024855868483
+      ],
+      "to": [
+        302.86638497590735,
+        229.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_gravity_4_shaft",
+      "from": [
+        197.61841589748894,
+        371.2066198406783
+      ],
+      "to": [
+        197.61841589748892,
+        346.2066198406783
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_inertia_2_shaft",
+      "from": [
+        276.950097673823,
+        296.3007564859929
+      ],
+      "to": [
+        252.38757904114644,
+        291.6442901842338
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_force_inertia_4_shaft",
+      "from": [
+        221.0416129096553,
+        354.9446883760721
+      ],
+      "to": [
+        197.61841589748892,
+        346.2066198406783
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_1_arc",
+      "center": [
+        202.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 9,
+      "startAngle": 60,
+      "endAngle": 150,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_1__cand_68__leader_radial",
+      "from": [
+        200.53701356998465,
+        263.29358099528645
+      ],
+      "to": [
+        166.59588807303038,
+        229.35245549833218
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_2_arc",
+      "center": [
+        252.38757904114644,
+        291.6442901842338
+      ],
+      "radius": 9,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_2__cand_33__leader_elbow",
+      "from": [
+        254.71695044706914,
+        300.3376226208354
+      ],
+      "to": [
+        252.57335690762017,
+        308.3376226208354
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_2__cand_33__leader_shelf",
+      "from": [
+        252.57335690762017,
+        308.3376226208354
+      ],
+      "to": [
+        237.57335690762017,
+        308.3376226208354
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_3_arc",
+      "center": [
+        302.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 27,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_4_arc",
+      "center": [
+        197.61841589748892,
+        346.2066198406783
+      ],
+      "radius": 27,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_dim_moment_drive_drive_arc",
+      "center": [
+        202.86638497590735,
+        254.60024855868483
+      ],
+      "radius": 33.300000000000004,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_O_hatch0",
+      "from": [
+        197.86638497590735,
+        257.6002485586848
+      ],
+      "to": [
+        195.86638497590735,
+        255.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_O_hatch1",
+      "from": [
+        197.86638497590735,
+        255.60024855868483
+      ],
+      "to": [
+        195.86638497590735,
+        253.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_O_hatch2",
+      "from": [
+        197.86638497590735,
+        253.60024855868483
+      ],
+      "to": [
+        195.86638497590735,
+        251.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_O_hatch3",
+      "from": [
+        197.86638497590735,
+        251.60024855868483
+      ],
+      "to": [
+        195.86638497590735,
+        249.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_C_hatch0",
+      "from": [
+        299.86638497590735,
+        249.60024855868483
+      ],
+      "to": [
+        297.86638497590735,
+        247.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_C_hatch1",
+      "from": [
+        301.86638497590735,
+        249.60024855868483
+      ],
+      "to": [
+        299.86638497590735,
+        247.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_C_hatch2",
+      "from": [
+        303.86638497590735,
+        249.60024855868483
+      ],
+      "to": [
+        301.86638497590735,
+        247.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_C_hatch3",
+      "from": [
+        305.86638497590735,
+        249.60024855868483
+      ],
+      "to": [
+        303.86638497590735,
+        247.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_left",
+      "from": [
+        193.86638497590735,
+        270.1887058268047
+      ],
+      "to": [
+        196.86446118726067,
+        270.9958855037772
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_right",
+      "from": [
+        193.86638497590735,
+        270.1887058268047
+      ],
+      "to": [
+        196.06446118726066,
+        272.38152614983227
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_base",
+      "from": [
+        196.86446118726067,
+        270.9958855037772
+      ],
+      "to": [
+        196.06446118726066,
+        272.38152614983227
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_x_arrow_shaft",
+      "from": [
+        230.86638497590735,
+        254.60024855868483
+      ],
+      "to": [
+        232.86638497590735,
+        254.60024855868483
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_y_arrow_shaft",
+      "from": [
+        202.86638497590735,
+        282.6002485586848
+      ],
+      "to": [
+        202.86638497590735,
+        284.6002485586848
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_1_arrow_shaft",
+      "from": [
+        205.63433416833848,
+        263.3944771927448
+      ],
+      "to": [
+        207.36638497590735,
+        262.3944771927448
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_2_arrow_shaft",
+      "from": [
+        249.6196298487153,
+        300.43851881829374
+      ],
+      "to": [
+        247.88757904114644,
+        299.43851881829374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_3_arrow_shaft",
+      "from": [
+        291.09843578347625,
+        278.98293446086467
+      ],
+      "to": [
+        289.36638497590735,
+        277.98293446086467
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_inertia_4_arrow_shaft",
+      "from": [
+        185.8504667050578,
+        370.58930574285813
+      ],
+      "to": [
+        184.11841589748894,
+        369.58930574285813
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_moment_drive_drive_arrow_shaft",
+      "from": [
+        187.94843578347624,
+        284.43889450470664
+      ],
+      "to": [
+        186.21638497590735,
+        283.43889450470664
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_x_30_-20",
+      "text": "x",
+      "position": [
+        232.86638497590735,
+        234.60024855868483
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_y_-20_30",
+      "text": "y",
+      "position": [
+        182.86638497590735,
+        284.6002485586848
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_O, S1_-19.798989873223327_19.79898987322333",
+      "text": "O, S1",
+      "position": [
+        183.06739510268403,
+        274.39923843190815
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_A_48.29629131445341_-19.940952255126035",
+      "text": "A",
+      "position": [
+        251.16267629036076,
+        234.6592963035588
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_C, S3_107.42462120245875_7.424621202458747",
+      "text": "C, S3",
+      "position": [
+        310.2910061783661,
+        262.0248697611436
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_B_43.74609681602477_87.02903550622398",
+      "text": "B",
+      "position": [
+        246.6124817919321,
+        341.6292840649088
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_D_26.119145224037144_137.54355325933597",
+      "text": "D",
+      "position": [
+        228.9855301999445,
+        392.1438018180208
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_E, S5_-86.8024662648029_-20.130301859097145",
+      "text": "E, S5",
+      "position": [
+        116.06391871110445,
+        234.4699466995877
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_H_-86.8024662648029_-0.630301859097143",
+      "text": "H",
+      "position": [
+        116.06391871110445,
+        253.9699466995877
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S2_42.521194065239094_37.04404162554897",
+      "text": "S2",
+      "position": [
+        245.38757904114644,
+        291.6442901842338
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S4_-12.672590280877174_99.0309924844522",
+      "text": "S4",
+      "position": [
+        190.1937946950302,
+        353.63124104313704
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_1_37.516313711352666_-4.876085059899186",
+      "text": "1",
+      "position": [
+        240.38269868726002,
+        249.72416349878563
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_4_-34.23537871811713_63.59333713036497",
+      "text": "4",
+      "position": [
+        168.6310062577902,
+        318.19358568904977
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\omega_{1}_-19.503006085357733_47.672138127364285",
+      "text": "\\omega_{1}",
+      "position": [
+        183.36337889054963,
+        302.2723866860491
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_F5_-100.57775262646157_-0.28998678655805943",
+      "text": "F5",
+      "position": [
+        102.28863234944578,
+        254.31026177212678
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_G_{1}_9.24264068711928_-16.742640687119287",
+      "text": "G_{1}",
+      "position": [
+        212.10902566302664,
+        237.85760787156553
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_G_{2}_58.52119406523909_24.54404162554897",
+      "text": "G_{2}",
+      "position": [
+        261.3875790411464,
+        279.1442901842338
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_G_{3}_109_-12.500000000000004",
+      "text": "G_{3}",
+      "position": [
+        311.86638497590735,
+        242.10024855868483
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_G_{4}_-0.24796907841841995_128.10637128199346",
+      "text": "G_{4}",
+      "position": [
+        202.61841589748894,
+        382.7066198406783
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\Phi_{2}_94.17377049175515_40.42004791614488",
+      "text": "\\Phi_{2}",
+      "position": [
+        297.0401554676625,
+        295.0202964748297
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\Phi_{4}_13.669190885196604_88.79861720441194",
+      "text": "\\Phi_{4}",
+      "position": [
+        216.53557586110395,
+        343.39886576309675
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_M_{\\Phi_{1}}_-48.72760368406353_-37.704899841539216",
+      "text": "M_{\\Phi_{1}}",
+      "position": [
+        154.13878129184383,
+        216.89534871714562
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_M_{\\Phi_{2}}_30.2069719317128_60.237374062150586",
+      "text": "M_{\\Phi_{2}}",
+      "position": [
+        233.07335690762017,
+        314.8376226208354
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_M_{\\Phi_{3}}_113.32918082277982_49.74518005388702",
+      "text": "M_{\\Phi_{3}}",
+      "position": [
+        316.1955657986872,
+        304.3454286125718
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_M_{\\Phi_{4}}_3.2539443527230754_142.39975144131515",
+      "text": "M_{\\Phi_{4}}",
+      "position": [
+        206.12032932863042,
+        397
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_M_{1}_12.242140833349232_45.68829158347293",
+      "text": "M_{1}",
+      "position": [
+        215.10852580925658,
+        300.2885401421578
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_0",
+      "points": [
+        [
+          114.5643690104759,
+          245.00669850695564
+        ],
+        [
+          112.57967013258501,
+          245.65552079703104
+        ],
+        [
+          112.55026868669064,
+          244.4558810365282
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_1",
+      "points": [
+        [
+          202.86638497590735,
+          229.60024855868483
+        ],
+        [
+          203.46638497590735,
+          231.60024855868483
+        ],
+        [
+          202.26638497590736,
+          231.60024855868483
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_2",
+      "points": [
+        [
+          252.38757904114644,
+          266.6442901842338
+        ],
+        [
+          252.98757904114643,
+          268.6442901842338
+        ],
+        [
+          251.78757904114644,
+          268.6442901842338
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_3",
+      "points": [
+        [
+          302.86638497590735,
+          229.60024855868483
+        ],
+        [
+          303.4663849759073,
+          231.60024855868483
+        ],
+        [
+          302.2663849759074,
+          231.60024855868483
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_4",
+      "points": [
+        [
+          197.61841589748892,
+          346.2066198406783
+        ],
+        [
+          198.21841589748894,
+          348.2066198406783
+        ],
+        [
+          197.01841589748892,
+          348.2066198406783
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_5",
+      "points": [
+        [
+          252.38757904114644,
+          291.6442901842338
+        ],
+        [
+          254.4643357230028,
+          291.42730704119026
+        ],
+        [
+          254.24082534051834,
+          292.6063079355588
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_6",
+      "points": [
+        [
+          197.61841589748892,
+          346.2066198406783
+        ],
+        [
+          199.7019853033117,
+          346.34350859521777
+        ],
+        [
+          199.28255801361277,
+          347.46782205180176
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_7",
+      "points": [
+        [
+          193.86638497590735,
+          270.1887058268047
+        ],
+        [
+          196.86446118726067,
+          270.9958855037772
+        ],
+        [
+          196.06446118726066,
+          272.38152614983227
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_8",
+      "points": [
+        [
+          232.86638497590735,
+          254.60024855868483
+        ],
+        [
+          230.86638497590735,
+          255.20024855868482
+        ],
+        [
+          230.86638497590735,
+          254.00024855868483
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_9",
+      "points": [
+        [
+          202.86638497590735,
+          284.6002485586848
+        ],
+        [
+          202.26638497590736,
+          282.6002485586848
+        ],
+        [
+          203.46638497590735,
+          282.6002485586848
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_10",
+      "points": [
+        [
+          207.36638497590735,
+          262.3944771927448
+        ],
+        [
+          205.93433416833847,
+          263.91409243501545
+        ],
+        [
+          205.33433416833847,
+          262.8748619504741
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_11",
+      "points": [
+        [
+          247.88757904114644,
+          299.43851881829374
+        ],
+        [
+          249.91962984871532,
+          299.91890357602307
+        ],
+        [
+          249.31962984871532,
+          300.9581340605644
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_12",
+      "points": [
+        [
+          289.36638497590735,
+          277.98293446086467
+        ],
+        [
+          291.3984357834762,
+          278.463319218594
+        ],
+        [
+          290.79843578347624,
+          279.50254970313534
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_13",
+      "points": [
+        [
+          184.11841589748894,
+          369.58930574285813
+        ],
+        [
+          186.15046670505782,
+          370.06969050058746
+        ],
+        [
+          185.5504667050578,
+          371.10892098512875
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_14",
+      "points": [
+        [
+          186.21638497590735,
+          283.43889450470664
+        ],
+        [
+          188.24843578347622,
+          283.91927926243596
+        ],
+        [
+          187.64843578347623,
+          284.9585097469773
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__filled_circle_0",
+      "center": [
+        252.38757904114644,
+        291.6442901842338
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__filled_circle_1",
+      "center": [
+        197.61841589748892,
+        346.2066198406783
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-3-text-1",
+      "text": "## Группа Ассура 4–5\n\n$\\sum\\overline F^{(4,5)}=\\overline F_{43}+\\overline F_{52}+\\overline G_4+\\overline\\Phi_4+\\overline F_5=0$.\n\n$\\sum M_D=-F_{52}h_{F52}+G_4h_{G4}-\\Phi_4h_{\\Phi4}+F_5h_{F5}+M_{\\Phi4}=0$.\n\n",
+      "position": [
+        333.8663849759074,
+        410
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 146.90609
+    },
+    {
+      "type": "circle",
+      "id": "object-group-3-scene-2__joint_D_pair",
+      "center": [
+        475.2800411758519,
+        359.9091357051547
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-3-scene-2__joint_E_pair",
+      "center": [
+        362.3584296870119,
+        219.73528058672161
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__joint_H_edge0",
+      "from": [
+        369.94192196166813,
+        223.050494745751
+      ],
+      "to": [
+        354.9464237974656,
+        223.41796557098672
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__joint_H_edge1",
+      "from": [
+        354.9464237974656,
+        223.41796557098672
+      ],
+      "to": [
+        354.7749374123556,
+        216.4200664276922
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__joint_H_edge2",
+      "from": [
+        354.7749374123556,
+        216.4200664276922
+      ],
+      "to": [
+        369.77043557655816,
+        216.0525956024565
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__joint_H_edge3",
+      "from": [
+        369.77043557655816,
+        216.0525956024565
+      ],
+      "to": [
+        369.94192196166813,
+        223.050494745751
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__link_D_E_link",
+      "from": [
+        474.33902774677824,
+        358.7410202458344
+      ],
+      "to": [
+        363.2994431160855,
+        220.90339604604188
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-3-scene-2__interest_S4_circle",
+      "center": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_joint_reaction_D_group_2_shaft",
+      "from": [
+        476.7490609055037,
+        360.2124194566051
+      ],
+      "to": [
+        499.76370333671485,
+        364.9638648959947
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_joint_reaction_H_group_2_shaft",
+      "from": [
+        361.70923122909545,
+        193.24323382996386
+      ],
+      "to": [
+        362.3216826044883,
+        218.23573077030136
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_gravity_G4_group_2_shaft",
+      "from": [
+        443.9129268733964,
+        345.9719537278122
+      ],
+      "to": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_gravity_G4_group_2__cand_59__leader_elbow",
+      "from": [
+        443.9129268733964,
+        333.4719537278122
+      ],
+      "to": [
+        436.4103494853249,
+        361.4719537278122
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_gravity_G4_group_2__cand_59__leader_shelf",
+      "from": [
+        436.4103494853249,
+        361.4719537278122
+      ],
+      "to": [
+        421.4103494853249,
+        361.4719537278122
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_inertia_force_Phi4_group_2_shaft",
+      "from": [
+        467.33612388556276,
+        329.71002226320604
+      ],
+      "to": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_force_external_load_F5_group_2_shaft",
+      "from": [
+        335.8663849759074,
+        220.38456251688913
+      ],
+      "to": [
+        360.85887998638333,
+        219.77203239408956
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-3-scene-2__thin_dim_iso_moment_inertia_moment_M_Phi4_group_2_arc",
+      "center": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "radius": 36,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2_ext1",
+      "from": [
+        475.24329409332836,
+        358.40958588873445
+      ],
+      "to": [
+        474.6675898004591,
+        334.9166387648172
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2_ext2",
+      "from": [
+        362.39517676953545,
+        221.23483040314184
+      ],
+      "to": [
+        365.3936932756675,
+        343.59624163679075
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2_line",
+      "from": [
+        474.7410839655062,
+        337.9157383976577
+      ],
+      "to": [
+        365.32019911062036,
+        340.59714200395024
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2__cand_8__leader_elbow",
+      "from": [
+        420.03064153806326,
+        339.256440200804
+      ],
+      "to": [
+        417.8870479986143,
+        347.256440200804
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2__cand_8__leader_shelf",
+      "from": [
+        417.8870479986143,
+        347.256440200804
+      ],
+      "to": [
+        402.8870479986143,
+        347.256440200804
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2_ext1",
+      "from": [
+        475.2800411758519,
+        358.4091357051547
+      ],
+      "to": [
+        475.2800411758519,
+        334.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2_ext2",
+      "from": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "to": [
+        443.9129268733964,
+        340.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2_line",
+      "from": [
+        475.2800411758519,
+        337.9091357051547
+      ],
+      "to": [
+        443.9129268733964,
+        337.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2__cand_47__leader_radial",
+      "from": [
+        459.59648402462415,
+        337.9091357051547
+      ],
+      "to": [
+        507.59648402462415,
+        337.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_inertia_force_Phi4_group_2_ext1",
+      "from": [
+        473.87464935512196,
+        359.38485159303104
+      ],
+      "to": [
+        393.29885163326963,
+        329.32589583127617
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_inertia_force_Phi4_group_2_ext2",
+      "from": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "to": [
+        402.21790709893264,
+        305.4175466934255
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_inertia_force_Phi4_group_2_line",
+      "from": [
+        396.1096352747296,
+        330.3744640555234
+      ],
+      "to": [
+        405.0286907403926,
+        306.4661149176727
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_external_load_F5_group_2_ext1",
+      "from": [
+        473.78049147522336,
+        359.9458875125227
+      ],
+      "to": [
+        387.8063086391862,
+        362.0529911349532
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_external_load_F5_group_2_ext2",
+      "from": [
+        363.8579793876404,
+        219.69852877935364
+      ],
+      "to": [
+        390.3033222436623,
+        219.05039144451428
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_external_load_F5_group_2_line",
+      "from": [
+        390.80540804044335,
+        361.9794875202172
+      ],
+      "to": [
+        387.3042228424052,
+        219.12389505925023
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_moment_inertia_moment_M_Phi4_group_2_arrow_shaft",
+      "from": [
+        427.6449776809652,
+        353.148868264052
+      ],
+      "to": [
+        425.9129268733964,
+        352.148868264052
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2_arrow_from_shaft",
+      "from": [
+        473.7413840878927,
+        337.9402364526734
+      ],
+      "to": [
+        474.7410839655062,
+        337.9157383976577
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_joint_reaction_H_group_2_arrow_to_shaft",
+      "from": [
+        366.31989898823383,
+        340.57264394893457
+      ],
+      "to": [
+        365.32019911062036,
+        340.59714200395024
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2_arrow_from_shaft",
+      "from": [
+        474.2800411758519,
+        337.9091357051547
+      ],
+      "to": [
+        475.2800411758519,
+        337.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_gravity_G4_group_2_arrow_to_shaft",
+      "from": [
+        444.9129268733964,
+        337.9091357051547
+      ],
+      "to": [
+        443.9129268733964,
+        337.9091357051547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_inertia_force_Phi4_group_2_arrow_from_shaft",
+      "from": [
+        396.45915801614535,
+        329.43753617503677
+      ],
+      "to": [
+        396.1096352747296,
+        330.3744640555234
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_inertia_force_Phi4_group_2_arrow_to_shaft",
+      "from": [
+        404.6791679989769,
+        307.4030427981594
+      ],
+      "to": [
+        405.0286907403926,
+        306.4661149176727
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_external_load_F5_group_2_arrow_from_shaft",
+      "from": [
+        390.78090683553137,
+        360.9797877197982
+      ],
+      "to": [
+        390.80540804044335,
+        361.9794875202172
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-3-scene-2__thin_dim_iso_lever_external_load_F5_group_2_arrow_to_shaft",
+      "from": [
+        387.32872404731717,
+        220.12359485966925
+      ],
+      "to": [
+        387.3042228424052,
+        219.12389505925023
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_D_26.119145224037144_137.54355325933597",
+      "text": "D",
+      "position": [
+        475.2800411758519,
+        366.9091357051547
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_E, S5_-99.17683493556748_-22.004670529861723",
+      "text": "E, S5",
+      "position": [
+        349.9840610162473,
+        207.36091191595702
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_H_-77.25652471878452_-19.176243405115535",
+      "text": "H",
+      "position": [
+        371.90437123303025,
+        210.1893390407032
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_S4_-12.672590280877174_99.0309924844522",
+      "text": "S4",
+      "position": [
+        436.4883056709376,
+        328.39657493027096
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_A_48.29629131445341_-5.940952255126037",
+      "text": "A",
+      "position": [
+        497.4571872662682,
+        223.4246301906927
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_4_-34.23537871811713_63.59333713036497",
+      "text": "4",
+      "position": [
+        414.92551723369763,
+        292.9589195761837
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_\\vec F_{43}_47.14349533064576_139.98954196326454",
+      "text": "\\vec F_{43}",
+      "position": [
+        496.30439128246053,
+        369.35512440908326
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_\\vec F_{52}_-109.52515370563503_-40.05333359343258",
+      "text": "\\vec F_{52}",
+      "position": [
+        339.63574224617975,
+        189.31224885238618
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_\\vec G_{4}_-29.25054646648986_138.60637128199346",
+      "text": "\\vec G_{4}",
+      "position": [
+        419.9103494853249,
+        367.9719537278122
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_\\vec \\Phi_{4}_17.307822718831986_87.1371845758485",
+      "text": "\\vec \\Phi_{4}",
+      "position": [
+        466.46871867064675,
+        316.50276702166724
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_\\vec F_{5}_-103.43403560565604_-1.3919080835636337",
+      "text": "\\vec F_{5}",
+      "position": [
+        345.72686034615873,
+        227.9736743622551
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_M_{\\Phi4}_9.245897447322736_145.69821755418127",
+      "text": "M_{\\Phi4}",
+      "position": [
+        458.40679339913754,
+        375.0638
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_h_{F52}_-43.27384795320047_124.39085775498523",
+      "text": "h_{F52}",
+      "position": [
+        405.8870479986143,
+        353.756440200804
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_h_{G4}_69.93558807280937_108.54355325933597",
+      "text": "h_{G4}",
+      "position": [
+        519.0964840246241,
+        337.9091357051547
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_h_{\\Phi4}_-32.240458979595935_95.15458113012619",
+      "text": "h_{\\Phi4}",
+      "position": [
+        416.92043697221885,
+        324.52016357594493
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-3-scene-2__label_h_{F5}_-72.69715226492826_61.49469791134312",
+      "text": "h_{F5}",
+      "position": [
+        376.4637436868865,
+        290.86028035716186
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_0",
+      "points": [
+        [
+          499.76370333671485,
+          364.9638648959947
+        ],
+        [
+          497.68369686326565,
+          365.1470944525882
+        ],
+        [
+          497.92632386442597,
+          363.9718786688668
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_1",
+      "points": [
+        [
+          362.3216826044883,
+          218.23573077030136
+        ],
+        [
+          361.6728665678888,
+          216.2510298480838
+        ],
+        [
+          362.872506421025,
+          216.22163218206492
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_2",
+      "points": [
+        [
+          443.9129268733964,
+          320.9719537278122
+        ],
+        [
+          444.51292687339634,
+          322.9719537278122
+        ],
+        [
+          443.31292687339635,
+          322.9719537278122
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_3",
+      "points": [
+        [
+          443.9129268733964,
+          320.9719537278122
+        ],
+        [
+          445.9964962792191,
+          321.1088424823517
+        ],
+        [
+          445.5770689895202,
+          322.2331559389357
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_4",
+      "points": [
+        [
+          360.85887998638333,
+          219.77203239408956
+        ],
+        [
+          358.87418110849245,
+          220.42085468416496
+        ],
+        [
+          358.84477966259806,
+          219.22121492366213
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_5",
+      "points": [
+        [
+          425.9129268733964,
+          352.148868264052
+        ],
+        [
+          427.9449776809652,
+          352.6292530217813
+        ],
+        [
+          427.34497768096526,
+          353.6684835063227
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_6",
+      "points": [
+        [
+          474.7410839655062,
+          337.9157383976577
+        ],
+        [
+          472.7563830432887,
+          338.5645544342572
+        ],
+        [
+          472.7269853772698,
+          337.364914581121
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_7",
+      "points": [
+        [
+          365.32019911062036,
+          340.59714200395024
+        ],
+        [
+          367.3049000328379,
+          339.94832596735074
+        ],
+        [
+          367.3342976988568,
+          341.14796582048695
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_8",
+      "points": [
+        [
+          475.2800411758519,
+          337.9091357051547
+        ],
+        [
+          473.2800411758519,
+          338.5091357051547
+        ],
+        [
+          473.2800411758519,
+          337.30913570515474
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_9",
+      "points": [
+        [
+          443.9129268733964,
+          337.9091357051547
+        ],
+        [
+          445.9129268733964,
+          337.30913570515474
+        ],
+        [
+          445.9129268733964,
+          338.5091357051547
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_10",
+      "points": [
+        [
+          396.1096352747296,
+          330.3744640555234
+        ],
+        [
+          396.2465240292691,
+          328.29089464970065
+        ],
+        [
+          397.3708374858531,
+          328.71032193939953
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_11",
+      "points": [
+        [
+          405.0286907403926,
+          306.4661149176727
+        ],
+        [
+          404.89180198585314,
+          308.5496843234955
+        ],
+        [
+          403.76748852926914,
+          308.13025703379657
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_12",
+      "points": [
+        [
+          390.80540804044335,
+          361.9794875202172
+        ],
+        [
+          390.156585750368,
+          359.99478864232634
+        ],
+        [
+          391.3562255108708,
+          359.96538719643195
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-3-scene-2__filled_poly_13",
+      "points": [
+        [
+          387.3042228424052,
+          219.12389505925023
+        ],
+        [
+          387.9530451324806,
+          221.1085939371411
+        ],
+        [
+          386.75340537197775,
+          221.1379953830355
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-3-scene-2__filled_circle_0",
+      "center": [
+        443.9129268733964,
+        320.9719537278122
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-5-text-1",
+      "text": "## Проверка по звену 5\n\n$\\sum\\overline F^{(5)}=\\overline F_{54}+\\overline F_{52}+\\overline F_5=0$, $\\sum M_E=M_{52}=0$.\n\n",
+      "position": [
+        25,
+        255.8897487171456
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 79.351285
+    },
+    {
+      "type": "circle",
+      "id": "object-group-5-scene-2__joint_E_pair",
+      "center": [
+        53.49204471110447,
+        181.7268862490733
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__joint_H_edge0",
+      "from": [
+        61.07553698576072,
+        185.04210040810267
+      ],
+      "to": [
+        46.08003882155822,
+        185.4095712333384
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__joint_H_edge1",
+      "from": [
+        46.08003882155822,
+        185.4095712333384
+      ],
+      "to": [
+        45.90855243644822,
+        178.41167209004388
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__joint_H_edge2",
+      "from": [
+        45.90855243644822,
+        178.41167209004388
+      ],
+      "to": [
+        60.90405060065072,
+        178.04420126480818
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__joint_H_edge3",
+      "from": [
+        60.90405060065072,
+        178.04420126480818
+      ],
+      "to": [
+        61.07553698576072,
+        185.04210040810267
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__thin_dim_iso_force_joint_reaction_E_body_5_2_shaft",
+      "from": [
+        52.38631894774896,
+        180.71329336420683
+      ],
+      "to": [
+        35.06328198851264,
+        164.83367150129925
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__thin_dim_iso_force_joint_reaction_H_body_5_2_shaft",
+      "from": [
+        53.528791793628045,
+        183.22643606549352
+      ],
+      "to": [
+        54.104496086497306,
+        206.7193831894108
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-5-scene-2__thin_dim_iso_force_external_load_F5_body_5_2_shaft",
+      "from": [
+        27.000000000000014,
+        182.3761681792408
+      ],
+      "to": [
+        51.99249501047592,
+        181.76363805644124
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_E, S5_-74.42809759403832_-22.004670529861727",
+      "text": "E, S5",
+      "position": [
+        65.86641338186905,
+        169.3525175783087
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_H_-86.8024662648029_-18.630301859097145",
+      "text": "H",
+      "position": [
+        53.49204471110447,
+        172.7268862490733
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_A_48.29629131445341_-5.940952255126037",
+      "text": "A",
+      "position": [
+        188.59080229036078,
+        185.41623585304438
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_\\vec F_{54}_-93.07252323087639_-31.75322569518818",
+      "text": "\\vec F_{54}",
+      "position": [
+        47.22198774503099,
+        159.60396241298224
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_\\vec F_{52}_-74.11352468262935_19.538160608975186",
+      "text": "\\vec F_{52}",
+      "position": [
+        66.18098629327802,
+        210.8953487171456
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-5-scene-2__label_\\vec F_{5}_-103.43403560565604_-1.3919080835636337",
+      "text": "\\vec F_{5}",
+      "position": [
+        36.860475370251336,
+        189.96528002460678
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-5-scene-2__filled_poly_0",
+      "points": [
+        [
+          35.06328198851264,
+          164.83367150129925
+        ],
+        [
+          36.94302016026657,
+          165.74283837577897
+        ],
+        [
+          36.13214585237341,
+          166.62741898646337
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-5-scene-2__filled_poly_1",
+      "points": [
+        [
+          54.104496086497306,
+          206.7193831894108
+        ],
+        [
+          53.45568004989778,
+          204.7346822671932
+        ],
+        [
+          54.655319903033984,
+          204.70528460117436
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-5-scene-2__filled_poly_2",
+      "points": [
+        [
+          51.99249501047592,
+          181.76363805644124
+        ],
+        [
+          50.00779613258503,
+          182.41246034651664
+        ],
+        [
+          49.97839468669066,
+          181.2128205860138
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-5-text-3",
+      "text": "\n$F_{54}=694{,}1\\ \\text{Н}$, $\\varphi_{54}=222{,}5^\\circ$.\n",
+      "position": [
+        192.59080229036078,
+        212.89534871714562
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 39.126628
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-2-text-1",
+      "text": "## Число неизвестных и инерционные нагрузки\n\n$N_y=3n=15$, $N_F=2p_5+p_4+W=2\\cdot7+1=15$.\n\n$G_1=255{,}1$, $G_2=294{,}3$, $G_3=245{,}2$, $G_4=98{,}1\\ \\text{Н}$;\n$\\Phi_2=1706{,}8$, $\\Phi_4=1699{,}5\\ \\text{Н}$;\n$M_{\\Phi2}=491{,}7$, $M_{\\Phi4}=215{,}3\\ \\text{Н}\\cdot\\text{м}$.\n\n",
+      "position": [
+        223.93001929036078,
+        212.89534871714562
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 83.508073
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-4-text-1",
+      "text": "## План сил группы 4–5\n\n$F_{52}=481{,}4\\ \\text{Н}$, $\\varphi_{52}=88{,}6^\\circ$;\n$F_{43}=1103{,}5\\ \\text{Н}$, $\\varphi_{43}=11{,}7^\\circ$.\n\n",
+      "position": [
+        287.4457842903608,
+        185.31224885238618
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 45.8334
+    },
+    {
+      "type": "line",
+      "id": "object-group-4-scene-2__thin_vector_reaction_A_1_shaft",
+      "from": [
+        332.9181427586666,
+        176.31224885238618
+      ],
+      "to": [
+        334.07632594866084,
+        96.39194018375882
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-4-scene-2__thin_vector_reaction_O_1_shaft",
+      "from": [
+        334.07632594866084,
+        96.39194018375882
+      ],
+      "to": [
+        332.9181427586666,
+        178.8628488523861
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-4-scene-2__thin_vector_gravity_1_shaft",
+      "from": [
+        332.9181427586666,
+        178.8628488523861
+      ],
+      "to": [
+        332.9181427586666,
+        176.31224885238612
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_p_4.286263797015736e-16_7",
+      "text": "p",
+      "position": [
+        332.9181427586666,
+        183.31224885238618
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_f1_-3.791564278311605_-74.97056120032153",
+      "text": "f1",
+      "position": [
+        329.12657848035496,
+        101.34168765206465
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_f2_-4.9497474683058424_-2.3991474683059",
+      "text": "f2",
+      "position": [
+        327.9683952903608,
+        173.91310138408028
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_f3_4.949747468305823_-4.949747468305902",
+      "text": "f3",
+      "position": [
+        337.8678902269724,
+        171.36250138408028
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_A_5.578566652394686_-39.88770331320612",
+      "text": "A",
+      "position": [
+        338.49670941106126,
+        136.42454553918006
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_O_5.8681444131424865_-59.23237074372519",
+      "text": "O",
+      "position": [
+        338.7862871718091,
+        117.07987810866098
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-4-scene-2__label_G_{1}_19.99999999999999_1.2752999999999317",
+      "text": "G_{1}",
+      "position": [
+        352.9181427586666,
+        177.5875488523861
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-4-scene-2__filled_poly_0",
+      "points": [
+        [
+          334.07632594866084,
+          96.39194018375882
+        ],
+        [
+          335.03275034747577,
+          99.40611542241888
+        ],
+        [
+          333.03296032451675,
+          99.37713501397585
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-4-scene-2__filled_poly_1",
+      "points": [
+        [
+          332.9181427586666,
+          178.8628488523861
+        ],
+        [
+          331.96036780918445,
+          175.84910248844895
+        ],
+        [
+          333.96017061744317,
+          175.87718679154708
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-4-scene-2__filled_poly_2",
+      "points": [
+        [
+          332.9181427586666,
+          176.31224885238612
+        ],
+        [
+          333.9181427586666,
+          179.31224885238612
+        ],
+        [
+          331.9181427586666,
+          179.31224885238612
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    }
+  ]
+}

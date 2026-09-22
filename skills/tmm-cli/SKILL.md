@@ -53,6 +53,33 @@ resources throughout the work.
 The exact command contract is in [REFERENCE.md](REFERENCE.md). Confirm that
 the binary version and help describe the release you installed.
 
+## Install the local KOMPAS Renderer
+
+Install the renderer only when native `.cdw` output is required. It is a
+separate per-user Windows application, not part of the `tmm` executable or a
+skill directory. It requires 64-bit Windows, installed KOMPAS-3D with API7/API5,
+and the user's interactive desktop session.
+
+1. Download `tmm-kompas-renderer-setup.exe` from the first-party
+   [`/v1/kompas-renderer/installer`](https://api.tmm-agent.ru/v1/kompas-renderer/installer)
+   route. The same setup and its `.sha256` file are attached to the
+   [latest CLI release](https://github.com/nickadminroot/tmm-cli/releases/latest).
+2. Verify the setup SHA-256 against the adjacent release checksum. Run the
+   unsigned setup as the current user; SmartScreen may require the user to
+   choose **More info → Run anyway**.
+3. Confirm that `GET http://127.0.0.1:17342/v1/capabilities` returns protocol
+   version 2. The setup starts the renderer immediately and registers per-user
+   startup for future Windows logins.
+4. Run the required `tmm kompas ... --output FILE.cdw` command and inspect the
+   non-empty CDW in visible KOMPAS. A capabilities response, signed plan, JSON
+   result, or preview alone is not native acceptance.
+
+If the renderer is missing or incompatible, reinstall the current setup and
+retry the probe. Use the supported local interactive renderer rather than a
+Linux process, Windows service, remote renderer, or private source checkout.
+The public renderer source and packaging contract are in
+[`kompas-renderer/`](https://github.com/nickadminroot/tmm-cli/tree/main/kompas-renderer).
+
 ## Endpoint and environment contract
 
 The CLI reads `TMM_API_URL` only as an endpoint override for source or

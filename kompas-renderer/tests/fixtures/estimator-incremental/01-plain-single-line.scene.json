@@ -1,0 +1,17 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "estimator-incremental-01",
+  "bounds": { "low": [0, 0], "high": [120, 40] },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "plain-single-line",
+      "text": "A short label.",
+      "position": [10, 35],
+      "fontSize": 5,
+      "width": 120
+    }
+  ]
+}

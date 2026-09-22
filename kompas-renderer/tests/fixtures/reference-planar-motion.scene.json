@@ -1,0 +1,20 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "reference-planar-motion",
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "reference-planar-motion",
+      "position": [
+        0,
+        100
+      ],
+      "fontSize": 5,
+      "width": 180,
+      "italic": true,
+      "text": "# Плоское движение звена 2:\n\n$$\\overline{a}_B=\\overline{a}_A+\\overline{a}_{BA}^{n}+\\overline{a}_{BA}^{\\tau}$$\n\n$$\\overline{a}_{BA}^{n}=\\omega_2^2 l_{AB}=6{,}941^2\\cdot1=48{,}177\\ \\text{м}/\\text{с}^2$$\n\n$$?\\qquad\\underset{\\parallel AB,\\;B\\to A}{\\underline{\\overline{a}_{BA}^{n}}}\\qquad\\underset{\\perp AB}{\\underline{\\overline{a}_{BA}^{\\tau}}}$$"
+    }
+  ]
+}

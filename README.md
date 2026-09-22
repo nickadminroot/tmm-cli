@@ -92,6 +92,49 @@ Repository development has a random persisted HTTPS port. Set `TMM_API_URL` to
 the `apiUrl` in `.tmm/dev/credentials.json` after `pnpm db:init -- dev` and
 `pnpm dev`; no account credential is needed by this CLI.
 
+## KOMPAS Renderer installation
+
+The local KOMPAS Renderer is required only for native `.cdw` creation through
+`tmm kompas ...`. Linkage, XMCD, Markdown preview, scene resolution, SVG, and
+PNG do not use it. The renderer requires 64-bit Windows, an installed
+KOMPAS-3D with API7/API5, and the same interactive desktop session as the user;
+it is not a Windows service and does not work headlessly.
+
+Download the current setup from the
+[first-party TMM API](https://api.tmm-agent.ru/v1/kompas-renderer/installer).
+The identical production setup and its SHA-256 file are also attached to the
+[latest public CLI release](https://github.com/nickadminroot/tmm-cli/releases/latest).
+Verify the setup before running it:
+
+```powershell
+Invoke-WebRequest https://api.tmm-agent.ru/v1/kompas-renderer/installer -OutFile tmm-kompas-renderer-setup.exe
+Invoke-WebRequest https://github.com/nickadminroot/tmm-cli/releases/latest/download/tmm-kompas-renderer-setup.exe.sha256 -OutFile tmm-kompas-renderer-setup.exe.sha256
+$expected = (Get-Content .\tmm-kompas-renderer-setup.exe.sha256).Split()[0].ToUpperInvariant()
+$actual = (Get-FileHash .\tmm-kompas-renderer-setup.exe -Algorithm SHA256).Hash
+if ($actual -ne $expected) { throw "KOMPAS Renderer checksum mismatch" }
+```
+
+Run `tmm-kompas-renderer-setup.exe` as the current user. The setup is unsigned,
+so Windows SmartScreen may require **More info → Run anyway**. It installs into
+`%LOCALAPPDATA%\Programs\TMM Kompas Renderer`, starts the renderer immediately,
+and registers per-user startup for later Windows logins. It listens only on
+`http://127.0.0.1:17342`.
+
+Check the local process from PowerShell:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:17342/v1/capabilities
+```
+
+A protocol-v2 capabilities response proves that the local renderer is
+reachable. Final acceptance still requires running a `tmm kompas ...` command,
+opening the visible KOMPAS document, and checking the non-empty `.cdw` output.
+If the website reports that the renderer is missing or incompatible, reinstall
+the current setup and select **Проверить снова** in the render dialog.
+
+The complete renderer source, tests, locked dependencies, and Windows packaging
+scripts are published in [`kompas-renderer/`](kompas-renderer/README.md).
+
 ## Release installation
 
 Public releases are published in

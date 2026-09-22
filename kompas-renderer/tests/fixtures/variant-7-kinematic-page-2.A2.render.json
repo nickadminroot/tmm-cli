@@ -1,0 +1,1501 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "Кинематический анализ механизма — лист 2",
+  "kind": "super-scene",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      594,
+      420
+    ],
+    "width": 594,
+    "height": 420
+  },
+  "sheet": {
+    "format": "A2",
+    "orientation": "landscape",
+    "titleBlock": {
+      "text": "Кинематический анализ механизма — лист 2"
+    }
+  },
+  "metadata": {
+    "layout": {
+      "coordinateSystem": "y-up",
+      "placements": [
+        {
+          "id": "group-1-text-1",
+          "x": 42.819245181465135,
+          "y": 241.5788,
+          "width": 60.509959,
+          "height": 157.4212,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-1-scene-2",
+          "x": 105.32920418146514,
+          "y": 72.57234238627132,
+          "width": 296.6707958185349,
+          "height": 326.4276576137287,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-2-text-1",
+          "x": 25,
+          "y": 92.2562,
+          "width": 77.859498,
+          "height": 147.3226,
+          "groupId": "group-2"
+        }
+      ]
+    }
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "object-group-1-text-1",
+      "text": "## План ускорений\n\nДля точки $A$:\n$\\overline a_A=\\overline a^n_{AO}+\\overline a^\\tau_{AO}$,\n$a^n_{AO}=\\omega_1^2l_{OA}=50{,}000\\ \\text{м/с}^2$,\n$a^\\tau_{AO}=\\varepsilon_1l_{OA}=25{,}000\\ \\text{м/с}^2$.\n\nДля звеньев 2 и 3:\n$\\overline a_B=\\overline a_A+\\overline a^n_{BA}+\\overline a^\\tau_{BA}$,\n$\\overline a_B=\\overline a^n_{BC}+\\overline a^\\tau_{BC}$.\n\nДля точки $E$:\n$\\overline a_E=\\overline a_H+\\overline a^k_{EH}+\\overline a^\\tau_{EH}$,\n$\\overline a_E=\\overline a_D+\\overline a^n_{ED}+\\overline a^\\tau_{ED}$,\n$a^k_{EH}=2\\omega_2v_{EH}=26{,}729\\ \\text{м/с}^2$.\n\n",
+      "position": [
+        42.819245181465135,
+        399
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 83.462013
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dashed_segment_similarity_2_A_H",
+      "from": [
+        138.8951694211624,
+        176.27723998363766
+      ],
+      "to": [
+        196.17753235462794,
+        387.5773748507607
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dashed_segment_similarity_2_B_H",
+      "from": [
+        295.2524318796686,
+        133.88960279133957
+      ],
+      "to": [
+        196.17753235462794,
+        387.5773748507607
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_parallel_normal_1_A_O",
+      "from": [
+        125.99138190879943,
+        159.0292758186766
+      ],
+      "to": [
+        180.08322818098722,
+        144.53540929293547
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_perpendicular_tangential_1_A_O",
+      "from": [
+        131.6482361582918,
+        149.2313168475439
+      ],
+      "to": [
+        140.96572178198252,
+        184.0046465939502
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_parallel_normal_2_B_A",
+      "from": [
+        137.75492051047567,
+        129.74674212446968
+      ],
+      "to": [
+        139.0911538612881,
+        184.27483900454564
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_perpendicular_tangential_2_B_A",
+      "from": [
+        303.2500309005766,
+        133.6936183512138
+      ],
+      "to": [
+        129.95330592969339,
+        137.9403255855034
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_parallel_normal_3_B_C",
+      "from": [
+        211.56109213810927,
+        77.33232720696365
+      ],
+      "to": [
+        168.41550931595665,
+        153.56828449425353
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_perpendicular_tangential_3_B_C",
+      "from": [
+        302.2147547201665,
+        137.82991504605752
+      ],
+      "to": [
+        200.65845704289333,
+        80.35433779274354
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_parallel_normal_4_E_D",
+      "from": [
+        398.1464476295837,
+        178.97954702472168
+      ],
+      "to": [
+        351.6819987457727,
+        121.30147424375674
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_perpendicular_tangential_4_E_D",
+      "from": [
+        145.42160291363936,
+        372.29731449067367
+      ],
+      "to": [
+        399.35765845756555,
+        167.73085961995397
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_perpendicular_coriolis_H",
+      "from": [
+        196.37351679475364,
+        395.5749738716687
+      ],
+      "to": [
+        195.45769359730116,
+        358.2026870586298
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_guide_parallel_slot-tangential_H",
+      "from": [
+        203.65127705833487,
+        366.0043016394121
+      ],
+      "to": [
+        143.6539530091062,
+        367.47456064240646
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_A_label__cand_57__leader_elbow",
+      "from": [
+        155.62549549591853,
+        161.44160081869666
+      ],
+      "to": [
+        143.8357310289491,
+        117.44160081869664
+      ],
+      "layer": "thin",
+      "style": "solid",
+      "role": "leader"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_A_label__cand_57__leader_shelf",
+      "from": [
+        143.8357310289491,
+        117.44160081869664
+      ],
+      "to": [
+        128.8357310289491,
+        117.44160081869664
+      ],
+      "layer": "thin",
+      "style": "solid",
+      "role": "leader"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_A_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        138.8951694211624,
+        176.27723998363766
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_B_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        295.2524318796686,
+        133.88960279133957
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_D_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        356.70073703416557,
+        127.53142336013154
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_E_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        151.6515520300142,
+        367.2785762022807
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_S2_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        217.07380065041548,
+        155.08342138748864
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_S4_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        299.742630088568,
+        194.12785470517298
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_absolute_point_H_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        196.17753235462794,
+        387.5773748507607
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_normal_1_A_O_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        133.71878851911197,
+        156.95872345785645
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_tangential_1_A_O_shaft",
+      "from": [
+        133.71878851911197,
+        156.95872345785645
+      ],
+      "to": [
+        138.8951694211624,
+        176.27723998363766
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_normal_2_B_A_shaft",
+      "from": [
+        138.8951694211624,
+        176.27723998363766
+      ],
+      "to": [
+        137.95090495060137,
+        137.74434114537766
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_tangential_2_B_A_shaft",
+      "from": [
+        137.95090495060137,
+        137.74434114537766
+      ],
+      "to": [
+        295.2524318796686,
+        133.88960279133957
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_resultant_2_B_A_shaft",
+      "from": [
+        138.8951694211624,
+        176.27723998363766
+      ],
+      "to": [
+        295.2524318796686,
+        133.88960279133957
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_normal_3_B_C_shaft",
+      "from": [
+        172.35582157067466,
+        146.60596165375563
+      ],
+      "to": [
+        207.62077988339126,
+        84.29465004746156
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_tangential_3_B_C_shaft",
+      "from": [
+        207.62077988339126,
+        84.29465004746156
+      ],
+      "to": [
+        295.2524318796686,
+        133.88960279133957
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_normal_4_E_D_shaft",
+      "from": [
+        356.70073703416557,
+        127.53142336013154
+      ],
+      "to": [
+        393.1277093411908,
+        172.74959790834686
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_tangential_4_E_D_shaft",
+      "from": [
+        393.1277093411908,
+        172.74959790834686
+      ],
+      "to": [
+        151.6515520300142,
+        367.2785762022807
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_resultant_4_E_D_shaft",
+      "from": [
+        356.70073703416557,
+        127.53142336013154
+      ],
+      "to": [
+        151.6515520300142,
+        367.2785762022807
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_coriolis_H_shaft",
+      "from": [
+        196.17753235462794,
+        387.5773748507607
+      ],
+      "to": [
+        195.65367803742686,
+        366.2002860795378
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_vector_slot-tangential_H_shaft",
+      "from": [
+        195.65367803742686,
+        366.2002860795378
+      ],
+      "to": [
+        151.6515520300142,
+        367.2785762022807
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_P_a_19.798989873223327_-19.798989873223334",
+      "text": "P_a",
+      "position": [
+        192.15481144389798,
+        126.8069717805323
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_a'_-40.88527335197102_37.09589953234078",
+      "text": "a'",
+      "position": [
+        131.47054821870364,
+        183.7018611860964
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_b'_122.89661030899396_-19.716358862416072",
+      "text": "b'",
+      "position": [
+        295.2524318796686,
+        126.88960279133956
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_d'_189.29466293179675_-24.024285761929917",
+      "text": "d'",
+      "position": [
+        361.6504845024714,
+        122.58167589182571
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_e',S_{5}'_-33.07863821142506_233.04698321928964",
+      "text": "e',S_{5}'",
+      "position": [
+        139.2771833592496,
+        379.65294487304527
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S_{2}'_44.71797907974083_1.4774597337330082",
+      "text": "S_{2}'",
+      "position": [
+        217.07380065041548,
+        148.08342138748864
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S_{4}'_127.38680851789331_30.02189305141735",
+      "text": "S_{4}'",
+      "position": [
+        299.742630088568,
+        176.62785470517298
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_h'_18.871963315647434_245.9211606653109",
+      "text": "h'",
+      "position": [
+        191.2277848863221,
+        392.5271223190665
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_A_-43.52009054172554_-22.664360835058986",
+      "text": "\\bar{a}_A",
+      "position": [
+        128.8357310289491,
+        123.94160081869664
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_B_91.40053893859802_-16.997439478432224",
+      "text": "\\bar{a}_B",
+      "position": [
+        263.75636050927267,
+        129.6085221753234
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_D_139.54521791953061_-1.8722865008511143",
+      "text": "\\bar{a}_D",
+      "position": [
+        311.9010394902053,
+        144.7336751529045
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_E_24.692755390182803_57.97055011423031",
+      "text": "\\bar{a}_E",
+      "position": [
+        197.04857696085747,
+        204.57651176798595
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_S_{2}_29.81331126839833_26.008109706440987",
+      "text": "\\bar{a}_S_{2}",
+      "position": [
+        202.169132839073,
+        172.61407136019662
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_S_{4}_59.32436999124972_35.47254503179185",
+      "text": "\\bar{a}_S_{4}",
+      "position": [
+        231.68019156192437,
+        182.0785066855475
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_H_31.813838838633167_118.51815738129956",
+      "text": "\\bar{a}_H",
+      "position": [
+        204.16966040930782,
+        265.1241190350552
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{n}_AO_-29.67127832988217_-33.46065214951233",
+      "text": "\\bar{a}^{n}_AO",
+      "position": [
+        142.6845432407925,
+        113.1453095042433
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{t}_AO_-65.02661738920952_27.77659142006709",
+      "text": "\\bar{a}^{t}_AO",
+      "position": [
+        107.32920418146514,
+        174.38255307382272
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{n}_BA_-64.15984683083803_1.5065458516584447",
+      "text": "\\bar{a}^{n}_BA",
+      "position": [
+        108.19597473983663,
+        148.11250750541407
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{t}_BA_84.06118967704141_8.24132327836346",
+      "text": "\\bar{a}^{t}_BA",
+      "position": [
+        256.41701124771606,
+        154.8472849321191
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_BA_89.04030588394805_17.183803889149747",
+      "text": "\\bar{a}_BA",
+      "position": [
+        261.39612745462273,
+        163.78976554290537
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{n}_BC_0.34000808267025207_-61.509654659913124",
+      "text": "\\bar{a}^{n}_BC",
+      "position": [
+        172.6958296533449,
+        85.0963069938425
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{t}_BC_47.322090674990875_-32.50676631907977",
+      "text": "\\bar{a}^{t}_BC",
+      "position": [
+        219.67791224566554,
+        114.09919533467585
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{n}_ED_179.196092430598_22.354817561956917",
+      "text": "\\bar{a}^{n}_ED",
+      "position": [
+        351.5519140012726,
+        168.96077921571253
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{t}_ED_112.58065483591004_138.98299819249516",
+      "text": "\\bar{a}^{t}_ED",
+      "position": [
+        284.9364764065847,
+        285.58895984625076
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}_ED_148.28178793506171_53.86168337155558",
+      "text": "\\bar{a}_ED",
+      "position": [
+        320.63760950573635,
+        200.4676450253112
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{k}_EH_53.55077995375774_229.54792716092223",
+      "text": "\\bar{a}^{k}_EH",
+      "position": [
+        225.9066015244324,
+        376.1538888146779
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\bar{a}^{t}_EH_-8.968796388335935_250.39403834624437",
+      "text": "\\bar{a}^{t}_EH",
+      "position": [
+        163.38702518233873,
+        397
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_∥ OA_1.5157495278520523_-25.252772191757806",
+      "text": "∥ OA",
+      "position": [
+        173.87157109852672,
+        121.35318946199783
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_⊥ OA_-38.890099788692154_50.38906599696116",
+      "text": "⊥ OA",
+      "position": [
+        133.4657217819825,
+        196.9950276507168
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_∥ AB_-18.26916954518407_37.30140652555433",
+      "text": "∥ AB",
+      "position": [
+        154.0866520254906,
+        183.90736817930997
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_⊥ AB_-42.549503971075566_-14.663835333933255",
+      "text": "⊥ AB",
+      "position": [
+        129.80631759959908,
+        131.94212631982236
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_∥ CB_-10.350964788785511_-16.165658785390967",
+      "text": "∥ CB",
+      "position": [
+        162.00485678188915,
+        130.44030286836465
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_⊥ CB_26.6999723387018_-72.03361926748431",
+      "text": "⊥ CB",
+      "position": [
+        199.05579390937646,
+        74.57234238627132
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_∥ DE_175.56212345880334_-29.97694924727999",
+      "text": "∥ DE",
+      "position": [
+        347.917945029478,
+        116.62901240647564
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_⊥ DE_227.64417842932534_15.159380608679133",
+      "text": "⊥ DE",
+      "position": [
+        400,
+        161.76534226243476
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_⊥ H_27.239302957332747_207.25142158423802",
+      "text": "⊥ H",
+      "position": [
+        199.5951245280074,
+        353.85738323799364
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_∥ H_-28.848856891662756_214.87039972296984",
+      "text": "∥ H",
+      "position": [
+        143.5069646790119,
+        361.47636137672544
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_0",
+      "points": [
+        [
+          138.8951694211624,
+          176.27723998363766
+        ],
+        [
+          140.4763082512466,
+          173.53862719611183
+        ],
+        [
+          141.80324815774523,
+          175.0350330516675
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_1",
+      "points": [
+        [
+          295.2524318796686,
+          133.88960279133957
+        ],
+        [
+          292.37128625277353,
+          135.1930596861479
+        ],
+        [
+          292.16544124126756,
+          133.20368093104918
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_2",
+      "points": [
+        [
+          356.70073703416557,
+          127.53142336013154
+        ],
+        [
+          353.8195914072705,
+          128.8348802549399
+        ],
+        [
+          353.6137463957645,
+          126.84550149984116
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_3",
+      "points": [
+        [
+          151.6515520300142,
+          367.2785762022807
+        ],
+        [
+          150.93616425187918,
+          364.1982807088426
+        ],
+        [
+          152.92741910356904,
+          364.3851071406492
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_4",
+      "points": [
+        [
+          217.07380065041548,
+          155.08342138748864
+        ],
+        [
+          213.94003976242394,
+          155.5071461765846
+        ],
+        [
+          214.31255706656466,
+          153.54214468597047
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_5",
+      "points": [
+        [
+          299.742630088568,
+          194.12785470517298
+        ],
+        [
+          296.58232370569226,
+          194.01621436141238
+        ],
+        [
+          297.28136918852374,
+          192.14235860043905
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_6",
+      "points": [
+        [
+          196.17753235462794,
+          387.5773748507607
+        ],
+        [
+          194.88725079971465,
+          384.69030479462236
+        ],
+        [
+          196.8775491443803,
+          384.49354987290207
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_7",
+      "points": [
+        [
+          133.71878851911197,
+          156.95872345785645
+        ],
+        [
+          136.35774695287665,
+          155.21634049625982
+        ],
+        [
+          136.8753850430817,
+          157.14819214883795
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_8",
+      "points": [
+        [
+          138.8951694211624,
+          176.27723998363766
+        ],
+        [
+          137.15278645956576,
+          173.63828154987297
+        ],
+        [
+          139.0846381121439,
+          173.12064345966792
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_9",
+      "points": [
+        [
+          137.95090495060137,
+          137.74434114537766
+        ],
+        [
+          139.02409899326202,
+          140.71894272320245
+        ],
+        [
+          137.02469923803503,
+          140.76793883323387
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_10",
+      "points": [
+        [
+          295.2524318796686,
+          133.88960279133957
+        ],
+        [
+          292.27783030184384,
+          134.9627968340002
+        ],
+        [
+          292.22883419181244,
+          132.9633970787732
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_11",
+      "points": [
+        [
+          295.2524318796686,
+          133.88960279133957
+        ],
+        [
+          292.61859442112393,
+          135.63971714245122
+        ],
+        [
+          292.0952933021659,
+          133.70939179710209
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_12",
+      "points": [
+        [
+          207.62077988339126,
+          84.29465004746156
+        ],
+        [
+          207.01345314293422,
+          87.39806014448803
+        ],
+        [
+          205.27287243280978,
+          86.41298208080852
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_13",
+      "points": [
+        [
+          295.2524318796686,
+          133.88960279133957
+        ],
+        [
+          292.14902178264214,
+          133.28227605088253
+        ],
+        [
+          293.13409984632165,
+          131.54169534075805
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_14",
+      "points": [
+        [
+          393.1277093411908,
+          172.74959790834686
+        ],
+        [
+          390.46693884349656,
+          171.0407092757554
+        ],
+        [
+          392.0244261225903,
+          169.7860247036572
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_15",
+      "points": [
+        [
+          151.6515520300142,
+          367.2785762022807
+        ],
+        [
+          153.36044066260564,
+          364.61780570458654
+        ],
+        [
+          154.61512523470384,
+          366.17529298368027
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_16",
+      "points": [
+        [
+          151.6515520300142,
+          367.2785762022807
+        ],
+        [
+          152.8415086120801,
+          364.3487292211573
+        ],
+        [
+          154.36142548434097,
+          365.6486725666215
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_17",
+      "points": [
+        [
+          195.65367803742686,
+          366.2002860795378
+        ],
+        [
+          196.7268720800875,
+          369.1748876573626
+        ],
+        [
+          194.7274723248605,
+          369.22388376739406
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_18",
+      "points": [
+        [
+          151.6515520300142,
+          367.2785762022807
+        ],
+        [
+          154.62615360783897,
+          366.20538215962006
+        ],
+        [
+          154.6751497178704,
+          368.20478191484705
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-2-text-1",
+      "text": "## Результаты кинематического расчёта\n\n$a_A=55{,}902\\ \\text{м/с}^2$, $a_B=154{,}441\\ \\text{м/с}^2$, $a_D=231{,}661\\ \\text{м/с}^2$, $a_E=277{,}052\\ \\text{м/с}^2$.\n\n$a_{S2}=56{,}893\\ \\text{м/с}^2$, $a_{S4}=169{,}953\\ \\text{м/с}^2$.\n\n$\\varepsilon_2=\\varepsilon_5=-196{,}686\\ \\text{рад/с}^2$,\n$\\varepsilon_3=-125{,}866\\ \\text{рад/с}^2$,\n$\\varepsilon_4=-215{,}336\\ \\text{рад/с}^2$.\n\nОтносительное ускорение в поступательной паре:\n$a_{EH}=\\sqrt{(a^\\tau_{EH})^2+(a^k_{EH})^2}=61{,}168\\ \\text{м/с}^2$.\n",
+      "position": [
+        25,
+        239.5788
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 106.051153
+    }
+  ]
+}

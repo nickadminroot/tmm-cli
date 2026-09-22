@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-24-plain-given",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      120,
+      100
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-24-plain-given",
+      "text": "Given",
+      "position": [
+        10,
+        80
+      ],
+      "fontSize": 5,
+      "width": 50,
+      "italic": true
+    }
+  ]
+}

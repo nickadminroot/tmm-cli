@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-07-inline-script",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      120,
+      200
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-07-inline-script",
+      "text": "$F_{21}^{\\tau}$",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "width": 40,
+      "italic": true
+    }
+  ]
+}

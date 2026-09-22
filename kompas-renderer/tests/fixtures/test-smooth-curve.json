@@ -1,0 +1,93 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "test-smooth-curve",
+  "bounds": {
+    "low": [0, 0],
+    "high": [180, 90],
+    "width": 180,
+    "height": 90
+  },
+  "entities": [
+    {
+      "type": "smoothCurve",
+      "id": "curve-1",
+      "points": [
+        [10, 10],
+        [30, 60],
+        [60, 30],
+        [90, 70],
+        [120, 20],
+        [150, 50],
+        [170, 45]
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "smoothCurve",
+      "id": "curve-2",
+      "points": [
+        [10, 70],
+        [40, 20],
+        [70, 65],
+        [100, 15],
+        [130, 60],
+        [160, 25],
+        [170, 30]
+      ],
+      "layer": "thin",
+      "style": "dashed"
+    },
+    {
+      "type": "smoothCurve",
+      "id": "curve-3",
+      "points": [
+        [10, 45],
+        [30, 48],
+        [50, 42],
+        [70, 50],
+        [90, 38],
+        [110, 55],
+        [130, 35],
+        [150, 52],
+        [170, 40]
+      ],
+      "layer": "label",
+      "style": "dotted"
+    },
+    {
+      "type": "line",
+      "id": "axis-x",
+      "from": [5, 45],
+      "to": [175, 45],
+      "layer": "thin",
+      "style": "dashed"
+    },
+    {
+      "type": "text",
+      "id": "t1",
+      "text": "Smooth curves demo",
+      "position": [90, 82],
+      "fontSize": 5.0,
+      "layer": "label"
+    },
+    {
+      "type": "text",
+      "id": "t2",
+      "text": "solid - fixed layer",
+      "position": [10, 8],
+      "fontSize": 3.0,
+      "layer": "label"
+    },
+    {
+      "type": "text",
+      "id": "t3",
+      "text": "dashed - thin layer",
+      "position": [10, 78],
+      "fontSize": 3.0,
+      "layer": "label"
+    }
+  ]
+}

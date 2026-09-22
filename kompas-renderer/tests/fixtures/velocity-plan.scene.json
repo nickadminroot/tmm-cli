@@ -1,0 +1,577 @@
+{
+  "schema": "mechanism/v2",
+  "units": "SI",
+  "points": {
+    "A": [
+      0.0,
+      0.0
+    ],
+    "K": [
+      1.0,
+      0.8
+    ],
+    "B": [
+      0.3535533905932738,
+      0.35355339059327373
+    ],
+    "C": [
+      1.747676284660612,
+      -0.2
+    ],
+    "E": [
+      1.5495521526722387,
+      0.2590717028132464
+    ],
+    "S2": [
+      1.2829686533048326,
+      -0.015482203135575412
+    ],
+    "S3": [
+      1.847676284660612,
+      -0.2
+    ],
+    "S5": [
+      1.3563382570102862,
+      0.4492535864889405
+    ],
+    "Q": [
+      1.7126765140205724,
+      0.09850717297788092
+    ],
+    "S1": [
+      0.0,
+      0.0
+    ]
+  },
+  "joints": [
+    {
+      "id": "A",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "A"
+        },
+        {
+          "body": "1",
+          "point": "A"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "1",
+          "point": "B"
+        },
+        {
+          "body": "2",
+          "point": "B"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "C"
+        },
+        {
+          "body": "3",
+          "point": "C"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "type": "prismatic",
+      "guide": {
+        "body": "ground",
+        "axis": {
+          "origin": [
+            1.747676284660612,
+            -0.2
+          ],
+          "direction": [
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "slider": {
+        "body": "3",
+        "point": "C"
+      }
+    },
+    {
+      "id": "E",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "2",
+          "point": "E"
+        },
+        {
+          "body": "4",
+          "point": "E"
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "type": "prismatic",
+      "guide": {
+        "body": "5",
+        "axis": {
+          "origin": [
+            1.5495521526722387,
+            0.2590717028132463
+          ],
+          "direction": [
+            0.7126765140205725,
+            -0.7014928270221192
+          ]
+        }
+      },
+      "slider": {
+        "body": "4",
+        "point": "E"
+      }
+    },
+    {
+      "id": "K",
+      "type": "revolute",
+      "endpoints": [
+        {
+          "body": "ground",
+          "point": "K"
+        },
+        {
+          "body": "5",
+          "point": "K"
+        }
+      ]
+    }
+  ],
+  "bodies": {
+    "1": {
+      "type": "rigid",
+      "points": [
+        "S1",
+        "A",
+        "B"
+      ],
+      "com": [
+        0.0,
+        0.0
+      ],
+      "mass": 100.0,
+      "inertia": 10.0
+    },
+    "2": {
+      "type": "rigid",
+      "points": [
+        "E",
+        "S2",
+        "B",
+        "C"
+      ],
+      "com": [
+        1.2829686533048326,
+        -0.015482203135575412
+      ],
+      "mass": 80.0,
+      "inertia": 8.0
+    },
+    "3": {
+      "type": "slider",
+      "points": [
+        "S3",
+        "C"
+      ],
+      "com": [
+        1.847676284660612,
+        -0.2
+      ],
+      "mass": 75.0,
+      "inertia": 1.0
+    },
+    "4": {
+      "type": "slider",
+      "points": [
+        "E"
+      ],
+      "com": [
+        1.5495521526722387,
+        0.2590717028132464
+      ],
+      "mass": 0.0,
+      "inertia": 0.0
+    },
+    "5": {
+      "type": "rigid",
+      "points": [
+        "S5",
+        "K",
+        "Q"
+      ],
+      "com": [
+        1.3563382570102862,
+        0.4492535864889405
+      ],
+      "mass": 60.0,
+      "inertia": 6.0
+    }
+  },
+  "outputs": {
+    "points": [
+      "A",
+      "K",
+      "B",
+      "C",
+      "E",
+      "S2",
+      "S3",
+      "S5",
+      "Q",
+      "S1"
+    ]
+  },
+  "drive": {
+    "body": "1",
+    "omega": "omega_1",
+    "alpha": "epsilon_1",
+    ".omega_value": 10.0,
+    ".alpha_value": 50.0,
+    ".M": 5972.164219774098
+  },
+  "parameters": {
+    "l_AB": 0.5,
+    "l_BC": 1.5,
+    "l_CE": 0.5,
+    "l_KQ": 1.0,
+    "l_BS2": 1.0,
+    "l_CS3": 0.1,
+    "l_KS5": 0.5,
+    "alpha_BCE": 45.0,
+    "y_C_ref": -0.2,
+    "phi_1": 45.0,
+    "omega_1": 10.0,
+    "epsilon_1": 50.0
+  },
+  "id": "velocity-plan-scene",
+  "kind": "velocity-plan",
+  "analysis": {
+    "kinematic_plans": {
+      "velocity": {
+        ".kind": "velocity",
+        ".unit": "m/s",
+        "pole": "p",
+        "nodes": [
+          {
+            "id": "p",
+            "kind": "pole",
+            "aliases": [],
+            "x": 0.0,
+            "y": 0.0
+          },
+          {
+            "id": "point:B",
+            "kind": "point",
+            "aliases": [
+              "B"
+            ],
+            "x": -3.535533905932736,
+            "y": 3.5355339059327333
+          },
+          {
+            "id": "point:C",
+            "kind": "point",
+            "aliases": [
+              "C",
+              "S3"
+            ],
+            "x": -4.939360490744567,
+            "y": 2.1690982343613997e-15
+          },
+          {
+            "id": "point:E",
+            "kind": "point",
+            "aliases": [
+              "E"
+            ],
+            "x": -3.775142058167779,
+            "y": 0.5024482340898633
+          },
+          {
+            "id": "point:S2",
+            "kind": "point",
+            "aliases": [
+              "S2"
+            ],
+            "x": -4.471418295807295,
+            "y": 1.1785113019775786
+          },
+          {
+            "id": "point:S5",
+            "kind": "point",
+            "aliases": [
+              "S5"
+            ],
+            "x": -1.0416962099416822,
+            "y": -1.0583036561060544
+          },
+          {
+            "id": "point:Q",
+            "kind": "point",
+            "aliases": [
+              "Q"
+            ],
+            "x": -2.083392419883362,
+            "y": -2.116607312212106
+          }
+        ],
+        "segments": [
+          {
+            "id": "absolute:point:B",
+            "from": "p",
+            "to": "point:B",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 4.999999999999996,
+            "quantity": {
+              "symbol": "v",
+              "point": "B",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{B}"
+            }
+          },
+          {
+            "id": "absolute:point:C",
+            "from": "p",
+            "to": "point:C",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 4.939360490744567,
+            "quantity": {
+              "symbol": "v",
+              "point": "C",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{C}"
+            }
+          },
+          {
+            "id": "absolute:point:E",
+            "from": "p",
+            "to": "point:E",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 3.8084316702925465,
+            "quantity": {
+              "symbol": "v",
+              "point": "E",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{E}"
+            }
+          },
+          {
+            "id": "absolute:point:S2",
+            "from": "p",
+            "to": "point:S2",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 4.624118344611122,
+            "quantity": {
+              "symbol": "v",
+              "point": "S2",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{S_2}"
+            }
+          },
+          {
+            "id": "absolute:point:S5",
+            "from": "p",
+            "to": "point:S5",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 1.484970579619107,
+            "quantity": {
+              "symbol": "v",
+              "point": "S5",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{S_5}"
+            }
+          },
+          {
+            "id": "absolute:point:Q",
+            "from": "p",
+            "to": "point:Q",
+            ".kind": "absolute",
+            "arrow": true,
+            ".magnitude": 2.969941159238211,
+            "quantity": {
+              "symbol": "v",
+              "point": "Q",
+              "reference": null,
+              "component": null,
+              "latex": "\\vec v_{Q}"
+            }
+          },
+          {
+            "id": "relative:2:C:B",
+            "from": "point:B",
+            "to": "point:C",
+            ".kind": "relative",
+            "arrow": true,
+            ".magnitude": 3.8040411512264694,
+            "quantity": {
+              "symbol": "v",
+              "point": "C",
+              "reference": "B",
+              "component": null,
+              "latex": "\\vec v_{CB}"
+            }
+          },
+          {
+            "id": "similarity:2:B:E",
+            "from": "point:B",
+            "to": "point:E",
+            ".kind": "similarity",
+            "arrow": false,
+            ".magnitude": 3.0425352519495985,
+            "style": "dashed"
+          },
+          {
+            "id": "similarity:2:C:E",
+            "from": "point:C",
+            "to": "point:E",
+            ".kind": "similarity",
+            "arrow": false,
+            ".magnitude": 1.2680137170754795,
+            "style": "dashed"
+          }
+        ],
+        "guides": [
+          {
+            "id": "ground-prismatic:D:velocity",
+            "through": "p",
+            "direction": [
+              1.0,
+              0.0
+            ],
+            "relation": "parallel",
+            "label": "∥ D",
+            "source_segment": "absolute:point:C",
+            "reference": {
+              "type": "prismatic_axis",
+              "id": "D"
+            }
+          },
+          {
+            "id": "perpendicular:absolute:point:B",
+            "through": "p",
+            "direction": [
+              -0.7071067811865475,
+              0.7071067811865476
+            ],
+            "relation": "perpendicular",
+            "label": "⊥ AB",
+            "source_segment": "absolute:point:B",
+            "reference": {
+              "type": "body_line",
+              "id": "A:B"
+            }
+          },
+          {
+            "id": "perpendicular:relative:2:C:B",
+            "through": "point:B",
+            "direction": [
+              0.36903559372884914,
+              0.9294152627115588
+            ],
+            "relation": "perpendicular",
+            "label": "⊥ BC",
+            "source_segment": "relative:2:C:B",
+            "reference": {
+              "type": "body_line",
+              "id": "B:C"
+            }
+          }
+        ],
+        "steps": [
+          {
+            ".id": "rigid-body:1",
+            ".kind": "rigid_body",
+            ".body": "1",
+            ".moving": "B",
+            ".reference": "A",
+            ".segments": [
+              "absolute:point:B"
+            ],
+            ".latex": "\\vec v_{B}=\\vec v_{BA}",
+            ".presentation_latex": "\\underset{\\perp AB}{\\underline{\\vec v_B}}=\\vec v_{BA}"
+          },
+          {
+            ".id": "rigid-body:2",
+            ".kind": "rigid_body",
+            ".body": "2",
+            ".moving": "C",
+            ".reference": "B",
+            ".segments": [
+              "relative:2:C:B"
+            ],
+            ".latex": "\\vec v_{C}=\\vec v_{B}+\\vec v_{CB}",
+            ".presentation_latex": "\\underset{\\parallel Ax}{\\underline{\\vec v_C}}=\\underline{\\underline{\\vec v_B}}+\\underset{\\perp BC}{\\underline{\\vec v_{CB}}}"
+          },
+          {
+            ".id": "similarity:2",
+            ".kind": "similarity",
+            ".body": "2",
+            ".segments": [
+              "similarity:2:B:E",
+              "similarity:2:C:E"
+            ],
+            ".latex": "\\triangle bce\\sim\\triangle BCE",
+            ".method_linear_step_id": "linear-similarity:2:S2",
+            ".presentation_latex": "\\triangle bce\\sim\\triangle BCE"
+          },
+          {
+            ".id": "linear-similarity:2:S2",
+            ".kind": "linear_similarity",
+            ".body": "2",
+            ".pivot": "B",
+            ".point": "S2",
+            ".references": [
+              "C"
+            ],
+            ".segments": [],
+            ".latex": "\\frac{bS_2}{bc}=\\frac{l_{BS2}}{l_{BC}}",
+            ".presentation_latex": "\\frac{bS_2}{bc}=\\frac{l_{BS2}}{l_{BC}}"
+          },
+          {
+            ".id": "prismatic:H",
+            ".kind": "prismatic",
+            ".joint": "H",
+            ".moving": "E",
+            ".reference": "E",
+            ".segments": [],
+            ".latex": "\\vec v_{E}=\\vec v_{E}+\\vec v_{EE}",
+            ".presentation_latex": "\\underset{??}{\\vec v_E}=\\underset{??}{\\vec v_E}+\\vec v_{EE}"
+          }
+        ]
+      }
+    }
+  },
+  "vectorPlans": {
+    "velocity": {}
+  }
+}

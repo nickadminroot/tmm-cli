@@ -1,0 +1,1208 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "Структурный анализ и синтез плоского рычажного механизма",
+  "kind": "super-scene",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      594,
+      420
+    ],
+    "width": 594,
+    "height": 420
+  },
+  "sheet": {
+    "format": "A2",
+    "orientation": "landscape",
+    "titleBlock": {
+      "text": "Структурный анализ и синтез плоского рычажного механизма"
+    }
+  },
+  "metadata": {
+    "layout": {
+      "coordinateSystem": "y-up",
+      "placements": [
+        {
+          "id": "group-1-text-1",
+          "x": 25,
+          "y": 285.8374,
+          "width": 49.873789,
+          "height": 113.1626,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-1-scene-2",
+          "x": 25,
+          "y": 162.3374,
+          "width": 213.7676284660612,
+          "height": 121.5,
+          "groupId": "group-1"
+        },
+        {
+          "id": "group-2-text-1",
+          "x": 76.873789,
+          "y": 317.6098,
+          "width": 121.841862,
+          "height": 81.3902,
+          "groupId": "group-2"
+        },
+        {
+          "id": "group-3-text-1",
+          "x": 200.715651,
+          "y": 286.7966,
+          "width": 67.275524,
+          "height": 123.2034,
+          "groupId": "group-3"
+        }
+      ]
+    }
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "object-group-1-text-1",
+      "text": "## Структурная схема механизма\n\nСтойка 0, кривошип 1, шатун 2, ползун 3, камень кулисы 4 и коромысло 5 соединены семью одноподвижными кинематическими парами.\n\nПары $A$, $B$, $C$, $E$, $K$ — вращательные; пары $D$ и $H$ — поступательные.\n\n",
+      "position": [
+        25,
+        399
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 67.7598
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_A_pair",
+      "center": [
+        45,
+        194.8374
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_A_groundLine",
+      "from": [
+        40,
+        198.5874
+      ],
+      "to": [
+        40,
+        191.0874
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_A_groundStrut1",
+      "from": [
+        43.70096189432334,
+        195.5874
+      ],
+      "to": [
+        40,
+        197.72415134594814
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_A_groundStrut2",
+      "from": [
+        43.70096189432334,
+        194.0874
+      ],
+      "to": [
+        40,
+        191.95064865405186
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_B_pair",
+      "center": [
+        80.35533905932738,
+        230.19273905932738
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_C_pair",
+      "center": [
+        219.7676284660612,
+        174.8374
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_D_edge0",
+      "from": [
+        212.2676284660612,
+        171.3374
+      ],
+      "to": [
+        227.2676284660612,
+        171.3374
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_D_edge1",
+      "from": [
+        227.2676284660612,
+        171.3374
+      ],
+      "to": [
+        227.2676284660612,
+        178.3374
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_D_edge2",
+      "from": [
+        227.2676284660612,
+        178.3374
+      ],
+      "to": [
+        212.2676284660612,
+        178.3374
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_D_edge3",
+      "from": [
+        212.2676284660612,
+        178.3374
+      ],
+      "to": [
+        212.2676284660612,
+        171.3374
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_D_groundLine",
+      "from": [
+        210.2676284660612,
+        171.3374
+      ],
+      "to": [
+        229.2676284660612,
+        171.3374
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_E_pair",
+      "center": [
+        199.95521526722388,
+        220.74457028132463
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge0",
+      "from": [
+        192.15491651749218,
+        223.51139868491853
+      ],
+      "to": [
+        202.84506422780075,
+        212.98900627958673
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge1",
+      "from": [
+        202.84506422780075,
+        212.98900627958673
+      ],
+      "to": [
+        207.75551401695557,
+        217.97774187773075
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge2",
+      "from": [
+        207.75551401695557,
+        217.97774187773075
+      ],
+      "to": [
+        197.065366306647,
+        228.50013428306255
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_H_edge3",
+      "from": [
+        197.065366306647,
+        228.50013428306255
+      ],
+      "to": [
+        192.15491651749218,
+        223.51139868491853
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__joint_K_pair",
+      "center": [
+        145,
+        274.8374
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_K_groundLine",
+      "from": [
+        140,
+        278.5874
+      ],
+      "to": [
+        140,
+        271.0874
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_K_groundStrut1",
+      "from": [
+        143.70096189432334,
+        275.5874
+      ],
+      "to": [
+        140,
+        277.72415134594814
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__joint_K_groundStrut2",
+      "from": [
+        143.70096189432334,
+        274.0874
+      ],
+      "to": [
+        140,
+        271.95064865405186
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_2_side1",
+      "from": [
+        81.74946195339471,
+        229.63918566873411
+      ],
+      "to": [
+        217.4440903092823,
+        175.75998898432212
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__triangle_2_side2",
+      "from": [
+        218.77700780611934,
+        177.13275851406624
+      ],
+      "to": [
+        200.549587663189,
+        219.3673551728849
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__triangle_2_apexArc",
+      "center": [
+        219.7676284660612,
+        174.8374
+      ],
+      "radius": 2.5,
+      "startAngle": 113.34384785468683,
+      "endAngle": 158.34384785468683,
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__link_A_B_link",
+      "from": [
+        46.06066017177982,
+        195.89806017177983
+      ],
+      "to": [
+        79.29467888754755,
+        229.13207888754755
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__link_H_K_link",
+      "from": [
+        194.6101414120696,
+        226.00576648399053
+      ],
+      "to": [
+        146.06901477103094,
+        273.78516075946675
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__interest_S2_circle",
+      "center": [
+        173.29686533048326,
+        193.28917968644248
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__interest_S3_circle",
+      "center": [
+        229.7676284660612,
+        174.8374
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__interest_S5_circle",
+      "center": [
+        180.63382570102863,
+        239.76275864889405
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": false
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__ext_5_Q_link",
+      "from": [
+        205.30028912237816,
+        215.48337407865876
+      ],
+      "to": [
+        216.26765140205725,
+        204.6881172977881
+      ],
+      "layer": "fixed",
+      "style": "solid"
+    },
+    {
+      "type": "arc",
+      "id": "object-group-1-scene-2__thin_arc",
+      "center": [
+        45,
+        194.8374
+      ],
+      "radius": 18,
+      "startAngle": 30,
+      "endAngle": 120,
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_x_axis",
+      "from": [
+        46.5,
+        194.8374
+      ],
+      "to": [
+        75,
+        194.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_y_axis",
+      "from": [
+        45,
+        196.3374
+      ],
+      "to": [
+        45,
+        224.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_A_hatch0",
+      "from": [
+        40,
+        197.8374
+      ],
+      "to": [
+        38,
+        195.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_A_hatch1",
+      "from": [
+        40,
+        195.8374
+      ],
+      "to": [
+        38,
+        193.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_A_hatch2",
+      "from": [
+        40,
+        193.8374
+      ],
+      "to": [
+        38,
+        191.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_A_hatch3",
+      "from": [
+        40,
+        191.8374
+      ],
+      "to": [
+        38,
+        189.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch0",
+      "from": [
+        210.7676284660612,
+        171.3374
+      ],
+      "to": [
+        208.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch1",
+      "from": [
+        212.7676284660612,
+        171.3374
+      ],
+      "to": [
+        210.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch2",
+      "from": [
+        214.7676284660612,
+        171.3374
+      ],
+      "to": [
+        212.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch3",
+      "from": [
+        216.7676284660612,
+        171.3374
+      ],
+      "to": [
+        214.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch4",
+      "from": [
+        218.7676284660612,
+        171.3374
+      ],
+      "to": [
+        216.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch5",
+      "from": [
+        220.7676284660612,
+        171.3374
+      ],
+      "to": [
+        218.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch6",
+      "from": [
+        222.7676284660612,
+        171.3374
+      ],
+      "to": [
+        220.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch7",
+      "from": [
+        224.7676284660612,
+        171.3374
+      ],
+      "to": [
+        222.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch8",
+      "from": [
+        226.7676284660612,
+        171.3374
+      ],
+      "to": [
+        224.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_D_hatch9",
+      "from": [
+        228.7676284660612,
+        171.3374
+      ],
+      "to": [
+        226.7676284660612,
+        169.3374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_K_hatch0",
+      "from": [
+        140,
+        277.8374
+      ],
+      "to": [
+        138,
+        275.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_K_hatch1",
+      "from": [
+        140,
+        275.8374
+      ],
+      "to": [
+        138,
+        273.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_K_hatch2",
+      "from": [
+        140,
+        273.8374
+      ],
+      "to": [
+        138,
+        271.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_ground_hatch_K_hatch3",
+      "from": [
+        140,
+        271.8374
+      ],
+      "to": [
+        138,
+        269.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_triangle_2_hidden_hiddenSide",
+      "from": [
+        81.85068032278488,
+        230.0746098681792
+      ],
+      "to": [
+        198.45987400376595,
+        220.86269947247283
+      ],
+      "layer": "thin",
+      "style": "dashed"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_left",
+      "from": [
+        36,
+        210.4258572681199
+      ],
+      "to": [
+        38.99807621135332,
+        211.23303694509235
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_right",
+      "from": [
+        36,
+        210.4258572681199
+      ],
+      "to": [
+        38.19807621135332,
+        212.61867759114745
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_arrow_arrow_base",
+      "from": [
+        38.99807621135332,
+        211.23303694509235
+      ],
+      "to": [
+        38.19807621135332,
+        212.61867759114745
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_x_arrow_shaft",
+      "from": [
+        73,
+        194.8374
+      ],
+      "to": [
+        75,
+        194.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "line",
+      "id": "object-group-1-scene-2__thin_dim_drive_axes_y_arrow_shaft",
+      "from": [
+        45,
+        222.8374
+      ],
+      "to": [
+        45,
+        224.8374
+      ],
+      "layer": "thin",
+      "style": "solid"
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_x_30_5",
+      "text": "x",
+      "position": [
+        75,
+        199.8374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_y_5_30",
+      "text": "y",
+      "position": [
+        50,
+        224.8374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_A, S1_-1.9288187086570813e-15_-10.5",
+      "text": "A, S1",
+      "position": [
+        45,
+        184.3374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_B_35.35533905932738_42.35533905932738",
+      "text": "B",
+      "position": [
+        80.35533905932738,
+        237.19273905932738
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_C_174.7676284660612_-30.5",
+      "text": "C",
+      "position": [
+        219.7676284660612,
+        164.3374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_D_165.22168692004283_-10.454058453981608",
+      "text": "D",
+      "position": [
+        210.22168692004283,
+        184.38334154601839
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_E_147.53059406476513_18.48254907886589",
+      "text": "E",
+      "position": [
+        192.53059406476513,
+        213.3199490788659
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_H_161.3191762979028_32.27113131200356",
+      "text": "H",
+      "position": [
+        206.3191762979028,
+        227.10853131200355
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_K_100_87",
+      "text": "K",
+      "position": [
+        145,
+        281.8374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S2_128.29686533048326_5.451779686442464",
+      "text": "S2",
+      "position": [
+        173.29686533048326,
+        200.28917968644248
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S3_191.7676284660612_-20",
+      "text": "S3",
+      "position": [
+        236.7676284660612,
+        174.8374
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_S5_125.13382570102863_44.92535864889405",
+      "text": "S5",
+      "position": [
+        170.13382570102863,
+        239.76275864889405
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_Q_171.26765140205725_16.850717297788094",
+      "text": "Q",
+      "position": [
+        216.26765140205725,
+        211.6881172977881
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_1_14.142135623730951_21.213203435596427",
+      "text": "1",
+      "position": [
+        59.14213562373095,
+        216.05060343559643
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_5_130.98507176872255_56.516967710765186",
+      "text": "5",
+      "position": [
+        175.98507176872255,
+        251.3543677107652
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": false,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "text",
+      "id": "object-group-1-scene-2__label_\\omega_{1}_-11.017724711119161_39.18685675312571",
+      "text": "\\omega_{1}",
+      "position": [
+        33.98227528888084,
+        234.0242567531257
+      ],
+      "layer": "label",
+      "fontSize": 5,
+      "italic": true,
+      "anchor": "middle",
+      "baseline": "middle",
+      "fromAnnotation": true
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_0",
+      "points": [
+        [
+          36,
+          210.4258572681199
+        ],
+        [
+          38.99807621135332,
+          211.23303694509235
+        ],
+        [
+          38.19807621135332,
+          212.61867759114745
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_1",
+      "points": [
+        [
+          75,
+          194.8374
+        ],
+        [
+          73,
+          195.4374
+        ],
+        [
+          73,
+          194.2374
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "polygon",
+      "id": "object-group-1-scene-2__filled_poly_2",
+      "points": [
+        [
+          45,
+          224.8374
+        ],
+        [
+          44.4,
+          222.8374
+        ],
+        [
+          45.6,
+          222.8374
+        ]
+      ],
+      "layer": "fixed",
+      "filled": true,
+      "role": "arrowhead"
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__filled_circle_0",
+      "center": [
+        173.29686533048326,
+        193.28917968644248
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__filled_circle_1",
+      "center": [
+        229.7676284660612,
+        174.8374
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "circle",
+      "id": "object-group-1-scene-2__filled_circle_2",
+      "center": [
+        180.63382570102863,
+        239.76275864889405
+      ],
+      "radius": 1.5,
+      "layer": "fixed",
+      "style": "solid",
+      "filled": true
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-2-text-1",
+      "text": "## Основные структурные параметры\n\n$k=6$, $n=k-1=5$, $p_5=p_1=7$, $p_4=0$.\n\nФормула П. Л. Чебышёва:\n$W_m=3n-2p_5-p_4=3\\cdot5-2\\cdot7=1$.\n\nФормула П. О. Сомова и А. П. Малышева:\n$W_{np}=6n-5p_1-4p_2-3p_3-2p_4-p_5=6\\cdot5-5\\cdot7=-5$.\n\nИзбыточные связи:\n$q_m=W_0+W_m-W_{np}=1+0-0=1$,\n$q_{np}=W_0+W_m-W_{np}=1+0-(-5)=6$.\n\n",
+      "position": [
+        76.873789,
+        399
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 151.108361
+    },
+    {
+      "type": "textBlock",
+      "id": "object-group-3-text-1",
+      "text": "## Классификация по Ассуру\n\nПервичный механизм: звено 1 и стойка 0.\n$n=1$, $p_5=1$, $W=3\\cdot1-2\\cdot1=1$.\n\nГруппа Ассура I: звенья 2 и 3, пары $B$, $C$, $D$.\n$n=2$, $p_5=3$, $W=3\\cdot2-2\\cdot3=0$.\n\nГруппа Ассура II: звенья 4 и 5, пары $E$, $H$, $K$.\n$n=2$, $p_5=3$, $W=3\\cdot2-2\\cdot3=0$.\n\nПосле устранения избыточных связей структурная формула:\n$M=\\mathrm{PM}+\\mathrm{GA}_{\\mathrm{I}}+\\mathrm{GA}_{\\mathrm{II}}$.\n",
+      "position": [
+        200.715651,
+        410
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 88.7582
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "estimator-incremental-04",
+  "bounds": { "low": [0, 0], "high": [180, 70] },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "inline-formula",
+      "text": "Given the force $F_{21}^{\\tau}=\\frac{M}{l}$ and its reaction.",
+      "position": [10, 65],
+      "fontSize": 5,
+      "width": 85
+    }
+  ]
+}

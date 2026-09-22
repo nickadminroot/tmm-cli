@@ -1,0 +1,25 @@
+{
+  "format": "tmm-table-cell-inline-corpus",
+  "version": 1,
+  "contract": "kompas-table-cell-inline-v1",
+  "accepted": [
+    { "id": "empty", "source": "", "runs": [] },
+    { "id": "cyrillic", "source": "Параметр", "runs": [{ "kind": "text", "value": "Параметр", "start": 0, "end": 8 }] },
+    { "id": "escaped-pipe", "source": "A \\| B", "runs": [{ "kind": "text", "value": "A | B", "start": 0, "end": 6 }] },
+    { "id": "mixed-inline-math", "source": "Длина $l_1$, мм", "runs": [{ "kind": "text", "value": "Длина ", "start": 0, "end": 6 }, { "kind": "math", "value": "l_1", "start": 6, "end": 11 }, { "kind": "text", "value": ", мм", "start": 11, "end": 15 }] },
+    { "id": "several-math", "source": "$a$ + $b$", "runs": [{ "kind": "math", "value": "a", "start": 0, "end": 3 }, { "kind": "text", "value": " + ", "start": 3, "end": 6 }, { "kind": "math", "value": "b", "start": 6, "end": 9 }] },
+    { "id": "inline-plain-prefix", "source": "1. plain text", "runs": [{ "kind": "text", "value": "1. plain text", "start": 0, "end": 13 }] }
+  ],
+  "rejected": [
+    { "id": "display-math", "source": "$$x$$", "code": "table-cell-display-math", "tokenKind": "math_display", "start": 0 },
+    { "id": "malformed-delimiter", "source": "$x", "code": "malformed-table-cell-math", "tokenKind": "math_inline", "start": 0 },
+    { "id": "invalid-tex", "source": "$\\notacommand{x}$", "code": "malformed-table-cell-math", "tokenKind": "math_inline", "start": 0 },
+    { "id": "emphasis", "source": "*x*", "code": "unsupported-table-cell-markdown", "tokenKind": "emphasis", "start": 0 },
+    { "id": "strong", "source": "**x**", "code": "unsupported-table-cell-markdown", "tokenKind": "strong", "start": 0 },
+    { "id": "code", "source": "`x`", "code": "unsupported-table-cell-markdown", "tokenKind": "code", "start": 0 },
+    { "id": "link", "source": "[x](url)", "code": "unsupported-table-cell-markdown", "tokenKind": "link", "start": 0 },
+    { "id": "image", "source": "![x](image.png)", "code": "unsupported-table-cell-markdown", "tokenKind": "image", "start": 0 },
+    { "id": "html", "source": "<b>x</b>", "code": "unsupported-table-cell-markdown", "tokenKind": "html", "start": 0 },
+    { "id": "line-break", "source": "a\u000ab", "code": "unsupported-table-cell-markdown", "tokenKind": "line_break", "start": 1 }
+  ]
+}

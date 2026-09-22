@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-44-sum-overline-base",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-44-sum-overline-base",
+      "text": "\n$\\sum\\overline F^{(3)}=0$\n",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "width": 100,
+      "italic": true
+    }
+  ]
+}

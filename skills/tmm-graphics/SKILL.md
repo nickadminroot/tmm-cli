@@ -93,7 +93,9 @@ labels; it is not a replacement for the XMCD calculation.
    Both JSON CDW commands are tokenless, but they require the installed local
    KOMPAS Renderer and KOMPAS. They obtain a renderer challenge, verify the
    signed plan, and only then send the plan to the loopback renderer. A JSON
-   response or preview is not evidence that a `.cdw` was created.
+   response or preview is not evidence that a `.cdw` was created. If the
+   renderer is unavailable, follow the installation and verification section in
+   [`tmm-cli`](../tmm-cli/SKILL.md) before retrying the final CDW step.
 6. Open the CDW and inspect geometry, text, arrows, dimensions, line weights,
    page scale, and clipping. If anything is wrong, fix the scene or the
    source data, rerun the command, and keep the resulting XMCD/scene/CDW paths

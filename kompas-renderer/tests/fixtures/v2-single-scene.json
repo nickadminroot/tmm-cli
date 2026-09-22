@@ -1,0 +1,13 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "test-scene",
+  "bounds": { "low": [0, 0], "high": [10, 10], "width": 10, "height": 10 },
+  "entities": [
+    { "type": "line", "id": "l1", "from": [0, 0], "to": [10, 0], "layer": "fixed", "style": "solid" },
+    { "type": "circle", "id": "c1", "center": [5, 5], "radius": 2.5, "layer": "fixed" },
+    { "type": "text", "id": "t1", "text": "Hello", "position": [5, 5], "fontSize": 3.5, "layer": "label" },
+    { "type": "polygon", "id": "p1", "points": [[5, 10], [0, 0], [10, 0]], "role": "arrowhead" }
+  ]
+}

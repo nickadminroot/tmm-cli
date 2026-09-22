@@ -1,0 +1,17 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "estimator-incremental-05",
+  "bounds": { "low": [0, 0], "high": [200, 100] },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "display-safe-breaks",
+      "text": "The result is:\n$$A=B+C+D+E$$",
+      "position": [10, 95],
+      "fontSize": 5,
+      "width": 55
+    }
+  ]
+}

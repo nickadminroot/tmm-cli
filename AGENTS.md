@@ -22,6 +22,11 @@ This repository is public by design. Keep private implementation, component
 SHAs, checkout URLs, and server deployment files outside it. Keep local
 fallback execution out of the client.
 
+`kompas-renderer/` owns the public native renderer source, COM-free tests,
+locked Python dependencies, and Windows packaging scripts. Release public keys
+and exact allowed origins are build inputs; private signing keys and production
+configuration never enter this repository or its artifacts.
+
 ## Transport and output invariants
 
 - Require `--output` for every artifact-producing command.
@@ -87,3 +92,14 @@ After changing synthesis code, run `uv sync --extra dev --locked`,
 
 Before committing, update the public README when a command, environment
 variable, output field, or exit class changes, then run both Go commands above.
+
+After changing `kompas-renderer/`, synchronize its locked environment and run
+the COM-free suite from that directory:
+
+```bash
+uv sync --locked
+uv run --locked python -m unittest
+```
+
+Run packaging tests on Linux; building and live acceptance of the setup require
+Windows, Inno Setup, KOMPAS-3D, and an interactive desktop session.

@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-03-spaces-punctuation",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      120,
+      200
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-03-spaces-punctuation",
+      "text": "A A, A.",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "width": 60,
+      "italic": true
+    }
+  ]
+}

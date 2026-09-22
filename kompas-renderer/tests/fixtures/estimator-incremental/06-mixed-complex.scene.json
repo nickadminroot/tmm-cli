@@ -1,0 +1,17 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "estimator-incremental-06",
+  "bounds": { "low": [0, 0], "high": [220, 150] },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "mixed-complex",
+      "text": "## Equilibrium\nGiven **forces** and *moments*:\n$\\sum F_x=0$, $\\sum F_y=0$\n\n$$M_A=F_{21}l_{AB}+F_{31}l_{AC}$$\n\n1. resolve the components\n2. verify the reaction",
+      "position": [10, 140],
+      "fontSize": 5,
+      "width": 100
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-34-heading-one-sum",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      220,
+      300
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-34-heading-one-sum",
+      "text": "## Ведущее звено\n\n$\\sum\\overline F^{(1)}=\\overline F_{10}+\\overline F_{12}+\\overline G_1=0$",
+      "position": [
+        10,
+        180
+      ],
+      "fontSize": 5,
+      "italic": true,
+      "width": 79.496766
+    }
+  ]
+}

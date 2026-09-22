@@ -1,0 +1,20 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "reference-problem-statement",
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "reference-problem-statement",
+      "position": [
+        0,
+        100
+      ],
+      "fontSize": 5,
+      "width": 180,
+      "italic": true,
+      "text": "# Постановка задачи:\n\nДано: $l_{AB}=0{,}5\\ \\text{м},\\;l_{BC}=1{,}5\\ \\text{м},\\;l_{CE}=0{,}5\\ \\text{м},\\;l_{KQ}=1\\ \\text{м},\\;l_{BS2}=1\\ \\text{м},\\;l_{CS3}=0{,}1\\ \\text{м},\\;l_{KS5}=0{,}5\\ \\text{м}$\n\n$y_D=-0{,}2\\ \\text{м},\\;x_K=1\\ \\text{м},\\;y_K=0{,}8,\\;\\angle BCE=45^\\circ$\n\n$\\varphi_1=45^\\circ,\\;\\omega_1=10\\ \\text{рад/с},\\;\\varepsilon_1=10\\ \\text{рад/с}^2$\n\n$m_1=100\\ \\text{кг},\\;m_2=80\\ \\text{кг},\\;m_3=75\\ \\text{кг},\\;m_5=60\\ \\text{кг}$\n\n$J_{1S}=10\\ \\text{кг}\\cdot\\text{м}^2,\\;J_{2S}=8\\ \\text{кг}\\cdot\\text{м}^2,\\;J_{5S}=6\\ \\text{кг}\\cdot\\text{м}^2$\n\n$F_3=2500\\ \\text{Н},\\;F_5=1000\\ \\text{Н}$\n\nНайти: $F_{ij},\\;M_1$."
+    }
+  ]
+}

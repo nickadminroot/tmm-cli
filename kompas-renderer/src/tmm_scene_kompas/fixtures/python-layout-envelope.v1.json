@@ -1,0 +1,58 @@
+{
+  "format": "tmm-python-layout-envelope",
+  "version": 1,
+  "contract": "kompas-text-block-v1",
+  "corpusSha256": "422169f7d44bda3eea9da58ed0d5cb12827c431ec65b22dfee23295a0554bd15",
+  "provenance": "Deterministic COM-free API5 plan envelope from tmm-scene-kompas; JS estimates must cover width and height.",
+  "cases": [
+    {
+      "id": "reference-problem-statement",
+      "width": 259.0,
+      "height": 65.8,
+      "lineCount": 9,
+      "overflow": true
+    },
+    {
+      "id": "reference-planar-motion",
+      "width": 122.49999999999999,
+      "height": 30.799999999999997,
+      "lineCount": 4,
+      "overflow": false
+    },
+    {
+      "id": "reference-force-equilibrium",
+      "width": 168.0,
+      "height": 51.8,
+      "lineCount": 7,
+      "overflow": false
+    },
+    {
+      "id": "supported-heading-levels",
+      "width": 29.4,
+      "height": 58.79999999999999,
+      "lineCount": 6,
+      "overflow": false
+    },
+    {
+      "id": "supported-inline-formatting",
+      "width": 91.0,
+      "height": 28.0,
+      "lineCount": 4,
+      "overflow": false
+    },
+    {
+      "id": "supported-lists",
+      "width": 52.5,
+      "height": 35.0,
+      "lineCount": 5,
+      "overflow": false
+    },
+    {
+      "id": "supported-display-safe-breaks",
+      "width": 24.5,
+      "height": 7.0,
+      "lineCount": 1,
+      "overflow": false
+    }
+  ]
+}

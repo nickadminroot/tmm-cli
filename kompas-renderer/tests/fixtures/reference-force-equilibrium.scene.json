@@ -1,0 +1,20 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "reference-force-equilibrium",
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "reference-force-equilibrium",
+      "position": [
+        0,
+        100
+      ],
+      "fontSize": 5,
+      "width": 180,
+      "italic": true,
+      "text": "# Равновесие сил:\n\n$$7{,}8)\\sum\\overline{F}_k^{(2,3)}=0:\\quad\\overline{F}_{30}+\\overline{F}_3+\\overline{G}_3+\\overline{\\Phi}_3+\\overline{G}_2+\\overline{\\Phi}_2+\\overline{F}_{24}+\\overline{F}_{21}^{n}+\\overline{F}_{21}^{\\tau}=0$$\n\n$$9)\\sum M_C(\\overline{F}_k^{(2,3)})=0:\\quad G_2\\cdot h_{G2}-F_{21}^{\\tau}\\cdot l_{BC}-M_{\\Phi2}-\\Phi_2\\cdot h_{\\Phi2}-F_{24}\\cdot h_{F24}+M_{30}-G_3\\cdot l_{CS3}=0$$\n\n$$F_{21}^{\\tau}=\\frac{1}{l_{BC}}\\left(M_{\\Phi2}+\\Phi_2\\cdot h_{\\Phi2}-G_2\\cdot h_{G2}+F_{24}\\cdot h_{F24}\\right)=$$\n\n$$=\\frac{1}{1{,}5}\\left(81{,}04+448\\cdot0{,}233-784{,}8\\cdot0{,}456+677{,}55\\cdot0{,}4631\\right)=715{,}51\\ \\text{Н}$$"
+    }
+  ]
+}

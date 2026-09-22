@@ -1,0 +1,483 @@
+{
+  "format": "tmm-text-block-corpus",
+  "version": 1,
+  "contract": "kompas-text-block-v1",
+  "snapshotState": "implemented-conformance-v1",
+  "markdownProfile": {
+    "breaks": true,
+    "html": false,
+    "images": false,
+    "linkify": false,
+    "typographer": false,
+    "inlineMath": "$...$",
+    "displayMath": "$$...$$"
+  },
+  "supportedFontSizes": [
+    1.8,
+    2.5,
+    3.5,
+    5,
+    7,
+    10,
+    14,
+    20,
+    28,
+    40
+  ],
+  "fixtures": [
+    {
+      "id": "reference-problem-statement",
+      "kind": "reference",
+      "source": {
+        "markdown": "# Постановка задачи:\n\nДано: $l_{AB}=0{,}5\\ \\text{м},\\;l_{BC}=1{,}5\\ \\text{м},\\;l_{CE}=0{,}5\\ \\text{м},\\;l_{KQ}=1\\ \\text{м},\\;l_{BS2}=1\\ \\text{м},\\;l_{CS3}=0{,}1\\ \\text{м},\\;l_{KS5}=0{,}5\\ \\text{м}$\n\n$y_D=-0{,}2\\ \\text{м},\\;x_K=1\\ \\text{м},\\;y_K=0{,}8,\\;\\angle BCE=45^\\circ$\n\n$\\varphi_1=45^\\circ,\\;\\omega_1=10\\ \\text{рад/с},\\;\\varepsilon_1=10\\ \\text{рад/с}^2$\n\n$m_1=100\\ \\text{кг},\\;m_2=80\\ \\text{кг},\\;m_3=75\\ \\text{кг},\\;m_5=60\\ \\text{кг}$\n\n$J_{1S}=10\\ \\text{кг}\\cdot\\text{м}^2,\\;J_{2S}=8\\ \\text{кг}\\cdot\\text{м}^2,\\;J_{5S}=6\\ \\text{кг}\\cdot\\text{м}^2$\n\n$F_3=2500\\ \\text{Н},\\;F_5=1000\\ \\text{Н}$\n\nНайти: $F_{ij},\\;M_1$.",
+        "referenceImage": {
+          "owner": "tmm-scene-kompas",
+          "path": "references/text-block/problem-statement.png",
+          "sha256": "363532b0da91b53c3e52dff8fb6603a6d9c4a9487e31191b247b13f7fceeb4f4"
+        }
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "reference-problem-statement",
+        "position": [
+          0,
+          100
+        ],
+        "fontSize": 5,
+        "width": 180,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "cf5bc6df99b2096484bf30005999a379608d0730552bfcb9082d9b8fb749c672"
+      }
+    },
+    {
+      "id": "reference-planar-motion",
+      "kind": "reference",
+      "source": {
+        "markdown": "# Плоское движение звена 2:\n\n$$\\overline{a}_B=\\overline{a}_A+\\overline{a}_{BA}^{n}+\\overline{a}_{BA}^{\\tau}$$\n\n$$\\overline{a}_{BA}^{n}=\\omega_2^2 l_{AB}=6{,}941^2\\cdot1=48{,}177\\ \\text{м}/\\text{с}^2$$\n\n$$?\\qquad\\underset{\\parallel AB,\\;B\\to A}{\\underline{\\overline{a}_{BA}^{n}}}\\qquad\\underset{\\perp AB}{\\underline{\\overline{a}_{BA}^{\\tau}}}$$",
+        "referenceImage": {
+          "owner": "tmm-scene-kompas",
+          "path": "references/text-block/planar-motion.png",
+          "sha256": "c9bf5ac4bf74683225d6e75c5e8889bedcd8cce3880f37ce772b43ef9c813e69"
+        }
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "reference-planar-motion",
+        "position": [
+          0,
+          100
+        ],
+        "fontSize": 5,
+        "width": 180,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "a7b02d0b77184691bf412771b70abda0ef252667a6468a50a8301d9c6ee640b6"
+      }
+    },
+    {
+      "id": "reference-force-equilibrium",
+      "kind": "reference",
+      "source": {
+        "markdown": "# Равновесие сил:\n\n$$7{,}8)\\sum\\overline{F}_k^{(2,3)}=0:\\quad\\overline{F}_{30}+\\overline{F}_3+\\overline{G}_3+\\overline{\\Phi}_3+\\overline{G}_2+\\overline{\\Phi}_2+\\overline{F}_{24}+\\overline{F}_{21}^{n}+\\overline{F}_{21}^{\\tau}=0$$\n\n$$9)\\sum M_C(\\overline{F}_k^{(2,3)})=0:\\quad G_2\\cdot h_{G2}-F_{21}^{\\tau}\\cdot l_{BC}-M_{\\Phi2}-\\Phi_2\\cdot h_{\\Phi2}-F_{24}\\cdot h_{F24}+M_{30}-G_3\\cdot l_{CS3}=0$$\n\n$$F_{21}^{\\tau}=\\frac{1}{l_{BC}}\\left(M_{\\Phi2}+\\Phi_2\\cdot h_{\\Phi2}-G_2\\cdot h_{G2}+F_{24}\\cdot h_{F24}\\right)=$$\n\n$$=\\frac{1}{1{,}5}\\left(81{,}04+448\\cdot0{,}233-784{,}8\\cdot0{,}456+677{,}55\\cdot0{,}4631\\right)=715{,}51\\ \\text{Н}$$",
+        "referenceImage": {
+          "owner": "tmm-scene-kompas",
+          "path": "references/text-block/force-equilibrium.png",
+          "sha256": "261018a3f173cd360cb255c68b03d8fe20d3a21ed3f65ea2286a81a7cf0ea980"
+        }
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "reference-force-equilibrium",
+        "position": [
+          0,
+          100
+        ],
+        "fontSize": 5,
+        "width": 180,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "d2fabd0f3251ff64356cbb7b4b013169543ea84cefaf450343867c1bda3e9018"
+      }
+    },
+    {
+      "id": "supported-heading-levels",
+      "kind": "supported",
+      "source": {
+        "markdown": "# Один\n## Два\n### Три\n#### Четыре\n##### Пять\n###### Шесть"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "supported-heading-levels",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "e158084228f3adfda36fcf1853de0428f950d54b3b38b1e7831989d1d4b6ffe0"
+      }
+    },
+    {
+      "id": "supported-inline-formatting",
+      "kind": "supported",
+      "source": {
+        "markdown": "Обычный **жирный** и *курсив*.\nВидимый перенос, `код $x$`, [только метка](https://example.test) и $F_{21}^{\\tau}$.\nЭкранировано: \\*не курсив\\*."
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "supported-inline-formatting",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 100,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "5d4d7d9b4d355f375c4e358355ae9a30830994fae9f2fa2ae86cc9cf5f0db7c2"
+      }
+    },
+    {
+      "id": "supported-lists",
+      "kind": "supported",
+      "source": {
+        "markdown": "1. Первый\n2. Второй\n   - Вложенный\n\n- Маркер\n- Второй маркер"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "supported-lists",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 100,
+        "italic": false
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "9ea0c07be5075efc10c1482261815a23154cf8351271e8385053037da1605d2a"
+      }
+    },
+    {
+      "id": "supported-display-safe-breaks",
+      "kind": "supported",
+      "source": {
+        "markdown": "$$a\\allowbreak=b+c-d$$"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "supported-display-safe-breaks",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 30,
+        "italic": true
+      },
+      "expected": {
+        "outcome": "success",
+        "warnings": []
+      },
+      "digests": {
+        "sourceSha256": "7555aa33545c62abc17ae181250d0056a24f406abaf72a1d9ee425b5273fe409"
+      }
+    },
+    {
+      "id": "invalid-raw-html",
+      "kind": "invalid",
+      "source": {
+        "markdown": "<span>не поддерживается</span>"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-raw-html",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-markdown-token",
+            "tokenKind": "html",
+            "sourceSpan": {
+              "start": 0,
+              "end": 1
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "9cbe921329b57260f6f941b8c3f45979c865382dbf58363ff44ae76e1dca6a07"
+      }
+    },
+    {
+      "id": "invalid-image",
+      "kind": "invalid",
+      "source": {
+        "markdown": "![схема](scheme.png)"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-image",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-markdown-token",
+            "tokenKind": "image",
+            "sourceSpan": {
+              "start": 0,
+              "end": 1
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "7cbfb6d58b14a762b55d80511187187c8f267c6d1feeb34a78d21abc30338f67"
+      }
+    },
+    {
+      "id": "invalid-blockquote",
+      "kind": "invalid",
+      "source": {
+        "markdown": "> цитата"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-blockquote",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-markdown-token",
+            "tokenKind": "blockquote",
+            "sourceSpan": {
+              "start": 0,
+              "end": 1
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "b50fa759fb9b329a89864a48e8aad1a134917fbe0bcd41f340c834874eae3fa5"
+      }
+    },
+    {
+      "id": "invalid-horizontal-rule",
+      "kind": "invalid",
+      "source": {
+        "markdown": "---"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-horizontal-rule",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-markdown-token",
+            "tokenKind": "hr",
+            "sourceSpan": {
+              "start": 0,
+              "end": 1
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b"
+      }
+    },
+    {
+      "id": "invalid-table",
+      "kind": "invalid",
+      "source": {
+        "markdown": "| a | b |\n| --- | --- |\n| 1 | 2 |"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-table",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-markdown-token",
+            "tokenKind": "table",
+            "sourceSpan": {
+              "start": 0,
+              "end": 1
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "80ba6414c39f46d5ccc4d645f73ce6aa25919a627ec145c23159ae2efd7bd077"
+      }
+    },
+    {
+      "id": "invalid-math-delimiter",
+      "kind": "invalid",
+      "source": {
+        "markdown": "Незакрытая формула $a+b"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-math-delimiter",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "malformed-math-delimiter",
+            "tokenKind": "math_inline",
+            "sourceSpan": {
+              "start": 19,
+              "end": 20
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "390ddc99d07e2763b02d3278f10568e19b8b7f2a040ddb86f5da49b4eb98fad3"
+      }
+    },
+    {
+      "id": "invalid-tex-command",
+      "kind": "invalid",
+      "source": {
+        "markdown": "$\\notacommand{x}$"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-tex-command",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 5,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "invalid-tex",
+            "tokenKind": "math_inline",
+            "sourceSpan": {
+              "start": 0,
+              "end": 17
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "16e29124035eb78ce94ede45740606ca8b7563964fb7dd54e9f5e7cd8afd8517"
+      }
+    },
+    {
+      "id": "invalid-font-size",
+      "kind": "invalid",
+      "source": {
+        "markdown": "Размер не из ряда"
+      },
+      "entity": {
+        "type": "textBlock",
+        "id": "invalid-font-size",
+        "position": [
+          10,
+          100
+        ],
+        "fontSize": 4,
+        "width": 80
+      },
+      "expected": {
+        "outcome": "error",
+        "errors": [
+          {
+            "code": "unsupported-font-size",
+            "tokenKind": "entity",
+            "sourceSpan": {
+              "start": 0,
+              "end": 17
+            }
+          }
+        ]
+      },
+      "digests": {
+        "sourceSha256": "ce4e301a564a760e4db951f992bfcf77fb4f48ab06d14ca4f0ee390eff2a6328"
+      }
+    }
+  ]
+}

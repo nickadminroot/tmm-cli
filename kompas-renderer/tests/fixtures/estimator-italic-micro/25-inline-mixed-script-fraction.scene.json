@@ -1,0 +1,30 @@
+{
+  "format": "tmm-scene",
+  "version": 2,
+  "units": "mm",
+  "id": "italic-micro-25-inline-mixed-script-fraction",
+  "bounds": {
+    "low": [
+      0,
+      0
+    ],
+    "high": [
+      120,
+      100
+    ]
+  },
+  "entities": [
+    {
+      "type": "textBlock",
+      "id": "italic-25-inline-mixed-script-fraction",
+      "text": "Given $F_{21}^{\\tau}=\\frac{M}{l}$",
+      "position": [
+        10,
+        80
+      ],
+      "fontSize": 5,
+      "width": 60,
+      "italic": true
+    }
+  ]
+}
