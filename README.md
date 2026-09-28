@@ -221,8 +221,8 @@ resources throughout the work.
 
 - [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, commands and diagnostics.
 - [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.
-- [`metric-synthesis`](skills/metric-synthesis/SKILL.md): dimension synthesis documented in editable XMCD, with a standalone Python solver.
-- [`mathcad-mechanisms`](skills/mathcad-mechanisms/SKILL.md): editable classic Mathcad mechanism calculations, examples and the bundled XMCD library.
+- [`metric-synthesis`](skills/metric-synthesis/SKILL.md): dimension synthesis in editable XMCD, a seven-model Python solver, and a method guide for positions, speed ratio, pressure angle, and assembly checks.
+- [`mathcad-mechanisms`](skills/mathcad-mechanisms/SKILL.md): editable classic Mathcad calculations, source examples, the bundled XMCD library, and a guide to motion equations, flywheel sizing, and drive selection.
 - [`tmm-graphics`](skills/tmm-graphics/SKILL.md): scene formats, custom plots, Markdown and KOMPAS CDW rendering.
 
 Read the [recommended coursework workflow](WORKFLOW.md). For a course project,

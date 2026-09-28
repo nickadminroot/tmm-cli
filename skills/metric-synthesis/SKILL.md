@@ -7,6 +7,12 @@ description: Derive planar mechanism dimensions in Python or classic Mathcad and
 
 Requires mathcad-mechanisms for XMCD authoring; the optional bundled numerical runtime requires uv and Python 3.10 or newer.
 
+Read [METHOD.md](METHOD.md) for the lecture/book-based synthesis procedure:
+choose the prescribed positions or motion requirement, derive contour equations,
+select a continuous assembly, and check crank rotation and pressure angles.
+[REFERENCE.md](REFERENCE.md) lists only the numerical runtime's supported
+schemas; it is not the boundary of metric synthesis as a subject.
+
 The user-facing result is an editable classic Mathcad `.xmcd`: source data,
 equations, chosen assembly, calculation, checks and dimensions. Use
 [mathcad-mechanisms](../mathcad-mechanisms/SKILL.md) and its bundled `xmcd`
@@ -22,23 +28,27 @@ variable, index, or mechanism names.
 ## Procedure
 
 1. Read the task and its diagram. Record the topology, known dimensions,
-   constraints, units and required positions. Preserve dimensions already given
-   by the user; synthesize only unknowns. Ask for missing constraints rather
-   than choosing arbitrary numbers. Read the synthesis generator and relevant
-   methods in `mathcad-mechanisms` before authoring the worksheet.
+   constraints, units and required positions or motion law. Preserve dimensions
+   already given by the user; synthesize only unknowns. Count independent
+   conditions and unknowns before solving; ask for missing constraints rather
+   than choosing arbitrary numbers. Read [METHOD.md](METHOD.md), the synthesis
+   generator and relevant methods in `mathcad-mechanisms` before authoring the
+   worksheet.
 2. Choose the calculation environment. For one of the seven supported numerical
    models, read [REFERENCE.md](REFERENCE.md) and use the bundled Python runtime
    below. For a different problem, derive and solve the actual equations in
    Mathcad or Python using `mathcad-mechanisms`; do not force it into an
    unrelated numerical model.
 3. Solve and inspect mechanical admissibility: positive lengths, contour
-   residuals in every prescribed position, assembly branch, travel and any
-   specified pressure-angle or full-rotation constraint. A converged root alone
-   is insufficient. Distinguish a dimensionless ratio from an absolute length.
+   residuals in every prescribed position, one assembly branch over the required
+   motion interval, travel and any specified pressure-angle or full-rotation
+   constraint. Check a prescribed motion law over its interval, not only at a
+   few poses. A converged root alone is insufficient. Distinguish a
+   dimensionless ratio from an absolute length.
 4. Write the synthesis into the user's XMCD using typed expressions and regions.
    Include the original data and units, assumptions, unknowns, contour equations,
    editable formulas or `Given/Find`, initial guesses/branch, resulting dimensions,
-   checks and configuration diagrams. Keep the calculation reproducible inside
+   checks across the required interval and configuration diagrams. Keep the calculation reproducible inside
    Mathcad: a text summary or a table of frozen Python answers is not a completed
    worksheet. Use Python results as independent checks or solver initial guesses;
    label any externally computed value honestly.
