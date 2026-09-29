@@ -179,7 +179,7 @@ def main() -> int:
                 {"row": 1, "column": 1, "text": "20"},
             ],
         })
-        add_table(module7, symbols, plan)
+        add_table(module7, const, symbols, plan)
         if int(tables.Count) != 1:
             raise RuntimeError(f"production add_table created {tables.Count!r} tables, expected 1")
         drawing_table = tables.Item(0)

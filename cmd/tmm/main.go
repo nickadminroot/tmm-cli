@@ -11,6 +11,12 @@ import (
 )
 
 func main() {
+	if updated, code, err := updateAtStartup(client.Version, os.Args[1:]); err != nil {
+		fmt.Fprintln(os.Stderr, "tmm: GitHub update check:", err)
+	} else if updated {
+		os.Exit(code)
+	}
+
 	root := &cobra.Command{
 		Use:   "tmm",
 		Short: "TMM remote execution client",

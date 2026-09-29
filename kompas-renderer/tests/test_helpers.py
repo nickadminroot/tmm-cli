@@ -18,6 +18,7 @@ from tmm_scene_kompas.render import (
     POINT_ARR,
     Api5Context,
     add_filled_circle,
+    add_line,
     add_smooth_curve,
     add_text,
     api5_math_point,
@@ -209,8 +210,17 @@ class TestResolveStyleForLayer(unittest.TestCase):
             ksCSThinForHatch=11,
         )
 
-    def test_fixed_solid_uses_thick(self):
-        self.assertEqual(resolve_style_for_layer(self.const, 'fixed', 'solid'), 7)
+    def test_fixed_solid_uses_normal(self):
+        self.assertEqual(resolve_style_for_layer(self.const, 'fixed', 'solid'), 1)
+
+    def test_explicit_system_style_ignores_layer(self):
+        const = _FakeConst(ksCSNormal=1, ksCSThin=2, ksCSAxial=3)
+        self.assertEqual(resolve_style_for_layer(const, 'fixed', 'ksCSAxial'), 3)
+        self.assertEqual(resolve_style_for_layer(const, 'thin', 'ksCSNormal'), 1)
+
+    def test_missing_explicit_system_style_fails(self):
+        with self.assertRaisesRegex(ValueError, 'ksCSISO15DashDot2Dashes3Dots'):
+            resolve_style_for_layer(self.const, 'fixed', 'ksCSISO15DashDot2Dashes3Dots')
 
     def test_fixed_dashed_uses_dashed(self):
         self.assertEqual(resolve_style_for_layer(self.const, 'fixed', 'dashed'), 4)
@@ -944,14 +954,38 @@ class _FakeContainerWithLines:
 
 class TestFilledCircleDispatch(unittest.TestCase):
 
-    def test_filled_circle_is_dense_disk_of_thick_horizontal_chords(self):
+    def test_invisible_style_does_not_emit_visible_kompas_geometry(self):
+        container = _FakeContainerWithLines()
+        scene_entity_to_api(MagicMock(), container, _FakeConst(), {
+            'type': 'line', 'from': [0, 0], 'to': [10, 0],
+            'style': 'ksCSHidden',
+        })
+        self.assertEqual(container.lines, [])
+
+    def test_explicit_style_rejected_by_kompas_is_not_silent(self):
+        class NormalizingLine(_FakeLineSegment):
+            def Update(self):
+                self.Style = 11
+                return True
+
+        class NormalizingContainer(_FakeContainerWithLines):
+            def Add(self):
+                line = NormalizingLine()
+                self.lines.append(line)
+                return line
+
+        with self.assertRaisesRegex(RuntimeError, 'ksCSBrokenLine'):
+            add_line(NormalizingContainer(), _FakeConst(ksCSBrokenLine=5),
+                     0, 0, 10, 0, style='ksCSBrokenLine')
+
+    def test_filled_circle_is_dense_disk_of_normal_horizontal_chords(self):
         container = _FakeContainerWithLines()
         const = _FakeConst(ksCSNormal=1, ksCSThick=7)
         add_filled_circle(container, const, xc=10.0, yc=20.0, radius=1.0)
 
         self.assertEqual(len(container.lines), 8)  # 2 mm / 0.25 mm pitch
         for line in container.lines:
-            self.assertEqual(line.Style, 7)
+            self.assertEqual(line.Style, 1)
             self.assertLessEqual(abs(line.Y1 - 20.0), 1.0)
             self.assertAlmostEqual(line.Y1, line.Y2)
             self.assertLessEqual(line.X1, line.X2)

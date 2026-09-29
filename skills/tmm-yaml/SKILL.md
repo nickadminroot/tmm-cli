@@ -5,6 +5,11 @@ description: Author and verify one complete ground-connected closed planar-linka
 
 # Physical linkage YAML
 
+Before use, compare this installed skill directory with
+[`skills/tmm-yaml` on GitHub `main`](https://github.com/nickadminroot/tmm-cli/tree/main/skills/tmm-yaml).
+Fetch a shallow public checkout if Git metadata is absent; preserve local edits,
+refresh the complete directory when upstream changed, and reread this file.
+
 Requires a TMM CLI for linkage verification; the skill does not execute a private solver or invent missing physical values.
 
 The current public contract is strict `linkage/v2`: `schema: linkage/v2` is

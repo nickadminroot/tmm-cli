@@ -77,6 +77,10 @@ data on uninstall. On Windows, build with
 Windows prerequisite. Both forms keep the strict adjacent release config and
 same production public verification key; never add private signing material or
 rotate keys as a packaging side effect. SmartScreen may display a warning.
+The installed setup checks the latest public GitHub release at startup. Label
+its setup asset `renderer-vX.Y.Z` and keep GitHub's SHA-256 asset digest;
+portable ZIPs remain manually updated. Existing releases without this logic
+need one manual upgrade.
 Never add arbitrary command, path, script, or COM-member execution APIs.
 ## Synchronization invariant
 

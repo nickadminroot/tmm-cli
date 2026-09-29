@@ -109,9 +109,37 @@
       "enum": [
         "solid",
         "dashed",
-        "dotted"
+        "dotted",
+        "ksCSHidden",
+        "ksCSUnvisible",
+        "ksCSNormal",
+        "ksCSThin",
+        "ksCSAxial",
+        "ksCSDashed",
+        "ksCSBrokenLine",
+        "ksCSConstruction",
+        "ksCSThick",
+        "ksCSDash2Dots",
+        "ksCSDashedNormal",
+        "ksCSNormalDashDot",
+        "ksCSThinForHatch",
+        "ksCSISO02Dashed",
+        "ksCSISO03DashedLSpace",
+        "ksCSISO04DashDotLDash",
+        "ksCSISO05DashDotLDash2Dots",
+        "ksCSISO06DashDotLDash3Dots",
+        "ksCSISO07Dotted",
+        "ksCSISO08DashDotLShDashes",
+        "ksCSISO09DashDot1L2ShDashes",
+        "ksCSISO10DashDot",
+        "ksCSISO11DashDot2Dashes",
+        "ksCSISO12DashDot2Dots",
+        "ksCSISO13DashDot3Dots",
+        "ksCSISO14DashDot2Dashes2Dots",
+        "ksCSISO15DashDot2Dashes3Dots",
+        "ksCSDotted"
       ],
-      "description": "Line style."
+      "description": "Line style: legacy aliases or exact KOMPAS system style constant names."
     },
     "entity": {
       "oneOf": [

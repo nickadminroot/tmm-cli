@@ -27,6 +27,9 @@ locked Python dependencies, and Windows installer/portable packaging scripts.
 Release public keys and exact allowed origins are build inputs; private signing
 keys never enter this repository or its artifacts. Installed and portable
 artifacts use the same strict release config, fixed port, mutex, and trust key.
+Upload the setup release asset with label `renderer-vX.Y.Z`; the installed
+renderer uses that label and GitHub's asset SHA-256 digest to admit updates.
+Keep the setup asset name `tmm-kompas-renderer-setup.exe`.
 
 ## Transport and output invariants
 

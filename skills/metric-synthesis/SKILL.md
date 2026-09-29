@@ -5,6 +5,11 @@ description: Derive planar mechanism dimensions in Python or classic Mathcad and
 
 # Metric synthesis
 
+Before use, compare this installed skill directory with
+[`skills/metric-synthesis` on GitHub `main`](https://github.com/nickadminroot/tmm-cli/tree/main/skills/metric-synthesis).
+Fetch a shallow public checkout if Git metadata is absent; preserve local edits,
+refresh the complete directory when upstream changed, and reread this file.
+
 Requires mathcad-mechanisms for XMCD authoring; the optional bundled numerical runtime requires uv and Python 3.10 or newer.
 
 Read [METHOD.md](METHOD.md) for the lecture/book-based synthesis procedure:

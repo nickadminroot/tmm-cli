@@ -118,7 +118,16 @@ class TestTableLowering(unittest.TestCase):
         class Range:
             def __init__(self):
                 self.CellsFormat = Format()
+                self.CellsBoundaries = self
                 self.combined = False
+                self.styles = []
+                self.visibility = []
+
+            def SetLineStyle(self, boundary, style):
+                self.styles.append((boundary, style))
+
+            def SetLineVisible(self, boundary, visible):
+                self.visibility.append((boundary, visible))
 
             def CombineCells(self):
                 self.combined = True
@@ -231,12 +240,22 @@ class TestTableLowering(unittest.TestCase):
                 return obj.font
             if interface == "ICellFormat":
                 return getattr(obj, "format", obj)
+            if interface == "ICellBoundaries":
+                return obj
             if interface == "IText":
                 return obj
             raise AssertionError(interface)
 
         with patch("tmm_scene_kompas.render._qi", side_effect=fake_qi):
-            add_table(object(), symbols, plan)
+            const = type("Const", (), {
+                "ksCBAllBorders": 7,
+                "ksCBExternalBorders": 6,
+                "ksCSNormal": 1,
+                "ksCSThin": 2,
+                "ksCSDashed": 4,
+                "ksCSAxial": 3,
+            })()
+            add_table(object(), const, symbols, plan)
         native = tables.native
         self.assertEqual(tables.add_args, (2, 2, 5.0, 10.0, 0))
         self.assertEqual((native.X, native.Y), (0.0, 20.0))
@@ -244,6 +263,9 @@ class TestTableLowering(unittest.TestCase):
             (0, 0, 10.0), (0, 1, 20.0), (1, 0, 10.0), (1, 1, 20.0)
         ])
         self.assertEqual(native.update_count, 2)
+        boundaries = native.ranges[0][1]
+        self.assertEqual(boundaries.styles, [(7, 2), (6, 1)])
+        self.assertEqual(boundaries.visibility, [(7, True), (6, True)])
         self.assertEqual(native.cells[(0, 0)].Text.Str, "title")
         self.assertEqual(native.cells[(1, 0)].Text.Str, "left")
         rich_text = native.cells[(1, 1)].Text

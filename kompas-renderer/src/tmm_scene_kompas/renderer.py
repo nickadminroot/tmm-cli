@@ -35,14 +35,15 @@ from urllib.parse import urlsplit
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-from .render import build_drawing
+from .render import SCENE_LINE_STYLES, build_drawing
 from .text_block_parser import STANDARD_TEXT_HEIGHTS
+from .update import check_and_start_update
 
 PLAN_FORMAT = "tmm-kompas-plan"
 PLAN_VERSION = 1
 PLAN_ALGORITHM = "ed25519"
 RENDERER_PROTOCOL_VERSION = 2
-RENDERER_VERSION = "0.2.0"
+RENDERER_VERSION = "0.2.2"
 MAX_RENDERER_VERSION_LENGTH = 64
 REQUIRED_CAPABILITIES = (
     "scene-v2",
@@ -65,7 +66,7 @@ RUNS_DIRECTORY = "runs"
 RUNS_MARKER = ".tmm-kompas-renderer-runs"
 
 _LAYERS = {"fixed", "thin", "hatch", "label", "dimension"}
-_STYLES = {"solid", "dashed", "dotted"}
+_STYLES = SCENE_LINE_STYLES
 _SHEET_FORMATS = {"A0", "A1", "A2", "A3", "A4", "A5"}
 _KEY_ID_RE = re.compile(r"^[A-Za-z0-9_.-]{1,64}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1334,6 +1335,11 @@ def main(argv: list[str] | None = None) -> int:
     config: RendererConfig | None = None
     try:
         config = _config_from_args(args)
+        try:
+            if check_and_start_update(config.renderer_version, config.data_directory, args.config):
+                return 0
+        except (OSError, ValueError, RuntimeError) as exc:
+            print(f"KOMPAS Renderer update check: {exc}", file=sys.stderr)
         lock = RendererInstanceLock(config.data_directory)
         lock.acquire()
         state = RendererState.from_config(config)

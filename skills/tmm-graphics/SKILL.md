@@ -5,6 +5,11 @@ description: Reuse CLI-generated drafts, then edit, validate, compose, and rende
 
 # TMM graphics
 
+Before use, compare this installed skill directory with
+[`skills/tmm-graphics` on GitHub `main`](https://github.com/nickadminroot/tmm-cli/tree/main/skills/tmm-graphics).
+Fetch a shallow public checkout if Git metadata is absent; preserve local edits,
+refresh the complete directory when upstream changed, and reread this file.
+
 Use this skill whenever a calculation has a drawing, graph, force plan,
 velocity/acceleration plan, dynamic diagram, or explanatory sheet that must be
 opened in KOMPAS. The public CLI is a transport and publication client. It does

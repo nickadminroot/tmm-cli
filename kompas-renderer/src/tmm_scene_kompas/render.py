@@ -460,12 +460,28 @@ def api5_math_point(kompas, const, x, y):
 # ─── Style mapping (verified constants) ────────────────────────────────────
 
 # Style constant names in preference order.
-_THICK_NAMES = ("ksCSThick",)
 _THIN_NAMES = ("ksCSThin",)
 _THIN_FOR_HATCH_NAMES = ("ksCSThinForHatch", "ksCSThin")
 _DASHED_NAMES = ("ksCSDashed",)
 _DASHDOT_NAMES = ("ksCSNormalDashDot", "ksCSISO10DashDot")
 _NORMAL_NAMES = ("ksCSNormal",)
+
+# Exact system style names accepted by Scene v2. Keep in sync with the owning
+# tmm-scene-format schema; an explicit name must never silently use another pen.
+KOMPAS_STYLE_NAMES = frozenset({
+    "ksCSHidden", "ksCSUnvisible", "ksCSNormal", "ksCSThin", "ksCSAxial",
+    "ksCSDashed", "ksCSBrokenLine", "ksCSConstruction", "ksCSThick",
+    "ksCSDash2Dots", "ksCSDashedNormal", "ksCSNormalDashDot",
+    "ksCSThinForHatch",
+    "ksCSISO02Dashed", "ksCSISO03DashedLSpace", "ksCSISO04DashDotLDash",
+    "ksCSISO05DashDotLDash2Dots", "ksCSISO06DashDotLDash3Dots",
+    "ksCSISO07Dotted", "ksCSISO08DashDotLShDashes",
+    "ksCSISO09DashDot1L2ShDashes", "ksCSISO10DashDot",
+    "ksCSISO11DashDot2Dashes", "ksCSISO12DashDot2Dots",
+    "ksCSISO13DashDot3Dots", "ksCSISO14DashDot2Dashes2Dots",
+    "ksCSISO15DashDot2Dashes3Dots", "ksCSDotted",
+})
+SCENE_LINE_STYLES = frozenset({"solid", "dashed", "dotted"}) | KOMPAS_STYLE_NAMES
 
 
 def _lookup_const(const, names: Tuple[str, ...], fallback: int) -> int:
@@ -482,6 +498,11 @@ def resolve_style_for_layer(const, layer: str, style: str) -> int:
     Pure helper — only reads attributes from *const*, no COM calls.
     Dashed always resolves to ksCSDashed (4) regardless of layer.
     """
+    if style in KOMPAS_STYLE_NAMES:
+        value = getattr(const, style, None)
+        if value is None:
+            raise ValueError(f"KOMPAS does not provide system line style {style}")
+        return int(value)
     normal = _lookup_const(const, _NORMAL_NAMES, 1)
     if layer == "hatch":
         return _lookup_const(const, _THIN_FOR_HATCH_NAMES, normal)
@@ -490,13 +511,21 @@ def resolve_style_for_layer(const, layer: str, style: str) -> int:
             return _lookup_const(const, _DASHED_NAMES, normal)
         if style in {"dashdot", "dotted"}:
             return _lookup_const(const, _DASHDOT_NAMES, normal)
-        return _lookup_const(const, _THICK_NAMES, normal)
+        return normal
     # thin, dimension, label, filled, and any other layer
     if style == "dashed":
         return _lookup_const(const, _DASHED_NAMES, normal)
     if style in {"dashdot", "dotted"}:
         return _lookup_const(const, _DASHDOT_NAMES, normal)
     return _lookup_const(const, _THIN_NAMES, normal)
+
+
+def _apply_geometry_style(obj, const, layer: str, style: str) -> None:
+    selected = resolve_style_for_layer(const, layer, style)
+    obj.Style = selected
+    _update(obj)
+    if style in KOMPAS_STYLE_NAMES and int(obj.Style) != selected:
+        raise RuntimeError(f"KOMPAS rejected system line style {style} for this geometry")
 
 
 def compute_leader_base_and_tip(
@@ -848,8 +877,7 @@ def add_line(container, const, x1: float, y1: float, x2: float, y2: float,
     obj.Y1 = float(y1)
     obj.X2 = float(x2)
     obj.Y2 = float(y2)
-    obj.Style = resolve_style_for_layer(const, layer, style)
-    _update(obj)
+    _apply_geometry_style(obj, const, layer, style)
 
 
 def add_circle(container, const, xc: float, yc: float, radius: float,
@@ -858,18 +886,16 @@ def add_circle(container, const, xc: float, yc: float, radius: float,
     obj.Xc = float(xc)
     obj.Yc = float(yc)
     obj.Radius = float(radius)
-    obj.Style = resolve_style_for_layer(const, layer, style)
-    _update(obj)
+    _apply_geometry_style(obj, const, layer, style)
 
 
 def add_filled_circle(container, const, xc: float, yc: float, radius: float) -> None:
-    """Render a visually solid black disk with overlapping thick scanlines.
+    """Render a visually solid black disk with overlapping normal scanlines.
 
     API7's ``Colourings`` collection creates a fill object, but it does not
     bind that object to a newly-created circle contour through COM.  Rendering
-    the disk as overlapping standard line segments is deterministic, editable,
-    and has been verified in KOMPAS' raster export.  ``fixed`` resolves to the
-    thick black line style, and the 0.25 mm pitch leaves no visible white gaps.
+    the disk as overlapping standard line segments keeps it editable.
+    ``fixed`` resolves to the normal line style; the scanlines use 0.25 mm pitch.
     """
     radius = float(radius)
     if radius <= 0:
@@ -893,8 +919,7 @@ def add_arc(container, const, xc: float, yc: float, radius: float,
     obj.Angle1 = float(angle1)
     obj.Angle2 = float(angle2)
     obj.Direction = bool(direction)
-    obj.Style = resolve_style_for_layer(const, layer, style)
-    _update(obj)
+    _apply_geometry_style(obj, const, layer, style)
 
 
 def add_text(module7, container, x: float, y: float, text: str,
@@ -1015,7 +1040,7 @@ def write_table_cell_inline(
     return text
 
 
-def add_table(module7, symbols, plan: TablePlan) -> None:
+def add_table(module7, const, symbols, plan: TablePlan) -> None:
     """Create one native KOMPAS ``IDrawingTable`` from a validated plan.
 
     Unlike a line/text approximation, this is a real editable KOMPAS table:
@@ -1062,6 +1087,19 @@ def add_table(module7, symbols, plan: TablePlan) -> None:
             write_table_cell_inline(
                 module7, table.Cell(cell.row, cell.column), cell.inline_plan
             )
+        boundaries = _qi(module7, all_cells.CellsBoundaries, "ICellBoundaries")
+        grid_style = resolve_style_for_layer(const, plan.grid_layer, plan.grid_style)
+        border_style = resolve_style_for_layer(const, plan.border_layer, plan.border_style)
+        boundaries.SetLineStyle(const.ksCBAllBorders, grid_style)
+        boundaries.SetLineStyle(const.ksCBExternalBorders, border_style)
+        boundaries.SetLineVisible(
+            const.ksCBAllBorders,
+            plan.grid_style not in {"ksCSHidden", "ksCSUnvisible"},
+        )
+        boundaries.SetLineVisible(
+            const.ksCBExternalBorders,
+            plan.border_style not in {"ksCSHidden", "ksCSUnvisible"},
+        )
         if not drawing_table.Update():
             raise RuntimeError(f"KOMPAS failed to update table {plan.entity_id!r}")
     finally:
@@ -1074,12 +1112,11 @@ def add_polyline(container, const, points: Sequence[Tuple[float, float]], closed
                  style: str = "solid", layer: str = "filled") -> None:
     obj = container.PolyLines2D.Add()
     obj.Closed = bool(closed)
-    obj.Style = resolve_style_for_layer(const, layer, style)
     for index, (x, y) in enumerate(points):
         ok = obj.AddPoint(int(index), float(x), float(y))
         if not ok:
             raise RuntimeError(f"PolyLine2D.AddPoint failed at index {index}")
-    _update(obj)
+    _apply_geometry_style(obj, const, layer, style)
 
 
 def add_smooth_curve(
@@ -1107,6 +1144,8 @@ def scene_entity_to_api(module7, container, const, entity: dict,
     ctype = entity.get('type')
     layer = entity.get('layer', 'fixed')
     style = entity.get('style', 'solid')
+    if style in {'ksCSHidden', 'ksCSUnvisible'}:
+        return
     if ctype == 'line':
         add_line(container, const,
                  entity['from'][0], entity['from'][1],
@@ -1153,7 +1192,7 @@ def scene_entity_to_api(module7, container, const, entity: dict,
     elif ctype == 'table':
         if symbols is None:
             raise RuntimeError("KOMPAS symbols container required for table rendering")
-        add_table(module7, symbols, compile_table_plan(entity))
+        add_table(module7, const, symbols, compile_table_plan(entity))
     elif ctype == 'polygon':
         points = entity.get('points', [])
         if is_arrowhead_polygon(entity):

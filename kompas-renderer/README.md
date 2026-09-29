@@ -28,6 +28,12 @@ the renderer immediately, and registers HKCU startup. Native acceptance requires
 an actual CLI or website render that leaves a visible KOMPAS document open and
 returns a non-empty `.cdw`.
 
+Installed release builds check the latest public GitHub release on startup. A
+newer `renderer-vX.Y.Z` labeled setup is downloaded, checked against its GitHub
+SHA-256 digest, and started for in-place replacement. Portable archives need
+manual replacement; older installations need one manual update to gain this
+behavior.
+
 ## Run the portable Renderer
 
 For one-off agent work, the latest tmm-cli release also contains
@@ -80,6 +86,11 @@ The portable public Scene v2 schema is bundled with the
 skill. This adapter owns KOMPAS-specific lowering, sheet handling, tables,
 text, and drawing capabilities.
 
+Explicit `ksCS…` names in that schema select matching KOMPAS system line
+styles and are read back after creation. Invisible styles omit geometry.
+KOMPAS v24 does not accept `ksCSBrokenLine` on ordinary primitives; this and
+other unsupported or normalized styles fail explicitly.
+
 ## CLI contract
 
 ```text
@@ -116,7 +127,7 @@ Ed25519 **public** key and the exact browser origin:
 uv sync --extra kompas --extra packaging --locked
 uv run --locked --extra kompas --extra packaging python packaging/build_windows.py \
   --public-key-file RELEASE_PUBLIC_KEY.pem --key-id release-2026 \
-  --allowed-origin https://www.tmm-agent.ru --renderer-version 0.2.0
+  --allowed-origin https://www.tmm-agent.ru --renderer-version 0.2.2
 ```
 
 The production portal origin is exactly `https://www.tmm-agent.ru`. If

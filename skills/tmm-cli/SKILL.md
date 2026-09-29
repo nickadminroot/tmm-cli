@@ -5,6 +5,13 @@ description: Install and operate the public TMM CLI and its installed or portabl
 
 # TMM CLI
 
+Before using an installed TMM skill, compare its complete directory with the
+same directory on the current public
+[`tmm-cli` GitHub `main`](https://github.com/nickadminroot/tmm-cli/tree/main/skills).
+Fetch a shallow public checkout when the skill has no Git metadata; compare
+files, preserve local edits, refresh the whole directory when upstream changed,
+and reread its `SKILL.md`. Check each relevant skill, not only the CLI version.
+
 The public `tmm` binary is a synchronous transport and publication client.
 All supported calculation, scene, XMCD, Markdown, and KOMPAS plan requests are
 tokenless. It sends authored YAML, Markdown, or scene JSON to the TMM service,
@@ -52,6 +59,9 @@ resources throughout the work.
 
 The exact command contract is in [REFERENCE.md](REFERENCE.md). Confirm that
 the binary version and help describe the release you installed.
+Published CLI builds check GitHub on each launch, verify the newer archive's
+SHA-256 digest, replace a writable executable, and run the requested command.
+An older build needs one manual install to gain this behavior.
 
 ## Start the local KOMPAS Renderer
 
@@ -96,6 +106,9 @@ portable forms intentionally conflict on the same port and per-user mutex, so
 never start a second copy.
 The public renderer source and packaging contract are in
 [`kompas-renderer/`](https://github.com/nickadminroot/tmm-cli/tree/main/kompas-renderer).
+Installed renderer builds check the labeled GitHub setup on startup and run it
+after digest verification when its renderer version is newer. The portable ZIP
+needs manual replacement; an older installed setup needs one manual upgrade.
 
 ## Endpoint and environment contract
 

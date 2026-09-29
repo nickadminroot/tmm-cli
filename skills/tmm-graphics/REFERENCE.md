@@ -80,8 +80,15 @@ contract changes.
 ### Entity forms
 
 Every entity has a non-empty `id`. `layer` is one of `fixed`, `thin`, `hatch`,
-`label`, or `dimension`; `style` is `solid`, `dashed`, or `dotted` when the
-consumer supports it. Required fields are:
+`label`, or `dimension`. `style` may be `solid`, `dashed`, `dotted`, or any
+exact `ksCS…` system style listed by the bundled Scene v2 schema. The exact
+KOMPAS name overrides layer pen width; SVG previews approximate its visible
+pattern because KOMPAS pen settings are configurable. Missing system styles in
+an older KOMPAS installation fail explicitly. The two invisible styles omit
+geometry; `ksCSBrokenLine` is a special native
+break-line object and fails on ordinary Scene v2 geometry in KOMPAS v24.
+
+Required fields are:
 
 | `type` | Required geometry/content | Useful optional fields |
 | --- | --- | --- |

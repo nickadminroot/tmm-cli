@@ -23,6 +23,13 @@ it to the installed localhost KOMPAS Renderer.
 | `tmm kompas render-json INPUT.render.json --output FILE.cdw` | Render arbitrary resolved Scene v2 JSON to CDW through the public plan endpoint and local Renderer; tokenless. |
 | `tmm version` | Print the client version. |
 
+Published CLI builds check the latest GitHub release at startup. When a newer
+archive for the current platform exists, the CLI verifies its GitHub SHA-256
+digest, replaces its user-writable executable, and runs the requested command
+with the new version. Development builds skip this check. If GitHub or the
+installation directory is unavailable, the installed version continues and
+the update diagnostic is written to stderr.
+
 The `linkage` command materializes the free generic result tree under `DIR`.
 The server owns linkage analysis and the native XMCD compiler; the client
 writes declared bytes unchanged. `tmm xmcd` is the dedicated free endpoint for
@@ -135,6 +142,12 @@ opening the visible KOMPAS document, and checking the non-empty `.cdw` output.
 If the website reports that the renderer is missing or incompatible, reinstall
 the current setup and select **Проверить снова** in the render dialog.
 
+Installed release builds check GitHub on startup. A newer renderer setup is
+downloaded only when its release asset carries a higher `renderer-vX.Y.Z`
+label and SHA-256 digest; the verified setup replaces and restarts the local
+renderer. Portable archives remain manually replaced. Existing installations
+without the updater need one manual installation of the new release.
+
 An agent may instead run the same renderer without installation. Download
 `tmm-kompas-renderer-portable-windows-amd64.zip` and its `.sha256` file from
 the [latest public CLI release](https://github.com/nickadminroot/tmm-cli/releases/latest),
@@ -218,6 +231,9 @@ directory inside the current working project. Preserve its `references`,
 `examples`, `assets`, `scripts`, and `vendor` content; copying only `SKILL.md`
 is insufficient. Read each installed `SKILL.md` and consult it and its routed
 resources throughout the work.
+Before use, compare each installed skill directory with the corresponding
+directory on current public GitHub `main`; refresh changed complete directories
+while preserving local edits.
 
 - [`tmm-cli`](skills/tmm-cli/SKILL.md): installation, commands and diagnostics.
 - [`tmm-yaml`](skills/tmm-yaml/SKILL.md): physical YAML authoring and complete examples.
