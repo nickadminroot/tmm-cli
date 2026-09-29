@@ -28,7 +28,8 @@ archive for the current platform exists, the CLI verifies its GitHub SHA-256
 digest, replaces its user-writable executable, and runs the requested command
 with the new version. Development builds skip this check. If GitHub or the
 installation directory is unavailable, the installed version continues and
-the update diagnostic is written to stderr.
+the update diagnostic is written to stderr. CLI versions before `0.1.8` need
+one manual upgrade to gain this updater.
 
 The `linkage` command materializes the free generic result tree under `DIR`.
 The server owns linkage analysis and the native XMCD compiler; the client
