@@ -482,6 +482,7 @@ KOMPAS_STYLE_NAMES = frozenset({
     "ksCSISO15DashDot2Dashes3Dots", "ksCSDotted",
 })
 SCENE_LINE_STYLES = frozenset({"solid", "dashed", "dotted"}) | KOMPAS_STYLE_NAMES
+TABLE_NATIVE_STYLES = frozenset({1, 2, 3, 4, 7, 8, 9, 10})
 
 
 def _lookup_const(const, names: Tuple[str, ...], fallback: int) -> int:
@@ -880,6 +881,27 @@ def add_line(container, const, x1: float, y1: float, x2: float, y2: float,
     _apply_geometry_style(obj, const, layer, style)
 
 
+def add_broken_line(symbols, const, x1: float, y1: float,
+                    x2: float, y2: float) -> None:
+    """Render KOMPAS's break-line object instead of a normalized line pen."""
+    obj = symbols.BrokenLines.Add()
+    obj.X1, obj.Y1 = float(x1), float(y1)
+    obj.X2, obj.Y2 = float(x2), float(y2)
+    obj.Style = resolve_style_for_layer(const, "fixed", "ksCSBrokenLine")
+    if not obj.Update() or not obj.Valid or int(obj.BreaksCount) < 1:
+        raise RuntimeError("KOMPAS failed to create the native break line")
+
+
+def add_styled_line(container, symbols, const, x1: float, y1: float,
+                    x2: float, y2: float, style: str, layer: str) -> None:
+    if style == "ksCSBrokenLine":
+        if symbols is None:
+            raise RuntimeError("KOMPAS symbols container required for a break line")
+        add_broken_line(symbols, const, x1, y1, x2, y2)
+    else:
+        add_line(container, const, x1, y1, x2, y2, style=style, layer=layer)
+
+
 def add_circle(container, const, xc: float, yc: float, radius: float,
                style: str = "solid", layer: str = "fixed") -> None:
     obj = container.Circles.Add()
@@ -1040,7 +1062,7 @@ def write_table_cell_inline(
     return text
 
 
-def add_table(module7, const, symbols, plan: TablePlan) -> None:
+def add_table(module7, const, container, symbols, plan: TablePlan) -> None:
     """Create one native KOMPAS ``IDrawingTable`` from a validated plan.
 
     Unlike a line/text approximation, this is a real editable KOMPAS table:
@@ -1090,22 +1112,53 @@ def add_table(module7, const, symbols, plan: TablePlan) -> None:
         boundaries = _qi(module7, all_cells.CellsBoundaries, "ICellBoundaries")
         grid_style = resolve_style_for_layer(const, plan.grid_layer, plan.grid_style)
         border_style = resolve_style_for_layer(const, plan.border_layer, plan.border_style)
-        boundaries.SetLineStyle(const.ksCBAllBorders, grid_style)
-        boundaries.SetLineStyle(const.ksCBExternalBorders, border_style)
-        boundaries.SetLineVisible(
-            const.ksCBAllBorders,
-            plan.grid_style not in {"ksCSHidden", "ksCSUnvisible"},
-        )
-        boundaries.SetLineVisible(
-            const.ksCBExternalBorders,
-            plan.border_style not in {"ksCSHidden", "ksCSUnvisible"},
-        )
+        native_grid = grid_style in TABLE_NATIVE_STYLES
+        native_border = border_style in TABLE_NATIVE_STYLES
+        boundaries.SetLineStyle(const.ksCBAllBorders, grid_style if native_grid else 0)
+        boundaries.SetLineVisible(const.ksCBAllBorders, native_grid)
+        boundaries.SetLineStyle(const.ksCBExternalBorders, border_style if native_border else 0)
+        boundaries.SetLineVisible(const.ksCBExternalBorders, native_border)
+        if not native_grid or not native_border:
+            # A range-level visibility setter does not persist on every cell
+            # in KOMPAS v24. Correct each physical edge after merged cells are
+            # created so unsupported native pens cannot leave solid borders.
+            last_row = len(plan.row_heights) - 1
+            last_column = len(plan.column_widths) - 1
+            for row in range(last_row + 1):
+                for column in range(last_column + 1):
+                    cell_boundaries = _qi(module7, table.Cell(row, column), "ICellBoundaries")
+                    for index, external in (
+                        (const.ksCBLeftBorder, column == 0),
+                        (const.ksCBRightBorder, column == last_column),
+                        (const.ksCBTopBorder, row == 0),
+                        (const.ksCBBottomBorder, row == last_row),
+                    ):
+                        native = native_border if external else native_grid
+                        value = border_style if external else grid_style
+                        cell_boundaries.SetLineStyle(index, value if native else 0)
+                        cell_boundaries.SetLineVisible(index, native)
         if not drawing_table.Update():
             raise RuntimeError(f"KOMPAS failed to update table {plan.entity_id!r}")
     finally:
         all_cells_format.ReadOnly = True
     if not drawing_table.Update():
         raise RuntimeError(f"KOMPAS failed to finalize table {plan.entity_id!r}")
+    if not native_border and plan.border_style not in {"ksCSHidden", "ksCSUnvisible"}:
+        x, y = plan.position
+        right, bottom = x + plan.width, y - plan.height
+        for x1, y1, x2, y2 in (
+            (x, y, right, y), (right, y, right, bottom),
+            (right, bottom, x, bottom), (x, bottom, x, y),
+        ):
+            add_styled_line(container, symbols, const, x1, y1, x2, y2,
+                            plan.border_style, plan.border_layer)
+    if not native_grid and plan.grid_style not in {"ksCSHidden", "ksCSUnvisible"}:
+        for x, low, high in plan.internal_vertical_segments():
+            add_styled_line(container, symbols, const, x, low, x, high,
+                            plan.grid_style, plan.grid_layer)
+        for y, left, right in plan.internal_horizontal_segments():
+            add_styled_line(container, symbols, const, left, y, right, y,
+                            plan.grid_style, plan.grid_layer)
 
 
 def add_polyline(container, const, points: Sequence[Tuple[float, float]], closed: bool,
@@ -1144,10 +1197,10 @@ def scene_entity_to_api(module7, container, const, entity: dict,
     ctype = entity.get('type')
     layer = entity.get('layer', 'fixed')
     style = entity.get('style', 'solid')
-    if style in {'ksCSHidden', 'ksCSUnvisible'}:
+    if ctype != 'table' and style in {'ksCSHidden', 'ksCSUnvisible'}:
         return
     if ctype == 'line':
-        add_line(container, const,
+        add_styled_line(container, symbols, const,
                  entity['from'][0], entity['from'][1],
                  entity['to'][0], entity['to'][1],
                  style=style, layer=layer)
@@ -1192,7 +1245,7 @@ def scene_entity_to_api(module7, container, const, entity: dict,
     elif ctype == 'table':
         if symbols is None:
             raise RuntimeError("KOMPAS symbols container required for table rendering")
-        add_table(module7, const, symbols, compile_table_plan(entity))
+        add_table(module7, const, container, symbols, compile_table_plan(entity))
     elif ctype == 'polygon':
         points = entity.get('points', [])
         if is_arrowhead_polygon(entity):

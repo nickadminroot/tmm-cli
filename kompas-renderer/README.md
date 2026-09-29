@@ -87,9 +87,11 @@ skill. This adapter owns KOMPAS-specific lowering, sheet handling, tables,
 text, and drawing capabilities.
 
 Explicit `ksCS…` names in that schema select matching KOMPAS system line
-styles and are read back after creation. Invisible styles omit geometry.
-KOMPAS v24 does not accept `ksCSBrokenLine` on ordinary primitives; this and
-other unsupported or normalized styles fail explicitly.
+styles and are read back after creation. Invisible styles hide the selected
+geometry or table border. `ksCSBrokenLine` on a Scene `line` creates the native
+KOMPAS break-line object. Table border styles that native cells do not support
+are drawn as separate editable geometry while the table remains native.
+Unsupported or normalized styles on ordinary primitives fail explicitly.
 
 ## CLI contract
 
@@ -127,7 +129,7 @@ Ed25519 **public** key and the exact browser origin:
 uv sync --extra kompas --extra packaging --locked
 uv run --locked --extra kompas --extra packaging python packaging/build_windows.py \
   --public-key-file RELEASE_PUBLIC_KEY.pem --key-id release-2026 \
-  --allowed-origin https://www.tmm-agent.ru --renderer-version 0.2.2
+  --allowed-origin https://www.tmm-agent.ru --renderer-version 0.2.3
 ```
 
 The production portal origin is exactly `https://www.tmm-agent.ru`. If

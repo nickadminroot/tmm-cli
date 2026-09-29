@@ -1,9 +1,9 @@
 """COM-free contract and lowering tests for the tmm-scene ``table`` entity."""
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from tmm_scene_kompas.render import add_table, entity_requires_api5, offset_entity, validate_payload_v2
+from tmm_scene_kompas.render import add_table, entity_requires_api5, offset_entity, scene_entity_to_api, validate_payload_v2
 from tmm_scene_kompas.table import (
     TableCellCompileError,
     TableCompileError,
@@ -73,6 +73,17 @@ class TestTablePlan(unittest.TestCase):
         validate_payload_v2({"entities": [table]})
         self.assertEqual(offset_entity(table, (3, 4))["position"], [3.0, 4.0])
 
+    def test_hidden_table_border_keeps_the_table_and_cell_text(self):
+        table = {
+            "type": "table", "id": "hidden-border", "position": [0, 10],
+            "columnWidths": [10], "rowHeights": [10],
+            "style": "ksCSHidden",
+            "cells": [{"row": 0, "column": 0, "text": "A"}],
+        }
+        with patch("tmm_scene_kompas.render.add_table") as lowered:
+            scene_entity_to_api(object(), object(), object(), table, symbols=object())
+        lowered.assert_called_once()
+
     def test_native_table_cells_never_require_the_api5_text_path(self):
         plain = compile_table_plan({
             "type": "table", "id": "plain", "position": [0, 0],
@@ -94,6 +105,42 @@ class TestTablePlan(unittest.TestCase):
 
 
 class TestTableLowering(unittest.TestCase):
+
+    def test_unsupported_native_border_pens_use_geometry_overlay(self):
+        plan = compile_table_plan({
+            "type": "table", "id": "styled", "position": [0, 20],
+            "columnWidths": [10, 10], "rowHeights": [10, 10],
+            "style": "ksCSISO02Dashed", "gridStyle": "ksCSDotted",
+            "cells": [{"row": row, "column": column, "text": "A"}
+                      for row in range(2) for column in range(2)],
+        })
+        drawing_table = MagicMock()
+        drawing_table.Update.return_value = True
+        symbols = MagicMock()
+        symbols.DrawingTables.Add.return_value = drawing_table
+        container = MagicMock()
+        segments = []
+
+        def create_segment():
+            segment = MagicMock()
+            segment.Update.return_value = True
+            segments.append(segment)
+            return segment
+
+        container.LineSegments.Add.side_effect = create_segment
+        const = type("Const", (), {
+            "ksCBAllBorders": 7, "ksCBExternalBorders": 6,
+            "ksCBLeftBorder": 0, "ksCBRightBorder": 1,
+            "ksCBTopBorder": 2, "ksCBBottomBorder": 3,
+            "ksCSISO02Dashed": 12, "ksCSDotted": 26,
+        })()
+        with patch("tmm_scene_kompas.render._qi", side_effect=lambda _module, obj, _name: obj), \
+                patch("tmm_scene_kompas.render.write_table_cell_inline"):
+            add_table(object(), const, container, symbols, plan)
+        boundaries = drawing_table.Range.return_value.CellsBoundaries
+        boundaries.SetLineVisible.assert_any_call(7, False)
+        boundaries.SetLineVisible.assert_any_call(6, False)
+        self.assertEqual([segment.Style for segment in segments], [12] * 4 + [26] * 4)
 
     def test_creates_one_native_table_with_formats_merges_and_cell_text(self):
         class Format:
@@ -255,7 +302,7 @@ class TestTableLowering(unittest.TestCase):
                 "ksCSDashed": 4,
                 "ksCSAxial": 3,
             })()
-            add_table(object(), const, symbols, plan)
+            add_table(object(), const, object(), symbols, plan)
         native = tables.native
         self.assertEqual(tables.add_args, (2, 2, 5.0, 10.0, 0))
         self.assertEqual((native.X, native.Y), (0.0, 20.0))

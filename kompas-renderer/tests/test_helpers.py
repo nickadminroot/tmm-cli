@@ -978,6 +978,27 @@ class TestFilledCircleDispatch(unittest.TestCase):
             add_line(NormalizingContainer(), _FakeConst(ksCSBrokenLine=5),
                      0, 0, 10, 0, style='ksCSBrokenLine')
 
+    def test_break_line_uses_native_special_object(self):
+        class BrokenLine:
+            Valid = True
+            BreaksCount = 1
+
+            def Update(self):
+                self.Style = 11  # KOMPAS v24 normalizes the special object's pen.
+                return True
+
+        native = BrokenLine()
+        symbols = MagicMock()
+        symbols.BrokenLines.Add.return_value = native
+        container = _FakeContainerWithLines()
+        scene_entity_to_api(MagicMock(), container, _FakeConst(ksCSBrokenLine=5), {
+            'type': 'line', 'from': [1, 2], 'to': [10, 2],
+            'style': 'ksCSBrokenLine',
+        }, symbols=symbols)
+        self.assertEqual((native.X1, native.Y1, native.X2, native.Y2), (1, 2, 10, 2))
+        self.assertEqual(container.lines, [])
+        symbols.BrokenLines.Add.assert_called_once_with()
+
     def test_filled_circle_is_dense_disk_of_normal_horizontal_chords(self):
         container = _FakeContainerWithLines()
         const = _FakeConst(ksCSNormal=1, ksCSThick=7)

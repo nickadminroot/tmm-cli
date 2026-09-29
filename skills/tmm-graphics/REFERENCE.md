@@ -84,9 +84,11 @@ Every entity has a non-empty `id`. `layer` is one of `fixed`, `thin`, `hatch`,
 exact `ksCS…` system style listed by the bundled Scene v2 schema. The exact
 KOMPAS name overrides layer pen width; SVG previews approximate its visible
 pattern because KOMPAS pen settings are configurable. Missing system styles in
-an older KOMPAS installation fail explicitly. The two invisible styles omit
-geometry; `ksCSBrokenLine` is a special native
-break-line object and fails on ordinary Scene v2 geometry in KOMPAS v24.
+an older KOMPAS installation fail explicitly. The two invisible styles hide
+selected geometry or table borders. On a `line`, `ksCSBrokenLine` creates a
+native break-line object and a zigzag SVG preview. Native table cells support
+only part of the system pen set; other visible table border styles use separate
+editable KOMPAS geometry around the native table.
 
 Required fields are:
 
